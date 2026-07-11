@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+        <!-- Top bar: group selector + date-range filter (titled borders applied in controller) -->
+        <HBox fx:id="hBxTopBar" alignment="CENTER_LEFT" spacing="5">
+            <padding><Insets top="7" right="5" bottom="5" left="5"/></padding>
+
+            <!-- Group selector — gets "group" titled border in controller -->
+            <VBox fx:id="vBxForGroup" prefWidth="200" HBox.hgrow="NEVER">
+                <HBox.margin><Insets right="5"/></HBox.margin>
+            </VBox>
+            <Button fx:id="btnManageGroups" mnemonicParsing="false"
+                    prefHeight="20" prefWidth="20">
+                <graphic><FontIcon iconLiteral="far-folder" iconSize="11"/></graphic>
+                <tooltip><Tooltip text="task groups verwalten"/></tooltip>
+                <HBox.margin><Insets right="5"/></HBox.margin>
+            </Button>
+            <Button fx:id="btnReload" mnemonicParsing="false"
+                    prefHeight="20" prefWidth="20">
+                <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                <tooltip><Tooltip text="neu laden"/></tooltip>
+                <HBox.margin><Insets right="5"/></HBox.margin>
+            </Button>
+            <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: #cc3333;"/>
+
+            <!-- Date-range filter — gets "filter" titled border in controller -->
+            <HBox fx:id="hBxForFilter" alignment="CENTER_LEFT" spacing="5" HBox.hgrow="NEVER">
+                <padding><Insets top="3" right="5" bottom="3" left="5"/></padding>
+                <Label text="start"/>
+                <DatePicker fx:id="dtPckrStart" prefWidth="130"/>
+                <Label text="end"/>
+                <DatePicker fx:id="dtPckrEnd" prefWidth="130"/>
+                <Button fx:id="btnApply" text="apply" style="-fx-font-size: 11px;" prefHeight="26"/>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <!-- Gantt TreeTableView -->
+        <TreeTableView fx:id="ttv" VBox.vgrow="ALWAYS"
+                       maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                       showRoot="false" fixedCellSize="28"
+                       style="-fx-table-cell-border-color: transparent; -fx-font-weight: normal;"/>
+
+        <!-- Detail / date editing area for selected task -->
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <padding><Insets top="4" right="5" bottom="5" left="5"/></padding>
+            <Label text="planned start"/>
+            <DatePicker fx:id="dtPckrTaskStart" prefWidth="130"/>
+            <Label text="planned end"/>
+            <DatePicker fx:id="dtPckrTaskEnd" prefWidth="130"/>
+            <Button fx:id="btnSaveDates" text="save"
+                    style="-fx-font-size: 11px;" prefHeight="26"/>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

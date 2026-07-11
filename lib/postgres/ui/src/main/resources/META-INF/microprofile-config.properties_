@@ -1,0 +1,17 @@
+# ============================================================================
+# MicroProfile Config for JDBC PostgreSQL Library Tests
+# ============================================================================
+# Reads environment variables directly (set by Docker .env_ or system)
+# Format: ${ENV_VAR:fallback-value}
+# ============================================================================
+
+config_ordinal=100
+
+# PostgreSQL Database Connection for lib_test
+# Uses shared Postgres container with lib_test database
+database.host=${POSTGRES_HOST:localhost}
+database.port=${POSTGRES_PORT:5432}
+database.name=${POSTGRES_LIB_TEST_DATABASE:lib_test}
+database.user=${POSTGRES_LIB_TEST_USER:lib_test}
+database.password=${POSTGRES_LIB_TEST_PASSWORD:lib_test}
+

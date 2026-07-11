@@ -1,0 +1,21 @@
+# Maven build output
+target/
+
+# IntelliJ IDEA — maschinenspezifische Dateien nicht teilen
+.idea/
+*.iml
+
+# Maven-Shade generierte POMs
+**/dependency-reduced-pom.xml
+
+# Umgebungsspezifische Konfiguration
+*.env
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Liberty global library — populated at build time by maven-dependency-plugin
+app/pragma/backend/rest/src/main/liberty/config/lib/global/

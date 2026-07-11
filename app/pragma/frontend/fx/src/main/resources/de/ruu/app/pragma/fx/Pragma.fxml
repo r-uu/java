@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+
+    <TabPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+             AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+             tabClosingPolicy="UNAVAILABLE">
+
+        <Tab text="Hierarchies">
+            <AnchorPane fx:id="paneHierarchies"
+                        maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+        </Tab>
+
+        <Tab text="Gantt">
+            <AnchorPane fx:id="paneGantt"
+                        maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+        </Tab>
+
+        <Tab text="Graph">
+            <AnchorPane fx:id="paneGraph"
+                        maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+        </Tab>
+
+    </TabPane>
+
+    <!-- Backup/Restore buttons floating over the tab header area -->
+    <HBox spacing="3" AnchorPane.topAnchor="4" AnchorPane.rightAnchor="5">
+        <Button fx:id="btnBackup" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+            <graphic><FontIcon iconLiteral="far-arrow-alt-circle-down" iconSize="11"/></graphic>
+            <tooltip><Tooltip text="backup database"/></tooltip>
+        </Button>
+        <Button fx:id="btnRestore" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+            <graphic><FontIcon iconLiteral="far-arrow-alt-circle-up" iconSize="11"/></graphic>
+            <tooltip><Tooltip text="restore database"/></tooltip>
+        </Button>
+    </HBox>
+
+</AnchorPane>

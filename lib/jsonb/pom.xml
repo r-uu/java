@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.java.jsonb</artifactId>
+	<name>${project.artifactId}</name>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.bom</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>jakarta.json.bind</groupId>
+			<artifactId>jakarta.json.bind-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>yasson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+		</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.util</artifactId>
+	</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Log4j2 for logging in tests -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!--
+				Compiler Plugin - exclude test module-info.java from Maven compilation
+
+				Warum: Mit Test-module-info.java würde Maven die Main-Sources im Test-Kontext
+				neu kompilieren, was zu Problemen mit Lombok führt (Annotation-Processor läuft nicht).
+
+				Lösung: Maven ignoriert das Test-module-info.java und verwendet Classpath für Tests.
+				        IntelliJ nutzt das Test-module-info.java für JPMS-konforme Test-Ausführung.
+
+				Beide Ansätze funktionieren und sind kompatibel.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<testExcludes>
+								<testExclude>**/module-info.java</testExclude>
+							</testExcludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

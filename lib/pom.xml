@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>r-uu.lib.java</artifactId>
+  <name>${project.artifactId}</name>
+  <packaging>pom</packaging>
+  <description>root module for possibly reusable library artifacts of group r-uu</description>
+
+  <parent>
+    <groupId>r-uu</groupId>
+    <artifactId>r-uu.lib.java.bom</artifactId>
+    <version>0.0.1</version>
+    <relativePath>bom/pom.xml</relativePath>
+  </parent>
+
+	<modules>
+		<module>archunit</module>
+		<module>cdi</module>
+		<module>fx</module>
+		<module>gen</module>
+		<module>jackson</module>
+		<module>jdbc</module>
+		<module>jpa</module>
+		<module>jsonb</module>
+		<module>junit</module>
+		<module>docker</module>
+		<module>keycloak</module>
+		<module>liberty</module>
+		<module>mapstruct</module>
+		<module>mp</module>
+		<module>office</module>
+		<module>postgres</module>
+		<module>util</module>
+		<module>ws</module>
+		<module>bom</module>
+	</modules>
+
+</project>

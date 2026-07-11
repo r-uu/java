@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.java.postgres.ui</artifactId>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.postgres</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.fx.comp</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.gen.core</artifactId>
+			<scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.gen.java.fx.comp</artifactId>
+			<scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.jboss.weld.se</groupId>
+			<artifactId>weld-se-shaded</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.mp.config</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>io.smallrye.config</groupId>
+			<artifactId>smallrye-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.postgres.toolbox</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.fx.core</artifactId>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>de.ruu.lib.postgres.toolbox.ui.PostgresUtilUIAppRunner</mainClass>
+					<systemProperties>
+						<systemProperty>
+							<key>glass.gtk.uiScale</key>
+							<value>1.5</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

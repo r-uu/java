@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.java.util</artifactId>
+	<description>module for possibly reusable utility library artifacts of group r-uu</description>
+	<name>${project.artifactId}</name>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.bom</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+
+		<!-- other dependencies -->
+		<dependency>
+			<groupId>org.jspecify</groupId>
+			<artifactId>jspecify</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<!-- Test-Logger Binding zur Vermeidung von SLF4J Provider-Warnungen -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!--				<configuration>-->
+				<!--					<argLine>-->
+				<!--						&#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED-->
+				<!--						&#45;&#45;add-opens java.base/java.util=ALL-UNNAMED-->
+				<!--						&#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED-->
+				<!--						&#45;&#45;add-opens java.base/java.io=ALL-UNNAMED-->
+				<!--						&#45;&#45;add-opens java.base/java.time=ALL-UNNAMED-->
+				<!--					</argLine>-->
+				<!--				</configuration>-->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-parameters</arg>
+						<arg>-Xlint:all</arg>
+						<!-- Suppress varargs warnings - methods are properly annotated with @SafeVarargs -->
+						<arg>-Xlint:-varargs</arg>
+						<arg>-Amapstruct.defaultComponentModel=default</arg>
+					</compilerArgs>
+					<annotationProcessorPaths>
+						<!-- Lombok must come first -->
+					</annotationProcessorPaths>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<compilerArgs>
+								<arg>-parameters</arg>
+								<arg>-Xlint:all</arg>
+								<arg>-Amapstruct.defaultComponentModel=default</arg>
+								<!--								<arg>&#45;&#45;add-modules</arg>-->
+								<!--
+								<arg>org.junit.jupiter.api,org.junit.jupiter.params,java.desktop,org.assertj</arg>-->
+								<!--								<arg>&#45;&#45;add-reads</arg>-->
+								<!--
+								<arg>de.ruu.lib.util=org.junit.jupiter.api,org.junit.jupiter.params,java.desktop,org.assertj</arg>-->
+							</compilerArgs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

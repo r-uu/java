@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.java.junit</artifactId>
+	<description>module for possibly reusable junit library artifacts of group r-uu</description>
+	<name>${project.artifactId}</name>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.bom</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+		<!-- Internal dependencies -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.util</artifactId>
+        </dependency>
+
+		<!-- External dependencies -->
+		<dependency>
+			<groupId>io.smallrye.config</groupId>
+			<artifactId>smallrye-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+		</dependency>
+		<!-- Present jakarta.ws.rs module to satisfy transitive requires from de.ruu.lib.util -->
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- JUnit API benötigt im Produktionscode (für Extensions/Annotations) -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-commons</artifactId>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+</project>

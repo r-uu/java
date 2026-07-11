@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.java.jdbc.postgres</artifactId>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.java.jdbc</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+		<!-- Internal dependencies alphabetisch nach artifactId -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.jdbc.core</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.java.junit</artifactId>
+			<scope>test</scope>
+        </dependency>
+
+		<!-- External dependencies alphabetisch nach artifactId -->
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.smallrye.config</groupId>
+			<artifactId>smallrye-config</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+
+		<!-- Test logging to avoid SLF4J NOP warnings -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>

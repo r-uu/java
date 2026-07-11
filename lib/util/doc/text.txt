@@ -1,0 +1,34 @@
+@startuml
+class Categoriser [[java:de.ruu.lib.util.jira.csv.raw.Categoriser]] {
+	-{static} log: org.slf4j.Logger
+	-issueRecordsByKey: Map<String,Set<ExportRecord>>
+	-initiatives: Map<String,IssueType.Initiative>
+	-epics: Map<String,IssueType.Epic>
+	-stories: Map<String,IssueType.Story>
+	-bugs: Map<String,IssueType.Bug>
+	-tasks: Map<String,IssueType.Task>
+	-featureRequests: Map<String,IssueType.FeatureRequest>
+	-technicalTasks: Map<String,IssueType.TechnicalTask>
+	-subTasks: Map<String,IssueType.SubTask>
+	-Categoriser(jiraRecordsByKey: Map<String,Set<ExportRecord>>)
+	-initialiseIssueTypes(): void
+	-addToInitiatives(issue: ExportRecord): void
+	-addToEpics(issue: ExportRecord): void
+	-addToStories(issue: ExportRecord): void
+	-addToBugs(issue: ExportRecord): void
+	-addToTasks(issue: ExportRecord): void
+	-addToFeatureRequest(issue: ExportRecord): void
+	-addToTechnicalTask(issue: ExportRecord): void
+	-addToSubTask(issue: ExportRecord): void
+	+{static} create(jiraRecordsByKey: Map<String,Set<ExportRecord>>): Categoriser
+	+issueRecordsByKey(): Map<String,Set<ExportRecord>>
+	+initiatives(): Map<String,IssueType.Initiative>
+	+epics(): Map<String,IssueType.Epic>
+	+stories(): Map<String,IssueType.Story>
+	+bugs(): Map<String,IssueType.Bug>
+	+tasks(): Map<String,IssueType.Task>
+	+featureRequests(): Map<String,IssueType.FeatureRequest>
+	+technicalTasks(): Map<String,IssueType.TechnicalTask>
+	+subTasks(): Map<String,IssueType.SubTask>
+}
+@enduml

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE xml> 
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:weld="http://jboss.org/schema/weld/beans"
+       xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xsi:schemaLocation=
+         "http://xmlns.jcp.org/xml/ns/javaee
+          http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
+       bean-discovery-mode="all">
+	<scan>
+		<!-- don't scan org.jboss.weld classes -->
+<!-- 		<exclude name="org.jboss.weld.**" />  -->
+		<!-- don't scan org.openxmlformats classes -->
+<!-- 		<exclude name="org.openxmlformats.**" />  -->
+		<!-- don't scan org classes -->
+		<exclude name="org.**" />
+	</scan>
+</beans>

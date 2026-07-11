@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="backup">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <GridPane layoutX="210.0" layoutY="120.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                                  <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                  <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="executable" />
+                                    <Label text="target" GridPane.rowIndex="1" />
+                                    <Label text="host" GridPane.rowIndex="2" />
+                                    <Label text="port" GridPane.rowIndex="3" />
+                                    <Label text="database" GridPane.rowIndex="4" />
+                                    <Label text="username" GridPane.rowIndex="5" />
+                                    <Label text="password" GridPane.rowIndex="6" />
+                                    <HBox prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                                       <children>
+                                          <TextField fx:id="tfExecutableBackup" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="btnFileChooserExecutableBackup" mnemonicParsing="false" text="..." />
+                                       </children>
+                                    </HBox>
+                                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                       <children>
+                                          <TextField fx:id="tfTargetFile" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="btnFileChooserTarget" mnemonicParsing="false" text="..." />
+                                       </children>
+                                    </HBox>
+                                    <TextField fx:id="tfHostBackup" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="tfPortBackup" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <TextField fx:id="tfDatabaseBackup" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <TextField fx:id="tfUsernameBackup" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <TextField fx:id="tfPasswordBackup" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                    <Button fx:id="btnExecuteBackup" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="execute" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab text="restore">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER" />
+                                 </rowConstraints>
+                                 <children>
+                                    <Label text="executable" />
+                                    <Label text="source" GridPane.rowIndex="1" />
+                                    <Label text="host" GridPane.rowIndex="2" />
+                                    <Label text="port" GridPane.rowIndex="3" />
+                                    <Label text="database" GridPane.rowIndex="4" />
+                                    <Label text="username" GridPane.rowIndex="5" />
+                                    <Label text="password" GridPane.rowIndex="6" />
+                                    <HBox prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                                       <children>
+                                          <TextField fx:id="tfExecutableRestore" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="btnFileChooserExecutableRestore" mnemonicParsing="false" text="..." />
+                                       </children>
+                                    </HBox>
+                                    <TextField fx:id="tfHostRestore" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="tfPortRestore" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                       <children>
+                                          <TextField fx:id="tfSourceFile" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="btnFileChooserSource" mnemonicParsing="false" text="..." />
+                                       </children>
+                                    </HBox>
+                                    <TextField fx:id="tfDatabaseRestore" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <TextField fx:id="tfUsernameRestore" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <TextField fx:id="tfPasswordRestore" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                    <Button fx:id="btnExecuteRestore" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="execute" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+            <Button fx:id="btnSaveSettings" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="save settings" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

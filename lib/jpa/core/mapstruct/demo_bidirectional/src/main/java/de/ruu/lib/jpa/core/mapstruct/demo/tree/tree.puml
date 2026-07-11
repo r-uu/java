@@ -1,0 +1,41 @@
+@startuml
+abstract class de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode {
+- String name
+- T parent
+- List<T> children
++ <<Create>> AbstractNode(String)
++ <<Create>> AbstractNode(String,T)
++ Optional<T> parent()
++ List<T> children()
++ boolean add(T)
++ boolean remove(T)
+}
+
+note left of de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode::parent()
+
+	 * Manually implement this method because lombok can not generate accessor returning {@code Optional} as required by
+	 * {@link Node} for a non-{@code Optional} field as {@link #parent}.
+	 *
+	 * @return {@link #parent} wrapped in an {@code Optional}
+	 
+end note
+note right of de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode::children()
+
+	 * Manually implement this method because lombok can not generate accessor returning unmodifiable list.;
+	 *
+	 * @return {@link #parent} wrapped in an {@code Optional}
+	 
+end note
+note left of de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode::add(T)
+
+	 * handle bidirectional relation properly
+	 * @param node
+	 * @return
+	 
+end note
+
+
+
+de.ruu.lib.jpa.core.mapstruct.demo.bintree.Node <|.. de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode
+de.ruu.lib.jpa.core.mapstruct.AbstractMappedDTO <|-- de.ruu.lib.jpa.core.mapstruct.demo.bintree.AbstractNode
+@enduml

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.TilePane?>
+
+<TilePane fx:id="tlPnOkCancel" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefColumns="2" prefRows="1" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="btnOk" maxWidth="50.0" mnemonicParsing="false" text="ok" />
+      <Button fx:id="btnCancel" maxWidth="50.0" mnemonicParsing="false" text="cancel" />
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</TilePane>

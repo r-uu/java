@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>r-uu.app.java.pragma.fx</artifactId>
+  <name>${project.artifactId}</name>
+  <description>JavaFX UI for pragma (model + FXC views)</description>
+
+  <parent>
+    <groupId>r-uu</groupId>
+    <artifactId>r-uu.app.java.pragma.frontend</artifactId>
+    <version>0.0.1</version>
+  </parent>
+
+  <dependencies>
+
+    <!-- Internal pragma modules -->
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.app.java.pragma.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.app.java.pragma.bean</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.app.java.pragma.dto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.app.java.pragma.rest-client</artifactId>
+    </dependency>
+
+    <!-- Postgres backup/restore UI -->
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.postgres.ui</artifactId>
+    </dependency>
+
+    <!-- FXC framework (brings javafx-fxml transitively) -->
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.fx.comp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.fx.core</artifactId>
+    </dependency>
+
+    <!-- required directly in module-info.java; declared explicitly for JPMS module-path resolution -->
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.cdi.se</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.cdi.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.java.util</artifactId>
+    </dependency>
+
+    <!-- Weld SE CDI implementation — compile scope overrides BOM test default -->
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- JavaFX -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+    </dependency>
+
+    <!-- Jakarta EE APIs -->
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
+
+    <!-- JavaFXSmartGraph for graph view -->
+    <dependency>
+      <groupId>com.brunomnsilva</groupId>
+      <artifactId>smartgraph</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+
+    <!-- Ikonli icon library -->
+    <dependency>
+      <groupId>org.kordamp.ikonli</groupId>
+      <artifactId>ikonli-javafx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kordamp.ikonli</groupId>
+      <artifactId>ikonli-fontawesome5-pack</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals><goal>testCompile</goal></goals>
+            <configuration>
+              <testExcludes>
+                <testExclude>**/module-info.java</testExclude>
+              </testExcludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>hierarchies</id>
+            <goals><goal>java</goal></goals>
+            <configuration>
+              <mainClass>de.ruu.app.pragma.fx.task.hierarchy.HierarchiesAppRunner</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>gantt</id>
+            <goals><goal>java</goal></goals>
+            <configuration>
+              <mainClass>de.ruu.app.pragma.fx.task.gantt.GanttAppRunner</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>graph</id>
+            <goals><goal>java</goal></goals>
+            <configuration>
+              <mainClass>de.ruu.app.pragma.fx.task.graph.GraphAppRunner</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>pragma</id>
+            <goals><goal>java</goal></goals>
+            <configuration>
+              <mainClass>de.ruu.app.pragma.fx.PragmaAppRunner</mainClass>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>win-exe</id>
+      <!--
+        Erzeugt ein selbst-enthaltenes Windows-Distributions-Verzeichnis unter
+        target/win-exe/:
+          pragma.jar   – Fat-JAR mit allen App-Klassen und Nicht-JavaFX-Deps
+          lib/         – Windows-JavaFX-JARs (natives für win)
+          pragma.bat   – Startskript für Windows
+        Build-Kommando (aus WSL, Projekt-Root):
+          mvn package -pl frontend/fx -am -P win-exe
+        Dann den Inhalt von target/win-exe/ auf den Windows-Rechner kopieren
+        und pragma.bat per Doppelklick starten.
+        Voraussetzung: Java (mind. 25) ist auf dem Ziel-Windows-Rechner im PATH
+        oder JAVA_HOME zeigt auf das JDK.
+      -->
+      <build>
+        <plugins>
+
+          <!-- 1. Fat-JAR: alle Deps außer JavaFX (bleibt auf dem module-path) -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>shade-win-exe</id>
+                <phase>package</phase>
+                <goals><goal>shade</goal></goals>
+                <configuration>
+                  <outputFile>${project.build.directory}/win-exe/pragma.jar</outputFile>
+                  <createDependencyReducedPom>false</createDependencyReducedPom>
+                  <artifactSet>
+                    <excludes>
+                      <!-- JavaFX liegt separat in lib/ auf dem module-path -->
+                      <exclude>org.openjfx:*</exclude>
+                      <!-- log4j-core hat viele optionale Deps (disruptor, kafka, …) die Weld-Scanning kaputt machen;
+                           slf4j-simple (bereits im FAT-JAR) übernimmt das Logging -->
+                      <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                      <exclude>org.apache.logging.log4j:log4j-slf4j2-impl</exclude>
+                    </excludes>
+                  </artifactSet>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>de.ruu.app.pragma.fx.PragmaAppRunner</mainClass>
+                    </transformer>
+                    <!-- SPI-Dateien (CDI, Ikonli, …) korrekt zusammenführen -->
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    <!-- Eigene beans.xml (mit weld:scan-Whitelist) gewinnt immer gegen Dependency-Versionen -->
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                      <resource>META-INF/beans.xml</resource>
+                      <file>${project.basedir}/src/main/resources/META-INF/beans.xml</file>
+                    </transformer>
+                  </transformers>
+                  <filters>
+                    <filter>
+                      <artifact>*:*</artifact>
+                      <excludes>
+                        <exclude>module-info.class</exclude>
+                        <exclude>META-INF/*.SF</exclude>
+                        <exclude>META-INF/*.DSA</exclude>
+                        <exclude>META-INF/*.RSA</exclude>
+                        <!-- Alle beans.xml raus; IncludeResourceTransformer fügt die eigene danach exakt einmal ein -->
+                        <exclude>META-INF/beans.xml</exclude>
+                      </excludes>
+                    </filter>
+                  </filters>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- 2. Windows-JavaFX-JARs nach lib/ kopieren -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-javafx-win</id>
+                <phase>package</phase>
+                <goals><goal>copy</goal></goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/win-exe/lib</outputDirectory>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.openjfx</groupId>
+                      <artifactId>javafx-base</artifactId>
+                      <version>25</version>
+                      <classifier>win</classifier>
+                      <destFileName>javafx-base-win.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.openjfx</groupId>
+                      <artifactId>javafx-controls</artifactId>
+                      <version>25</version>
+                      <classifier>win</classifier>
+                      <destFileName>javafx-controls-win.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.openjfx</groupId>
+                      <artifactId>javafx-fxml</artifactId>
+                      <version>25</version>
+                      <classifier>win</classifier>
+                      <destFileName>javafx-fxml-win.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.openjfx</groupId>
+                      <artifactId>javafx-graphics</artifactId>
+                      <version>25</version>
+                      <classifier>win</classifier>
+                      <destFileName>javafx-graphics-win.jar</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- 3. pragma.bat generieren -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>generate-bat</id>
+                <phase>package</phase>
+                <goals><goal>run</goal></goals>
+                <configuration>
+                  <target>
+                    <echo file="${project.build.directory}/win-exe/pragma.bat"><![CDATA[@echo off
+setlocal enabledelayedexpansion
+
+set "DIR=%~dp0"
+
+if defined JAVA_HOME (
+  set "JAVA=%JAVA_HOME%\bin\java.exe"
+) else (
+  where java >nul 2>&1
+  if errorlevel 1 (
+    echo ERROR: Java nicht gefunden. Bitte JAVA_HOME setzen oder Java zum PATH hinzufuegen.
+    pause
+    exit /b 1
+  )
+  set "JAVA=java"
+)
+
+"%JAVA%" ^
+  --module-path "%DIR%lib" ^
+  --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics ^
+  -jar "%DIR%pragma.jar"
+
+if errorlevel 1 (
+  echo.
+  echo Pragma wurde mit Fehlercode !ERRORLEVEL! beendet.
+  pause
+)
+
+endlocal
+]]></echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

@@ -1,0 +1,30 @@
+@startuml FX Comp Architecture
+''''''''''
+' settings
+''''''''''
+'  left to right direction
+'  top to bottom direction
+  skinparam linetype ortho
+  ' avoids nesting of packages
+  set separator none
+  package de.ruu.lib.fx.comp
+  {
+	abstract class FXCApp
+	{
+		+ void start(Stage)
+		+ void stop()
+	}
+
+	abstract class FXCAppRunner
+	{
+		+ {static} void run(Class<? extends FXCApp>,String[],Runnable)
+		+ {static} void run(Class<? extends FXCApp>,String[])
+	}
+  }
+  package javafx.application
+  {
+  	abstract class Application
+  }
+  FXCApp       -|> Application
+  FXCAppRunner ..> FXCApp
+@enduml

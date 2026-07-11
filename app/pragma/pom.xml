@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>r-uu.app.java.pragma</artifactId>
+  <packaging>pom</packaging>
+  <name>${project.artifactId}</name>
+  <description>root module for pragma application (Jakarta EE backend + JavaFX frontend)</description>
+
+  <parent>
+    <groupId>r-uu</groupId>
+    <artifactId>r-uu.app.java.pragma.bom</artifactId>
+    <version>0.0.1</version>
+    <!-- app BOM imports the lib-java BOM and pins the lib version (see bom/pom.xml) -->
+    <relativePath>bom/pom.xml</relativePath>
+  </parent>
+
+  <modules>
+    <module>bom</module>
+    <module>core</module>
+    <module>bean</module>
+    <module>backend</module>
+    <module>frontend</module>
+  </modules>
+
+</project>

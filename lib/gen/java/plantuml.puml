@@ -1,0 +1,287 @@
+@startuml
+interface de.ruu.lib.gen2.java.element.GeneratorModifiers {
+~ GeneratorModifiers visibility(Visibility)
+~ Visibility visibility()
+~ GeneratorModifiers setStatic(boolean)
+~ boolean isStatic()
+~ GeneratorModifiers setFinal(boolean)
+~ boolean isFinal()
+~ GeneratorModifiers setAbstract(boolean)
+~ boolean isAbstract()
+~ {static} GeneratorModifiers create()
+~ {static} GeneratorModifiers modifiers()
+}
+abstract class de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersAbstract {
+- Visibility visibility
+- boolean isStatic
+- boolean isFinal
+- boolean isAbstract
++ GeneratorModifiers setStatic(boolean)
++ GeneratorModifiers setFinal(boolean)
++ GeneratorModifiers setAbstract(boolean)
++ StringBuilder generate()
+}
+class de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersSimple {
+}
+class de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersFieldSimple {
++ GeneratorModifiers setAbstract(boolean)
+~ {static} GeneratorModifiersFieldSimple create()
+~ {static} GeneratorModifiersFieldSimple fieldModifiers()
+}
+interface de.ruu.lib.gen2.java.JavaTypeDeclared {
+~ JavaTypeDeclared setDeclaredType(Class<?>)
+~ Class<?> getDeclaredType()
+~ Optional<List<JavaTypeDeclared>> getTypeParameters()
+~ JavaTypeDeclared setTypeParameters(List<JavaTypeDeclared>)
+~ void addTypeParameter(JavaTypeDeclared)
+}
+interface de.ruu.lib.gen2.java.element.GeneratorElement {
+~ ElementKind elementKind()
+~ Optional<GeneratorJavaDoc> javaDoc()
+~ GeneratorElement javaDoc(GeneratorJavaDoc)
+~ Optional<GeneratorModifiers> modifiers()
+~ GeneratorElement modifiers(GeneratorModifiers)
+~ String name()
+~ GeneratorElement name(String)
+}
+abstract class de.ruu.lib.gen2.java.element.GeneratorElement$GeneratorElementAbstract {
+- String name
+- Optional<GeneratorJavaDoc> javaDoc
+- Optional<GeneratorModifiers> modifiers
++ <<Create>> GeneratorElementAbstract(String)
++ GeneratorElement name(String)
++ GeneratorElement javaDoc(GeneratorJavaDoc)
++ GeneratorElement modifiers(GeneratorModifiers)
+}
+interface de.ruu.lib.gen2.java.JavaType {
+~ boolean isArrayType()
+~ JavaType setArrayType(boolean)
+}
+class de.ruu.lib.gen2.java.naming.ImportManager {
+- String targetCompilationUnitPackageName
+- String targetCompilationUnitSimpleName
+- Map<TypeElement,String> typeElementToTargetQualifiedTypeName
+- Set<String> forceSimpleNamesForPackages
+- Map<String,String> typeImports
+- Set<String> fullyQualifiedStaticNames
++ <<Create>> ImportManager(String,String,Map<TypeElement,String>)
++ <<Create>> ImportManager(String,String)
++ void addPackageToForceSimpleNamesForPackages(String)
++ StringBuffer generateImportStatements()
++ String useType(String)
++ String useType(Class<?>)
++ String useType(TypeMirror)
++ String useType(TypeElement)
++ String useTypeOf(Element)
++ void addStaticImport(String)
++ List<GeneratorImportStatement> importStatementGenerators()
++ String asString(JavaType)
++ String asString(JavaTypeDeclared)
+- List<String> fullyQualifiedNames()
+}
+interface de.ruu.lib.gen2.java.naming.GeneratorImportStatement {
+~ {static} GeneratorImportStatement create(String)
+~ {static} GeneratorImportStatement importStatement(String)
+}
+class de.ruu.lib.gen2.java.naming.GeneratorImportStatement$GeneratorImportStatementSimple {
+- String fullyQualifiedName
++ StringBuilder generate()
+}
+interface de.ruu.lib.gen2.java.CompilationUnitContext {
+~ {static} String FILE_EXTENSION
+~ StringBuilder getFileExtension()
+~ ImportManager importManager()
+~ StringBuilder packageName()
+~ StringBuilder simpleFileName()
+~ Set<Generator> generators()
+~ Set<Generator> add(Generator)
+~ {static} CompilationUnitContext create()
+~ {static} CompilationUnitContext create(String,String)
+~ {static} CompilationUnitContext context()
+~ {static} CompilationUnitContext context(String,String)
+}
+class de.ruu.lib.gen2.java.CompilationUnitContext$CompilationUnitContextSimple {
+- ImportManager importManager
+- Set<Generator> generators
+~ <<Create>> CompilationUnitContextSimple(String,String)
++ Set<Generator> generators()
++ Set<Generator> add(Generator)
+}
+class de.ruu.lib.gen2.java.CompilationUnitContext$PackageNameProducer {
+- {static} String PACKAGE_NAME
++ {static} String packageName
+}
+class de.ruu.lib.gen2.java.CompilationUnitContext$SimpleFileNameProducer {
+- {static} String SIMPLE_FILE_NAME
++ {static} String simpleFileName
+}
+interface de.ruu.lib.gen2.java.doc.GeneratorJavaDoc {
+~ GeneratorJavaDoc add(String)
+~ {static} GeneratorJavaDoc create()
+~ {static} GeneratorJavaDoc javaDoc()
+}
+abstract class de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocAbstract {
+}
+class de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocSimple {
+- List<String> lines
++ GeneratorJavaDoc add(String)
++ StringBuilder generate()
+}
+interface de.ruu.lib.gen2.java.element.field.GeneratorField {
+~ GeneratorField javaDoc(GeneratorJavaDoc)
+~ GeneratorField modifiers(GeneratorModifiers)
+~ ElementKind elementKind()
+~ GeneratorField type(String)
+~ String type()
+~ GeneratorField assignment(String)
+~ Optional<String> assignment()
+~ {static} GeneratorField create(String,String)
+~ {static} GeneratorField field(String,String)
+}
+abstract class de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldAbstract {
+- String type
+- Optional<String> assignment
++ <<Create>> GeneratorFieldAbstract(String,String)
++ GeneratorField javaDoc(GeneratorJavaDoc)
++ GeneratorField modifiers(GeneratorModifiers)
++ GeneratorField type(String)
++ String type()
++ GeneratorField assignment(String)
++ Optional<String> assignment()
++ StringBuilder generate()
+}
+class de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldSimple {
++ <<Create>> GeneratorFieldSimple(String,String)
+}
+interface de.ruu.lib.gen2.java.GeneratorCompilationUnit {
+~ {static} GeneratorCompilationUnit create()
+~ {static} GeneratorCompilationUnit create(Generator)
+~ {static} GeneratorCompilationUnit compilationUnit()
+~ {static} GeneratorCompilationUnit compilationUnit(Generator)
+}
+abstract class de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitAbstract {
+- Generator generator
+# <<Create>> GeneratorCompilationUnitAbstract(Generator)
++ StringBuilder generate()
+}
+class de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitSimple {
++ <<Create>> GeneratorCompilationUnitSimple(Generator)
+}
+enum de.ruu.lib.gen2.java.TypeKindPrimitive {
++  BOOLEAN
++  BYTE
++  CHAR
++  DOUBLE
++  FLOAT
++  INT
++  LONG
++  SHORT
++  VOID
+- TypeKind typeKind
+- <<Create>> TypeKindPrimitive(TypeKind)
++ String asString()
++ TypeKind getTypeKind()
+}
+interface de.ruu.lib.gen2.java.Generator {
+~ Optional<LineIndenter> lineIndenter()
+~ Generator lineIndenter(LineIndenter)
+~ Generator lineIndenter(String,int)
+~ Optional<StringBuilder> childNodesSeparator()
+~ Generator childNodesSeparator(String)
+~ Generator add(Generator)
+~ {static} Generator create()
+~ {static} Generator generator()
+}
+abstract class de.ruu.lib.gen2.java.Generator$GeneratorAbstract {
+- CompilationUnitContext context
+- Optional<LineIndenter> lineIndenter
+# List<Generator> children
+- Optional<StringBuilder> childNodesSeparator
+- void postConstruct()
++ StringBuilder generate()
++ Optional<StringBuilder> childNodesSeparator()
++ Generator childNodesSeparator(String)
++ Generator lineIndenter(LineIndenter)
++ Generator lineIndenter(String,int)
+}
+class de.ruu.lib.gen2.java.Generator$GeneratorSimple {
+- String output
++ <<Create>> GeneratorSimple()
++ <<Create>> GeneratorSimple(String)
++ GeneratorSimple output(String)
++ StringBuilder generate()
++ Generator add(Generator)
++ {static} GeneratorSimple create()
++ {static} GeneratorSimple generator()
+}
+enum de.ruu.lib.gen2.java.Visibility {
++  PUBLIC
++  PROTECTED
++  PRIVATE
++  DEFAULT
+- Modifier modifier
+- <<Create>> Visibility(Modifier)
++ String asString()
++ Modifier getModifier()
+}
+interface de.ruu.lib.gen2.java.JavaTypePrimitive {
+~ TypeKindPrimitive getTypeKind()
+~ JavaType setTypeKind(TypeKindPrimitive)
+~ String asString()
+}
+enum de.ruu.lib.gen2.java.TypeKindDeclared {
++  ENUM
++  CLASS
++  ANNOTATION
++  INTERFACE
+- ElementKind elementKind
+- <<Create>> TypeKindDeclared(ElementKind)
++ String asString()
++ ElementKind getElementKind()
+}
+
+
+de.ruu.lib.gen2.java.Generator <|-- de.ruu.lib.gen2.java.element.GeneratorModifiers
+de.ruu.lib.gen2.java.element.GeneratorModifiers +.. de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersAbstract
+de.ruu.lib.gen2.java.element.GeneratorModifiers <|.. de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersAbstract
+de.ruu.lib.gen2.java.element.GeneratorAbstract <|-- de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersAbstract
+de.ruu.lib.gen2.java.element.GeneratorModifiers +.. de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersSimple
+de.ruu.lib.gen2.java.element.GeneratorModifiersAbstract <|-- de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersSimple
+de.ruu.lib.gen2.java.element.GeneratorModifiers +.. de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersFieldSimple
+de.ruu.lib.gen2.java.element.GeneratorModifiersSimple <|-- de.ruu.lib.gen2.java.element.GeneratorModifiers$GeneratorModifiersFieldSimple
+de.ruu.lib.gen2.java.JavaType <|-- de.ruu.lib.gen2.java.JavaTypeDeclared
+de.ruu.lib.gen2.Generator <|-- de.ruu.lib.gen2.java.element.GeneratorElement
+de.ruu.lib.gen2.java.element.GeneratorElement +.. de.ruu.lib.gen2.java.element.GeneratorElement$GeneratorElementAbstract
+de.ruu.lib.gen2.java.element.GeneratorElement <|.. de.ruu.lib.gen2.java.element.GeneratorElement$GeneratorElementAbstract
+de.ruu.lib.gen2.java.element.GeneratorAbstract <|-- de.ruu.lib.gen2.java.element.GeneratorElement$GeneratorElementAbstract
+de.ruu.lib.gen2.Generator <|-- de.ruu.lib.gen2.java.naming.GeneratorImportStatement
+de.ruu.lib.gen2.java.naming.GeneratorImportStatement +.. de.ruu.lib.gen2.java.naming.GeneratorImportStatement$GeneratorImportStatementSimple
+de.ruu.lib.gen2.java.naming.GeneratorImportStatement <|.. de.ruu.lib.gen2.java.naming.GeneratorImportStatement$GeneratorImportStatementSimple
+de.ruu.lib.gen2.java.CompilationUnitContext +.. de.ruu.lib.gen2.java.CompilationUnitContext$CompilationUnitContextSimple
+de.ruu.lib.gen2.java.CompilationUnitContext <|.. de.ruu.lib.gen2.java.CompilationUnitContext$CompilationUnitContextSimple
+de.ruu.lib.gen2.java.CompilationUnitContext +.. de.ruu.lib.gen2.java.CompilationUnitContext$PackageNameProducer
+de.ruu.lib.gen2.java.CompilationUnitContext +.. de.ruu.lib.gen2.java.CompilationUnitContext$SimpleFileNameProducer
+de.ruu.lib.gen2.java.Generator <|-- de.ruu.lib.gen2.java.doc.GeneratorJavaDoc
+de.ruu.lib.gen2.java.doc.GeneratorJavaDoc +.. de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocAbstract
+de.ruu.lib.gen2.java.doc.GeneratorAbstract <|-- de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocAbstract
+de.ruu.lib.gen2.java.doc.GeneratorJavaDoc +.. de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocSimple
+de.ruu.lib.gen2.java.doc.GeneratorJavaDoc <|.. de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocSimple
+de.ruu.lib.gen2.java.doc.GeneratorJavaDocAbstract <|-- de.ruu.lib.gen2.java.doc.GeneratorJavaDoc$GeneratorJavaDocSimple
+de.ruu.lib.gen2.java.element.GeneratorElement <|-- de.ruu.lib.gen2.java.element.field.GeneratorField
+de.ruu.lib.gen2.java.element.field.GeneratorField +.. de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldAbstract
+de.ruu.lib.gen2.java.element.field.GeneratorField <|.. de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldAbstract
+de.ruu.lib.gen2.java.element.field.GeneratorElementAbstract <|-- de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldAbstract
+de.ruu.lib.gen2.java.element.field.GeneratorField +.. de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldSimple
+de.ruu.lib.gen2.java.element.field.GeneratorFieldAbstract <|-- de.ruu.lib.gen2.java.element.field.GeneratorField$GeneratorFieldSimple
+de.ruu.lib.gen2.java.Generator <|-- de.ruu.lib.gen2.java.GeneratorCompilationUnit
+de.ruu.lib.gen2.java.GeneratorCompilationUnit +.. de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitAbstract
+de.ruu.lib.gen2.java.GeneratorCompilationUnit <|.. de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitAbstract
+de.ruu.lib.gen2.java.GeneratorCompilationUnit +.. de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitSimple
+de.ruu.lib.gen2.java.GeneratorCompilationUnitAbstract <|-- de.ruu.lib.gen2.java.GeneratorCompilationUnit$GeneratorCompilationUnitSimple
+de.ruu.lib.gen2.java.Generator <|-- de.ruu.lib.gen2.java.Generator
+de.ruu.lib.gen2.java.Generator +.. de.ruu.lib.gen2.java.Generator$GeneratorAbstract
+de.ruu.lib.gen2.java.Generator <|.. de.ruu.lib.gen2.java.Generator$GeneratorAbstract
+de.ruu.lib.gen2.java.Generator +.. de.ruu.lib.gen2.java.Generator$GeneratorSimple
+de.ruu.lib.gen2.java.GeneratorAbstract <|-- de.ruu.lib.gen2.java.Generator$GeneratorSimple
+de.ruu.lib.gen2.java.JavaType <|-- de.ruu.lib.gen2.java.JavaTypePrimitive
+@enduml

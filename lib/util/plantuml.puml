@@ -1,0 +1,616 @@
+@startuml
+interface de.ruu.lib.util.dto.jpa.Entity {
+~ Long getId()
+~ Short getVersion()
+}
+interface de.ruu.lib.util.dto.jpa.Parent {
++ String getName()
+}
+class de.ruu.lib.util.Time {
++ {static} long MSECS_SEC
++ {static} long MSECS_MIN
++ {static} long MSECS_HOUR
++ {static} long MSECS_DAY
++ {static} long MSECS_WEEK
++ {static} long MSECS_MONTH
++ {static} long MSECS_YEAR
++ {static} SimpleDateFormat getDateFormatSortableTimestamp()
++ {static} SimpleDateFormat getDateFormatSortableTimestampPrecisionSeconds()
++ {static} SimpleDateFormat getDateFormatSortableTimestampPrecisionMinutes()
++ {static} SimpleDateFormat getDateFormatSortableTimestampPrecisionHours()
++ {static} SimpleDateFormat getDateFormatSortableTimestampPrecisionDays()
++ {static} String getSortableTimestamp()
++ {static} String getSortableTimestampPrecisionSeconds()
++ {static} String getSortableTimestampPrecisionMinutes()
++ {static} String getSortableTimestampPrecisionMinutes(Date)
+}
+class de.ruu.lib.util.Types {
++ {static} String getPackageNameFromQualifiedTypeName(String)
++ {static} String getSimpleNameFromQualifiedTypeName(String)
+}
+class de.ruu.lib.util.tree.TreeTest {
+~ void test()
+}
+class de.ruu.lib.util.tree.TreeTest$Body {
+}
+class de.ruu.lib.util.tree.TreeTest$Head {
+}
+class de.ruu.lib.util.tree.TreeTest$Nose {
+}
+interface de.ruu.lib.util.tree.Root {
+~ Optional<P> parent()
+~ Node<P,N,C> parent(P)
+~ Set<Node<?,?,?>> nodes()
+~ Set<Node<?,?,?>> addToNodes(Node<?,?,?>)
+}
+abstract class de.ruu.lib.util.tree.Root$RootAbstract {
+- Set<Node<?,?,?>> nodes
+# <<Create>> RootAbstract()
++ Root<?,?,?> root()
++ Set<Node<?,?,?>> nodes()
++ Set<Node<?,?,?>> addToNodes(Node<?,?,?>)
+}
+class de.ruu.lib.util.tree.Root$RootSimple {
+}
+class de.ruu.lib.util.jsonb.TestJsonBWithMaxEncapsulationForData {
+- {static} Type SET_OF_PARENTS
+- {static} int NUMBER_OF_PARENTS
+- {static} int NUMBER_OF_CHILDREN
+~ void toJson()
+~ void fromJson()
+- Jsonb getContext()
+- Set<Parent> createTestData()
+}
+interface de.ruu.lib.util.classpath.ZipEntryFilter {
+~ boolean accept(ZipEntry)
+}
+interface de.ruu.lib.util.StringBuilders {
++ {static} StringBuilder sb()
++ {static} StringBuilder sb(String)
++ {static} boolean isNullOrEmpty(StringBuilder)
++ {static} boolean isNullOrEmptyOrBlank(StringBuilder)
++ {static} boolean startsWith(StringBuilder,String)
++ {static} boolean startsWithUpper(StringBuilder)
++ {static} boolean startsWithLower(StringBuilder)
++ {static} boolean endsWith(StringBuilder,String)
++ {static} StringBuilder rTrimChars(StringBuilder,String)
++ {static} StringBuilder replace(StringBuilder,String,String)
+- {static} StringBuilder trimChars(StringBuilder,String,boolean)
+}
+abstract class de.ruu.lib.util.classpath.ClasspathResource {
+- ResourceContainer resourcecontainer
+- String resourcename
+# <<Create>> ClasspathResource(ResourceContainer,String)
++ ResourceContainer getResourceContainer()
++ String getResourceName()
++ {abstract}boolean isDirectory()
++ {static} boolean isResourceAvailableTo(String,ClassLoader)
++ {static} boolean isResourceAvailableToClassLoaderOf(String,Class<?>)
+}
+class de.ruu.lib.util.dto.bidirectional.OneEntity {
+- String name
+- Set<ManyEntity> manys
+# <<Create>> OneEntity()
++ <<Create>> OneEntity(OneDTO,MappedObjects)
++ OneDTO toDTO(MappedObjects)
++ String getName()
++ Optional<Set<ManyEntity>> getManys()
++ boolean add(ManyEntity)
+- Set<ManyEntity> nonNullManys()
+}
+abstract class de.ruu.lib.util.Reflection {
++ {static} Set<Method> getAllMethods(Object)
++ {static} Set<Method> getAllMethods(Class<?>)
++ {static} Set<Field> getAllFields(Class<?>)
++ {static} Optional<ParameterizedType> getFirstParameterizedTypeInParents(Class<?>)
+}
+class de.ruu.lib.util.classpath.ResourceContainerDirectory {
+- String containerFileName
+- int containerFileNameLength
+~ <<Create>> ResourceContainerDirectory(File)
++ Map<String,ClasspathResource> getClassPathResources()
++ Map<String,ClasspathResource> getClassPathResources(FileFilter)
+- Map<String,File> getResourceFilesByName(File,FileFilter)
+}
+abstract class de.ruu.lib.util.dto.jpa.AbstractEntity {
+- Long id
+- Short version
+}
+interface de.ruu.lib.util.tree.Node {
+~ Root<?,?,?> root()
+~ Optional<P> parent()
+~ Node<P,N,C> parent(P)
+~ List<C> children()
+~ Node<P,N,C> add(C)
+}
+abstract class de.ruu.lib.util.tree.Node$NodeAbstract {
+- Optional<Root<?,?,?>> root
+- Optional<P> parent
+- List<C> children
++ Root<?,?,?> root()
++ Optional<P> parent()
++ Node<P,N,C> parent(P)
++ List<C> children()
++ Node<P,N,C> add(C)
+}
+class de.ruu.lib.util.tree.Node$NodeSimple {
+}
+class de.ruu.lib.util.dto.simple.SampleDTO {
+- {static} long serialVersionUID
+- String name
++ <<Create>> SampleDTO(String)
++ <<Create>> SampleDTO(SampleDTOSource)
++ SampleDTOSource toSource(MappedObjects)
++ String getName()
+}
+class de.ruu.lib.util.classpath.ClasspathTest {
+- {static} String FILTERED_RESOURCE_CONTAINER_NAME
+~ void testGetClasspathResourcesByName()
+~ void testGetClasspathResourcesWithResourceContainerFilter()
+~ void testGetClasspathResourcesWithDirectoryResourceFilter()
+~ void testGetClasspathPackages()
+~ void testReportClasspathResourcesByResourceContainerName()
+}
+class de.ruu.lib.util.IOTest {
++ void test()
+}
+class de.ruu.lib.util.dto.bidirectional.OneDTO {
+- {static} long serialVersionUID
+- String name
+- Set<ManyDTO> manys
+# <<Create>> OneDTO()
++ <<Create>> OneDTO(String)
++ <<Create>> OneDTO(OneEntity,MappedObjects)
++ OneEntity toSource(MappedObjects)
++ String getName()
++ Optional<Set<ManyDTO>> getManys()
++ boolean add(ManyDTO)
+- Set<ManyDTO> nonNullManys()
+}
+class de.ruu.lib.util.rs.RestClientCallException {
+- {static} long serialVersionUID
+- Response response
++ <<Create>> RestClientCallException(String,Response)
++ Response getResponse()
+}
+interface de.ruu.lib.util.IO {
++ {static} String toString(InputStream)
++ {static} boolean isListening(String,int)
+}
+class de.ruu.lib.util.TimeTest {
+~ void testSortableTimeStamp()
+}
+class de.ruu.lib.util.jsonb.Parent {
+- String field
+- Set<Child> children
++ <<Create>> Parent()
+~ <<Create>> Parent(String)
++ String getField()
++ Set<Child> getChildren()
++ String toString()
+}
+class de.ruu.lib.util.rs.filter.logging.ContainerLoggingFilter {
++ void filter(ContainerRequestContext,ContainerResponseContext)
++ void filter(ContainerRequestContext)
+}
+abstract class de.ruu.lib.util.classpath.Classpath {
++ {static} String RAM_COMPILER_TYPENAME
++ {static} FileFilter FILTER_ACCEPT_FILES_ALL
++ {static} FileFilter FILTER_ACCEPT_FILES_ALL_BUT_JAR
++ {static} FileFilter FILTER_ACCEPT_FILES_EXISTING_ONLY
++ {static} FileFilter FILTER_ACCEPT_FILES_DIRECTORIES_ONLY
++ {static} ZipEntryFilter FILTER_ACCEPT_ZIP_ENTRIES_ALL
++ {static} ZipEntryFilter FILTER_ACCEPT_ZIP_ENTRIES_DIRECTORIES_ONLY
+- <<Create>> Classpath()
++ {static} Map<String,List<ClasspathResource>> getClasspathResources()
++ {static} Map<String,List<ClasspathResource>> getClasspathResources(FileFilter,FileFilter,ZipEntryFilter)
++ {static} Map<String,List<ClasspathResource>> getPackagesAsClasspathResources()
++ {static} String[] classpathAsArray()
++ {static} StringBuilder reportClasspathResourcesByName(Map<String,List<ClasspathResource>>)
+- {static} Optional<ResourceContainer> createResourceContainer(File)
+}
+interface de.ruu.lib.util.classpath.ResourceContainer {
+~ Map<String,ClasspathResource> getClassPathResources()
+~ File getResourceContainerFile()
+}
+class de.ruu.lib.util.classpath.ResourceContainerJarFile {
+~ <<Create>> ResourceContainerJarFile(File)
++ Map<String,ClasspathResource> getClassPathResources()
++ Map<String,ClasspathResource> getClassPathResources(ZipEntryFilter)
+}
+interface de.ruu.lib.util.dto.DTO {
+~ S toSource()
+~ S toSource(MappedObjects)
+~ S toSource(MappedObjects,Class<S>)
+}
+class de.ruu.lib.util.dto.bidirectional.ManyEntity {
+- String name
+- OneEntity one
+# <<Create>> ManyEntity()
++ <<Create>> ManyEntity(ManyDTO,MappedObjects)
++ ManyDTO toDTO(MappedObjects)
++ String getName()
++ OneEntity getOne()
+}
+abstract class de.ruu.lib.util.json.Sanitiser {
+- {static} String ESCAPED_DOUBLE_QUOTE
+- {static} String ESCAPED_NEWLINE
+- {static} String NEWLINE
+- {static} String DOUBLE_QUOTE
+- {static} String SQUARE_BRACKET_OPENING
+- {static} String SQUARE_BRACKET_CLOSING
+- {static} String DOUBLE_QUOTE__SQUARE_BRACKET_OPENING
+- {static} String SQUARE_BRACKET_CLOSING__DOUBLE_QUOTE
++ {static} String sanitise(String)
+}
+interface de.ruu.lib.util.StringBuffers {
++ {static} StringBuffer sb()
++ {static} StringBuffer sb(String)
++ {static} boolean isNullOrEmpty(StringBuffer)
++ {static} boolean isNotNullOrEmpty(StringBuffer)
++ {static} boolean isNullOrEmptyOrBlank(StringBuffer)
++ {static} boolean startsWith(StringBuffer,String)
++ {static} boolean startsWithUpper(StringBuffer)
++ {static} boolean startsWithLower(StringBuffer)
++ {static} boolean endsWith(StringBuffer,String)
++ {static} StringBuffer lTrimChars(StringBuffer,String)
++ {static} StringBuffer rTrimChars(StringBuffer,String)
++ {static} StringBuffer lrTrimChars(StringBuffer,String)
++ {static} StringBuffer replace(StringBuffer,String,String)
+- {static} StringBuffer trimChars(StringBuffer,String,boolean)
+}
+class de.ruu.lib.util.BooleanFunctionsTest {
+~ void testIsForTrueIsTrue()
+~ void testIsForFalseIsFalse()
+~ void testIsNotForTrueIsFalse()
+~ void testIsNotForFalseIsTrue()
+}
+class de.ruu.lib.util.FilesTest {
++ void toSourceFilePath()
++ void toPackagePathClass()
++ void toDirectoryNamePackage()
++ void toDirectoryName()
++ void toDirectoryName_a_b_c()
+}
+abstract class de.ruu.lib.util.jsonb.AbstractOptionalSetAdapter {
+- {static} Jsonb JSONB
+# {abstract}Type getType()
++ JsonValue adaptToJson(Optional<Set<T>>)
++ Optional<Set<T>> adaptFromJson(JsonValue)
+}
+class de.ruu.lib.util.Files {
++ {static} char FILE_SEPARATOR_UNIX
++ {static} char FILE_SEPARATOR_WINDOWS
++ {static} char FILE_SEPARATOR_DEFAULT
++ {static} File toSourceFile(Class<?>)
++ {static} String toSourceFilePath(Class<?>)
++ {static} String toDirectoryName(Class<?>)
++ {static} String toDirectoryName(Package)
++ {static} String toDirectoryName(String)
++ {static} void writeToFile(String,Path)
++ {static} Optional<String> readFromFile(Path)
++ {static} Path createFileIfNotExists(Path)
++ {static} boolean deleteFile(Path)
++ {static} boolean isDirectoryEmpty(Path)
++ {static} void copyDirectoryWithContent(Path,Path,CopyOption)
++ {static} void copyDirectoryWithContentReplaceExisting(Path,Path)
+}
+class de.ruu.lib.util.Files$CopyDirectoryWithContentVisitor {
+- Path source
+- Path target
+- CopyOption[] copyOptions
+- <<Create>> CopyDirectoryWithContentVisitor(Path,Path,CopyOption)
++ FileVisitResult visitFile(Path,BasicFileAttributes)
++ FileVisitResult preVisitDirectory(Path,BasicFileAttributes)
+}
+interface de.ruu.lib.util.BooleanFunctions {
++ {static} boolean is(boolean)
++ {static} boolean isNot(boolean)
++ {static} boolean not(boolean)
+}
+abstract class de.ruu.lib.util.classpath.ResourceContainerBase {
+# File containerFile
+~ <<Create>> ResourceContainerBase(File)
++ File getResourceContainerFile()
+}
+interface de.ruu.lib.util.Strings {
++ {static} String firstLetterToLowerCase(String)
++ {static} String firstLetterToUpperCase(String)
++ {static} String indent(String,String,int)
++ {static} String allTrimChars(String,String)
++ {static} String lrTrimChars(String,String)
++ {static} String lTrimChars(String,String)
++ {static} String rTrimChars(String,String)
++ {static} String lFillCharsTargetLength(String,char,int)
++ {static} String rFillCharsTargetLength(String,char,int)
++ {static} boolean isNullOrEmpty(String)
++ {static} boolean isNullOrBlank(String)
++ {static} boolean isNullOrEmptyOrBlank(String)
++ {static} boolean isEmptyOrBlank(String)
++ {static} boolean isNotNullOrEmpty(String)
++ {static} boolean isNotNullOrBlank(String)
++ {static} boolean isNotNullOrEmptyOrBlank(String)
++ {static} boolean isNotEmptyOrBlank(String)
++ {static} boolean isNullSafeEquals(String,String)
+- {static} StringBuffer trimChars(StringBuffer,String,boolean)
++ {static} String lTrimChar(String,char)
++ {static} String rTrimChar(String,char)
++ {static} String allTrimChar(String,char)
++ {static} String removeAllCharsIn(String,char)
++ {static} String replaceLast(String,String,String)
+}
+abstract class de.ruu.lib.util.AbstractEvent {
+- S source
+- D data
+# <<Create>> AbstractEvent(S,D)
+# <<Create>> AbstractEvent(S)
++ S getSource()
++ Optional<D> getData()
+}
+abstract class de.ruu.lib.util.jsonb.AbstractSetAdapter {
+- {static} Jsonb JSONB
+# {abstract}Type getType()
++ JsonValue adaptToJson(Set<T>)
++ Set<T> adaptFromJson(JsonValue)
+}
+class de.ruu.lib.util.SystemProperties {
++ {static} String userName()
++ {static} String userHome()
+}
+class de.ruu.lib.util.dto.bidirectional.ManyDTO {
+- {static} long serialVersionUID
+- String name
+- OneDTO one
+# <<Create>> ManyDTO()
++ <<Create>> ManyDTO(String,OneDTO)
++ <<Create>> ManyDTO(ManyEntity,MappedObjects)
++ ManyEntity toSource(MappedObjects)
++ String getName()
++ OneDTO getOne()
+}
+class de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest {
+}
+interface de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$DTO {
+~ E toEntity()
+}
+interface de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$Entity {
+~ D toDTO()
+}
+class de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$DTOImpl {
++ EntityImpl toEntity()
+}
+class de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$EntityImpl {
++ DTOImpl toDTO()
+}
+class de.ruu.lib.util.classpath.ClasspathResourceFile {
+- File file
++ <<Create>> ClasspathResourceFile(ResourceContainer,File)
++ boolean isDirectory()
+}
+class de.ruu.lib.util.dto.jpa.ParentDTO {
+- {static} long serialVersionUID
+- String name
++ <<Create>> ParentDTO(ParentEntity)
++ ParentEntity toSource(MappedObjects)
+}
+interface de.ruu.lib.util.dto.DTOProvider {
+~ D toDTO()
+~ D toDTO(MappedObjects)
+~ D toDTO(MappedObjects,Class<D>)
+}
+class de.ruu.lib.util.dto.bidirectional.DTOEntityTest {
+~ void createOneDTO()
+~ void createMany()
+~ void mapFromDTOToEntity()
+~ void mapFromEntityToDTO()
+}
+abstract class de.ruu.lib.util.lang.model.JavaLangMetaModel {
+- {static} DeclaredTypeProviderVisitor DECLARED_TYPE_PROVIDER_VISITOR
+- {static} ArrayTypeProviderVisitor ARRAY_TYPE_PROVIDER_VISITOR
+- {static} PackageElementProviderVisitor PACKAGE_ELEMENT_PROVIDER_VISITOR
+- {static} TypeElementProviderVisitor TYPE_ELEMENT_PROVIDER_VISITOR
+- {static} ExecutableElementProviderVisitor EXECUTABLE_ELEMENT_PROVIDER_VISITOR
+- {static} VariableElementProviderVisitor VARIABLE_ELEMENT_PROVIDER_VISITOR
++ {static} boolean isPrimitiveKind(TypeMirror)
++ {static} boolean isPrimitiveKind(Element)
++ {static} boolean hasTypeArguments(DeclaredType)
++ {static} boolean hasTypeParameters(TypeElement)
++ {static} boolean hasTypeParameters(TypeMirror)
++ {static} DeclaredType asDeclaredType(TypeMirror)
++ {static} DeclaredType asDeclaredType(TypeElement)
++ {static} ArrayType asArrayType(TypeMirror)
++ {static} PackageElement asPackageElement(Element)
++ {static} TypeElement asTypeElement(Element)
++ {static} ExecutableElement asExecutableElement(Element)
++ {static} VariableElement asVariableElement(Element)
++ {static} TypeElement asTypeElement(TypeMirror)
++ {static} PackageElement getPackageElementOf(Element)
++ {static} List<VariableElement> getFields(TypeElement)
++ {static} List<ExecutableElement> getMethods(TypeElement)
++ {static} Set<TypeElement> withEnclosedTypeElements(Set<TypeElement>)
++ {static} String normalizeBinaryClassName(Class<?>)
++ {static} String normalizeBinaryQualifiedTypeName(String)
++ {static} Set<Element> asElementSet(Set<TypeElement>)
++ {static} Set<Element> asElementSet(List<Element>)
++ {static} boolean isInnerType(TypeElement)
++ {static} Set<TypeElement> getTypeElements(Collection<? extends Element>)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$DeclaredTypeProviderVisitor {
++ DeclaredType visitDeclared(DeclaredType,Void)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$ArrayTypeProviderVisitor {
++ ArrayType visitArray(ArrayType,Void)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$TypeElementProviderVisitor {
++ TypeElement visitType(TypeElement,Void)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$ExecutableElementProviderVisitor {
++ ExecutableElement visitExecutable(ExecutableElement,Void)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$PackageElementProviderVisitor {
++ PackageElement visitPackage(PackageElement,Void)
+}
+class de.ruu.lib.util.lang.model.JavaLangMetaModel$VariableElementProviderVisitor {
++ VariableElement visitVariable(VariableElement,Void)
+}
+abstract class de.ruu.lib.util.annotation.Utils {
++ {static} Optional<A> findAnnotation(AnnotatedElement,Class<A>)
+- {static} Optional<A> findAnnotation(AnnotatedElement,Class<A>,boolean,Set<Annotation>)
+- {static} Optional<A> findMetaAnnotation(Class<A>,Annotation[],boolean,Set<Annotation>)
+- {static} boolean isInJavaLangAnnotationPackage(Class<? extends Annotation>)
+}
+class de.ruu.lib.util.dto.simple.SampleDTOSource {
+- String name
++ <<Create>> SampleDTOSource(SampleDTO)
++ SampleDTO toDTO()
++ SampleDTO toDTO(MappedObjects)
++ String getName()
+}
+class de.ruu.lib.util.dto.simple.SampleDTOTest {
+~ void mapFromSampleDTOToSampleDTOSource()
+}
+class de.ruu.lib.util.dto.jpa.ParentEntity {
+- String name
++ <<Create>> ParentEntity(ParentDTO)
++ ParentDTO toDTO(MappedObjects)
+}
+class de.ruu.lib.util.classpath.ClasspathResourceZipEntry {
+- ZipEntry zipEntry
++ <<Create>> ClasspathResourceZipEntry(ResourceContainer,ZipEntry)
++ boolean isDirectory()
+}
+class de.ruu.lib.util.StringsTest {
+~ void testAllTrimChars__xay_xy__a()
+~ void testAllTrimChars__abcxxxcba_bac__xxx()
+~ void testAllTrimChars__abcxxxcba_x__abcxxxcba()
+~ void testAllTrimChars__null_cab__null()
+~ void testAllTrimChars__aaaxxxaaa_a__xxx()
+~ void testLFillCharsTargetLength__empty_a_3__aaa()
+~ void testLFillCharsTargetLength__x_a_4__aaax()
+~ void testRFillCharsTargetLength__empty_a_3_aaa()
+~ void testRFillCharsTargetLength__x_a_4__xaaa()
+~ void test()
+}
+class de.ruu.lib.util.dto.MappedObjects {
+- Map<Object,Object> mappedObjects
++ T getMappedInstance(Object,Class<T>)
++ void storeMappedInstance(Object,Object)
+}
+interface de.ruu.lib.util.Collections {
++ {static} Set<T> asSet(T)
++ {static} List<T> asList(T)
++ {static} List<T> asList(Iterable<T>)
++ {static} T[] asArray(Class<?>,Collection<T>)
++ {static} boolean isNullOrEmpty(Collection<?>)
++ {static} boolean isNotNullOrEmpty(Collection<?>)
+}
+class de.ruu.lib.util.jsonb.JsonbConfigurator {
+# {static} JsonbConfig CONFIG
++ Jsonb getContext(Class<?>)
++ Jsonb getContext()
++ {static} Jsonb context()
++ {static} Jsonb context(JsonbConfig)
++ {static} JsonbConfig config()
+}
+class de.ruu.lib.util.rs.filter.logging.ClientLoggingFilter {
++ void filter(ClientRequestContext)
+}
+class de.ruu.lib.util.jsonb.Child {
+- String field
++ <<Create>> Child()
+~ <<Create>> Child(String)
++ String toString()
+~ String getField()
+}
+class de.ruu.lib.util.jsonb.PrivateElementsVisibleStrategy {
++ boolean isVisible(Field)
++ boolean isVisible(Method)
+}
+interface de.ruu.lib.util.tree.Leaf {
+~ List<C> children()
+}
+abstract class de.ruu.lib.util.tree.Leaf$LeafAbstract {
++ List<C> children()
+}
+class de.ruu.lib.util.tree.Leaf$LeafSimple {
+}
+class de.ruu.lib.util.SystemPropertiesTest {
+~ void test()
+}
+abstract class de.ruu.lib.util.dto.jpa.AbstractDTO {
+- Long id
+- Short version
+}
+
+
+de.ruu.lib.util.tree.TreeTest +.. de.ruu.lib.util.tree.TreeTest$Body
+de.ruu.lib.util.tree.RootSimple <|-- de.ruu.lib.util.tree.TreeTest$Body
+de.ruu.lib.util.tree.TreeTest +.. de.ruu.lib.util.tree.TreeTest$Head
+de.ruu.lib.util.tree.NodeSimple <|-- de.ruu.lib.util.tree.TreeTest$Head
+de.ruu.lib.util.tree.TreeTest +.. de.ruu.lib.util.tree.TreeTest$Nose
+de.ruu.lib.util.tree.LeafSimple <|-- de.ruu.lib.util.tree.TreeTest$Nose
+de.ruu.lib.util.tree.Node <|-- de.ruu.lib.util.tree.Root
+de.ruu.lib.util.tree.Root +.. de.ruu.lib.util.tree.Root$RootAbstract
+de.ruu.lib.util.tree.Root <|.. de.ruu.lib.util.tree.Root$RootAbstract
+de.ruu.lib.util.tree.NodeAbstract <|-- de.ruu.lib.util.tree.Root$RootAbstract
+de.ruu.lib.util.tree.Root +.. de.ruu.lib.util.tree.Root$RootSimple
+de.ruu.lib.util.tree.RootAbstract <|-- de.ruu.lib.util.tree.Root$RootSimple
+de.ruu.lib.util.dto.DTOProvider <|.. de.ruu.lib.util.dto.bidirectional.OneEntity
+de.ruu.lib.util.classpath.ResourceContainerBase <|-- de.ruu.lib.util.classpath.ResourceContainerDirectory
+de.ruu.lib.util.dto.jpa.Entity <|.. de.ruu.lib.util.dto.jpa.AbstractEntity
+de.ruu.lib.util.tree.Node +.. de.ruu.lib.util.tree.Node$NodeAbstract
+de.ruu.lib.util.tree.Node <|.. de.ruu.lib.util.tree.Node$NodeAbstract
+de.ruu.lib.util.tree.Node +.. de.ruu.lib.util.tree.Node$NodeSimple
+de.ruu.lib.util.tree.NodeAbstract <|-- de.ruu.lib.util.tree.Node$NodeSimple
+de.ruu.lib.util.dto.DTO <|.. de.ruu.lib.util.dto.simple.SampleDTO
+de.ruu.lib.util.dto.DTO <|.. de.ruu.lib.util.dto.bidirectional.OneDTO
+de.ruu.lib.util.rs.RuntimeException <|-- de.ruu.lib.util.rs.RestClientCallException
+jakarta.ws.rs.container.ContainerRequestFilter <|.. de.ruu.lib.util.rs.filter.logging.ContainerLoggingFilter
+jakarta.ws.rs.container.ContainerResponseFilter <|.. de.ruu.lib.util.rs.filter.logging.ContainerLoggingFilter
+de.ruu.lib.util.classpath.ResourceContainerBase <|-- de.ruu.lib.util.classpath.ResourceContainerJarFile
+java.io.Serializable <|-- de.ruu.lib.util.dto.DTO
+de.ruu.lib.util.dto.DTOProvider <|.. de.ruu.lib.util.dto.bidirectional.ManyEntity
+jakarta.json.bind.adapter.JsonbAdapter <|.. de.ruu.lib.util.jsonb.AbstractOptionalSetAdapter
+de.ruu.lib.util.Files +.. de.ruu.lib.util.Files$CopyDirectoryWithContentVisitor
+de.ruu.lib.util.SimpleFileVisitor <|-- de.ruu.lib.util.Files$CopyDirectoryWithContentVisitor
+de.ruu.lib.util.classpath.ResourceContainer <|.. de.ruu.lib.util.classpath.ResourceContainerBase
+jakarta.json.bind.adapter.JsonbAdapter <|.. de.ruu.lib.util.jsonb.AbstractSetAdapter
+de.ruu.lib.util.dto.DTO <|.. de.ruu.lib.util.dto.bidirectional.ManyDTO
+de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest +.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$DTO
+de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest +.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$Entity
+de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest +.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$DTOImpl
+de.ruu.lib.util.dto.simple.DTO <|.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$DTOImpl
+de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest +.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$EntityImpl
+de.ruu.lib.util.dto.simple.Entity <|.. de.ruu.lib.util.dto.simple.GenericParameterWithExtendsTest$EntityImpl
+de.ruu.lib.util.classpath.ClasspathResource <|-- de.ruu.lib.util.classpath.ClasspathResourceFile
+de.ruu.lib.util.dto.jpa.Parent <|.. de.ruu.lib.util.dto.jpa.ParentDTO
+de.ruu.lib.util.dto.DTO <|.. de.ruu.lib.util.dto.jpa.ParentDTO
+de.ruu.lib.util.dto.jpa.AbstractDTO <|-- de.ruu.lib.util.dto.jpa.ParentDTO
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$DeclaredTypeProviderVisitor
+de.ruu.lib.util.lang.model.SimpleTypeVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$DeclaredTypeProviderVisitor
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$ArrayTypeProviderVisitor
+de.ruu.lib.util.lang.model.SimpleTypeVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$ArrayTypeProviderVisitor
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$TypeElementProviderVisitor
+de.ruu.lib.util.lang.model.SimpleElementVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$TypeElementProviderVisitor
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$ExecutableElementProviderVisitor
+de.ruu.lib.util.lang.model.SimpleElementVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$ExecutableElementProviderVisitor
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$PackageElementProviderVisitor
+de.ruu.lib.util.lang.model.SimpleElementVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$PackageElementProviderVisitor
+de.ruu.lib.util.lang.model.JavaLangMetaModel +.. de.ruu.lib.util.lang.model.JavaLangMetaModel$VariableElementProviderVisitor
+de.ruu.lib.util.lang.model.SimpleElementVisitor7 <|-- de.ruu.lib.util.lang.model.JavaLangMetaModel$VariableElementProviderVisitor
+de.ruu.lib.util.dto.DTOProvider <|.. de.ruu.lib.util.dto.simple.SampleDTOSource
+de.ruu.lib.util.dto.jpa.Parent <|.. de.ruu.lib.util.dto.jpa.ParentEntity
+de.ruu.lib.util.dto.DTOProvider <|.. de.ruu.lib.util.dto.jpa.ParentEntity
+de.ruu.lib.util.dto.jpa.AbstractEntity <|-- de.ruu.lib.util.dto.jpa.ParentEntity
+de.ruu.lib.util.classpath.ClasspathResource <|-- de.ruu.lib.util.classpath.ClasspathResourceZipEntry
+jakarta.ws.rs.ext.ContextResolver <|.. de.ruu.lib.util.jsonb.JsonbConfigurator
+jakarta.ws.rs.client.ClientRequestFilter <|.. de.ruu.lib.util.rs.filter.logging.ClientLoggingFilter
+jakarta.json.bind.config.PropertyVisibilityStrategy <|.. de.ruu.lib.util.jsonb.PrivateElementsVisibleStrategy
+de.ruu.lib.util.tree.Node <|-- de.ruu.lib.util.tree.Leaf
+de.ruu.lib.util.tree.Leaf +.. de.ruu.lib.util.tree.Leaf$LeafAbstract
+de.ruu.lib.util.tree.Leaf <|.. de.ruu.lib.util.tree.Leaf$LeafAbstract
+de.ruu.lib.util.tree.NodeAbstract <|-- de.ruu.lib.util.tree.Leaf$LeafAbstract
+de.ruu.lib.util.tree.Leaf +.. de.ruu.lib.util.tree.Leaf$LeafSimple
+de.ruu.lib.util.tree.LeafAbstract <|-- de.ruu.lib.util.tree.Leaf$LeafSimple
+de.ruu.lib.util.dto.jpa.Entity <|.. de.ruu.lib.util.dto.jpa.AbstractDTO
+@enduml

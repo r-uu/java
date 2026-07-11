@@ -1,0 +1,19 @@
+package de.ruu.lib.junit;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+@Disabled("TODO find out how to run these tests successfully with jpms enabled")
+class TestAnnotatedWithDisabledOnServerNotListening
+{
+	@Test
+//	@DisabledOnServerNotListening(propertyNameHost = "appserver.host", propertyNamePort = "appserver.port")
+	void testMethodAnnotatedWithDisabledOnServerNotListening() {}
+}
+
+@Disabled("TODO find out how to run these tests successfully with jpms enabled")
+//@DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
+class TestTypeAnnotatedWithDisabledOnServerNotListening
+{
+	@Test void test() {}
+}
