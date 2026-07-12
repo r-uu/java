@@ -5,15 +5,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.java.jpa</artifactId>
+	<artifactId>r-uu.lib.jpa</artifactId>
 	<packaging>pom</packaging>
 	<description>parent module for possibly reusable jpa library artifacts of group r-uu</description>
 	<name>${project.artifactId}</name>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.java.bom</artifactId>
+		<artifactId>r-uu.lib.bom</artifactId>
 		<version>0.0.1</version>
+		<relativePath>../bom</relativePath>
 	</parent>
 
 	<modules>

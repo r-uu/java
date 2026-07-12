@@ -5,13 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>r-uu.app.java.pragma.fx</artifactId>
+  <artifactId>r-uu.app.pragma.frontend.fx</artifactId>
   <name>${project.artifactId}</name>
   <description>JavaFX UI for pragma (model + FXC views)</description>
 
   <parent>
     <groupId>r-uu</groupId>
-    <artifactId>r-uu.app.java.pragma.frontend</artifactId>
+    <artifactId>r-uu.app.pragma.frontend</artifactId>
     <version>0.0.1</version>
   </parent>
 
@@ -20,49 +20,49 @@
     <!-- Internal pragma modules -->
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.core</artifactId>
+      <artifactId>r-uu.app.pragma.core</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.bean</artifactId>
+      <artifactId>r-uu.app.pragma.bean</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.dto</artifactId>
+      <artifactId>r-uu.app.pragma.backend.dto</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.rest-client</artifactId>
+      <artifactId>r-uu.app.pragma.frontend.rest.client</artifactId>
     </dependency>
 
     <!-- Postgres backup/restore UI -->
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.postgres.ui</artifactId>
+      <artifactId>r-uu.lib.postgres.ui</artifactId>
     </dependency>
 
     <!-- FXC framework (brings javafx-fxml transitively) -->
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.fx.comp</artifactId>
+      <artifactId>r-uu.lib.fx.comp</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.fx.core</artifactId>
+      <artifactId>r-uu.lib.fx.core</artifactId>
     </dependency>
 
     <!-- required directly in module-info.java; declared explicitly for JPMS module-path resolution -->
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.cdi.se</artifactId>
+      <artifactId>r-uu.lib.cdi.se</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.cdi.common</artifactId>
+      <artifactId>r-uu.lib.cdi.common</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.lib.java.util</artifactId>
+      <artifactId>r-uu.lib.util</artifactId>
     </dependency>
 
     <!-- Weld SE CDI implementation — compile scope overrides BOM test default -->

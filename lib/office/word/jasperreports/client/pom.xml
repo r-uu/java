@@ -7,11 +7,12 @@
 
     <parent>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.jasperreports</artifactId>
+        <artifactId>r-uu.lib.jasperreports</artifactId>
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>r-uu.lib.java.jasperreports.client</artifactId>
+    <artifactId>r-uu.lib.jasperreports.client</artifactId>
+    <name>${project.artifactId}</name>
 
     <dependencies>
         <!-- HTTP Client (Java 11+) - no external dependency needed -->

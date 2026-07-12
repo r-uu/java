@@ -1,4 +1,4 @@
-# Quickstart — lib-java
+# Quickstart — lib
 
 Allgemeine Java-Bibliothek als Maven Multi-Modul Projekt. Dieses Dokument beschreibt die Entwicklungsumgebung, Start der Infrastruktur-Services und die wichtigsten Build- und Test-Workflows.
 
@@ -120,7 +120,7 @@ Das BOM (`bom/pom.xml`) definiert Standard-Credentials als Maven-Properties. Die
 **Für produktive/reale Werte:** Das Maven-Profil `load-env` im BOM liest eine `.env`-Datei im Projektverzeichnis via `properties-maven-plugin` ein. Dort können Credentials überschrieben werden:
 
 ```bash
-# /home/r-uu/develop/github/lib-java/.env  (nicht eingecheckt)
+# /home/r-uu/develop/github/java/.env  (nicht eingecheckt)
 postgres_libtest_username=lib_test
 postgres_libtest_password=lib_test
 ```
@@ -151,7 +151,7 @@ Umgebungsvariablen (Ordinal 300) überschreiben Datei-Werte (Ordinal 100). Syste
 ### Vollständiger Build
 
 ```bash
-cd /home/r-uu/develop/github/lib-java
+cd /home/r-uu/develop/github/java
 mvn clean install
 ```
 

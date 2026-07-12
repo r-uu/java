@@ -5,20 +5,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>r-uu.app.java.pragma.jpa</artifactId>
+  <artifactId>r-uu.app.pragma.backend.jpa</artifactId>
   <name>${project.artifactId}</name>
   <description>JPA entity implementation of Task/TaskGroup for pragma</description>
 
   <parent>
     <groupId>r-uu</groupId>
-    <artifactId>r-uu.app.java.pragma.backend</artifactId>
+    <artifactId>r-uu.app.pragma.backend</artifactId>
     <version>0.0.1</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.core</artifactId>
+      <artifactId>r-uu.app.pragma.core</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>

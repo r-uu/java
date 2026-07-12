@@ -6,14 +6,14 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>r-uu.lib.java.jasperreports</artifactId>
+    <artifactId>r-uu.lib.jasperreports</artifactId>
     <packaging>pom</packaging>
     <description>JasperReports library for report generation (PDF, DOCX)</description>
     <name>${project.artifactId}</name>
 
     <parent>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.office.word</artifactId>
+        <artifactId>r-uu.lib.office.word</artifactId>
         <version>0.0.1</version>
     </parent>
 

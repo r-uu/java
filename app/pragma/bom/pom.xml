@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>r-uu.app.java.pragma.bom</artifactId>
+  <artifactId>r-uu.app.pragma.bom</artifactId>
   <version>0.0.1</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
@@ -13,7 +13,7 @@
 
   <parent>
     <groupId>r-uu</groupId>
-    <artifactId>r-uu.lib.java.bom</artifactId>
+    <artifactId>r-uu.lib.bom</artifactId>
     <version>0.0.1</version>
     <!-- inherited: build/plugin/property config, repositories and external dependencyManagement -->
     <relativePath>../../../lib/bom/pom.xml</relativePath>
@@ -25,7 +25,7 @@
         Decouple the app version from the lib-java version (variant B).
 
         The lib-java BOM is our parent, so its dependencyManagement is INHERITED. There it
-        declares every r-uu.lib.java.* module with <version>${project.version}</version>, which
+        declares every r-uu.lib.* module with <version>${project.version}</version>, which
         - when inherited - resolves against THIS project's version, i.e. the app version. That
         would silently tie the app version to the lib version.
 
@@ -35,48 +35,48 @@
         each lib-java module actually used by this app is pinned here to the lib version in plain
         text (no property, per project convention).
 
-        IMPORTANT: when a module starts depending on a new r-uu.lib.java.* artifact, add a pin
+        IMPORTANT: when a module starts depending on a new r-uu.lib.* artifact, add a pin
         here. Without a pin it falls back to the inherited app version; once app and lib versions
         differ that produces a build error (missing artifact at the app version).
       -->
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.cdi.common</artifactId>
+        <artifactId>r-uu.lib.cdi.common</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.cdi.se</artifactId>
+        <artifactId>r-uu.lib.cdi.se</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.fx.comp</artifactId>
+        <artifactId>r-uu.lib.fx.comp</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.fx.core</artifactId>
+        <artifactId>r-uu.lib.fx.core</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.jpa.core</artifactId>
+        <artifactId>r-uu.lib.jpa.core</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.junit</artifactId>
+        <artifactId>r-uu.lib.junit</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.postgres.ui</artifactId>
+        <artifactId>r-uu.lib.postgres.ui</artifactId>
         <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.util</artifactId>
+        <artifactId>r-uu.lib.util</artifactId>
         <version>0.0.1</version>
       </dependency>
 
@@ -84,37 +84,37 @@
       <!-- these DO follow the app version on purpose (${project.version}) -->
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.bean</artifactId>
+        <artifactId>r-uu.app.pragma.bean</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.core</artifactId>
+        <artifactId>r-uu.app.pragma.core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.dto</artifactId>
+        <artifactId>r-uu.app.pragma.backend.dto</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.fx</artifactId>
+        <artifactId>r-uu.app.pragma.frontend.fx</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.jpa</artifactId>
+        <artifactId>r-uu.app.pragma.backend.jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.rest</artifactId>
+        <artifactId>r-uu.app.pragma.backend.rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.app.java.pragma.rest-client</artifactId>
+        <artifactId>r-uu.app.pragma.frontend.rest.client</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

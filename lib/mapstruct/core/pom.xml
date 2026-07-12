@@ -5,13 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.java.mapstruct.core</artifactId>
+	<artifactId>r-uu.lib.mapstruct.core</artifactId>
 	<description>core module for possibly reusable mapstruct library artifacts of group r-uu</description>
 	<name>${project.artifactId}</name>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.java.mapstruct</artifactId>
+		<artifactId>r-uu.lib.mapstruct</artifactId>
 		<version>0.0.1</version>
 	</parent>
 
@@ -40,7 +40,7 @@
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.util</artifactId>
+			<artifactId>r-uu.lib.util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>

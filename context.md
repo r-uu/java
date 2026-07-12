@@ -11,7 +11,7 @@ Projekte bzw. Maven-Sub-Module können eigene, ergänzende `context.md`-Dateien 
 ```
 r-uu-java/
 ├── pom.xml              root-Aggregator (r-uu.java)
-├── lib/                 wiederverwendbare Libraries (r-uu.lib.java.*)
+├── lib/                 wiederverwendbare Libraries (r-uu.lib.*)
 │   ├── bom/             Bill of Material — Wurzel aller Build-Konfiguration
 │   ├── archunit/
 │   ├── cdi/
@@ -32,8 +32,8 @@ r-uu-java/
 │   ├── util/
 │   └── ws/
 └── app/
-    ├── pom.xml          app-Aggregator (r-uu.java.app)
-    └── pragma/          Jakarta EE Backend + JavaFX Frontend (r-uu.app.java.pragma.*)
+    ├── pom.xml          app-Aggregator (r-uu.app)
+    └── pragma/          Jakarta EE Backend + JavaFX Frontend (r-uu.app.pragma.*)
         ├── bom/
         ├── core/
         ├── bean/
@@ -44,36 +44,55 @@ r-uu-java/
 ## Maven-Parent-Kette
 
 ```
-r-uu.lib.java.bom (lib/bom/pom.xml — keine Parent, Wurzel)
+r-uu.lib.bom          (lib/bom/pom.xml — keine Parent, Wurzel)
   ↑ parent
-r-uu.lib.java    (lib/pom.xml — Aggregator für alle lib-Module)
-  + alle lib-Module erben von r-uu.lib.java
+r-uu.lib              (lib/pom.xml — Aggregator für alle lib-Module)
+  + alle lib-Module erben von r-uu.lib.bom
 
-r-uu.lib.java.bom
+r-uu.lib.bom
   ↑ parent
-r-uu.app.java.pragma.bom  (app/pragma/bom/pom.xml)
+r-uu.app.pragma.bom   (app/pragma/bom/pom.xml)
   ↑ parent
-r-uu.app.java.pragma      (app/pragma/pom.xml — Aggregator für pragma)
-  + alle pragma-Module erben von r-uu.app.java.pragma
+r-uu.app.pragma       (app/pragma/pom.xml — Aggregator für pragma)
+  + alle pragma-Module erben von r-uu.app.pragma
 
-r-uu.lib.java.bom
+r-uu.lib.bom
   ↑ parent
-r-uu.java        (pom.xml — root-Aggregator, modules: lib + app)
-r-uu.java.app    (app/pom.xml — app-Aggregator, modules: pragma)
+r-uu.java             (pom.xml — root-Aggregator, modules: lib + app)
+r-uu.app              (app/pom.xml — app-Aggregator, modules: pragma)
 ```
 
 ## Maven / BOM — wichtige Regeln
 
-Das App-BOM (`r-uu.app.java.pragma.bom`) erbt vom Lib-BOM (`r-uu.lib.java.bom`). Dadurch erbt es:
+Das App-BOM (`r-uu.app.pragma.bom`) erbt vom Lib-BOM (`r-uu.lib.bom`). Dadurch erbt es:
 - Build-/Plugin-/Property-Konfiguration
 - externe Dependency-Versionen
 
-**Regel für lib-Module:** Alle Module in `lib/` erben direkt oder transitiv von `r-uu.lib.java.bom`.
+**Regel für lib-Module:** Alle Module in `lib/` erben direkt oder transitiv von `r-uu.lib.bom`.
 Versions werden als Klartext angegeben, keine Properties.
 
-**Regel für pragma-Module:** Wenn ein pragma-Modul ein neues `r-uu.lib.java.*`-Artefakt nutzt,
+**Regel für pragma-Module:** Wenn ein pragma-Modul ein neues `r-uu.lib.*`-Artefakt nutzt,
 muss in `app/pragma/bom/pom.xml` ein direkter Pin mit der Klartext-lib-Version ergänzt werden.
 Ein `<scope>import</scope>` des lib-BOM genügt **nicht** (hat die niedrigste Maven-Priorität).
+
+## Bootstrap — Erster Build ohne lokales Repository
+
+`mvn clean install` vom Root funktioniert auch mit leerem `.m2`, weil:
+
+1. Alle `<parent>`-Sektionen, die `r-uu.lib.bom` referenzieren, haben `<relativePath>` gesetzt —
+   Maven löst das BOM direkt von Disk auf, ohne es aus `.m2` zu laden.
+2. `bom` steht als erstes `<module>` in `lib/pom.xml`, damit es im Reaktor verfügbar ist,
+   bevor die anderen Module gebaut werden.
+
+Konkrete `<relativePath>`-Werte:
+
+| pom.xml | relativePath |
+|---|---|
+| `pom.xml` (root) | `lib/bom/pom.xml` |
+| `lib/pom.xml` | `bom/pom.xml` |
+| `lib/*/pom.xml` (alle lib-Submodule) | `../bom` |
+| `app/pom.xml` | `../lib/bom/pom.xml` |
+| `app/pragma/bom/pom.xml` | `../../../lib/bom/pom.xml` |
 
 ## Allgemeine Regeln
 

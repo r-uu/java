@@ -9,7 +9,7 @@
 	<!-- ######################### -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>r-uu</groupId>
-	<artifactId>r-uu.lib.java.bom</artifactId>
+	<artifactId>r-uu.lib.bom</artifactId>
 	<name>${project.artifactId}</name>
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
@@ -571,253 +571,253 @@
 		<!-- ######### -->
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.cdi.common</artifactId>
+			<artifactId>r-uu.lib.cdi.common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.cdi.se</artifactId>
+			<artifactId>r-uu.lib.cdi.se</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.docker.health</artifactId>
+			<artifactId>r-uu.lib.docker.health</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.liberty.server</artifactId>
+			<artifactId>r-uu.lib.liberty.server</artifactId>
 			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jdbc.postgres</artifactId>
+			<artifactId>r-uu.lib.jdbc.postgres</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.core</artifactId>
+			<artifactId>r-uu.lib.jpa.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.se.hibernate.postgres</artifactId>
+			<artifactId>r-uu.lib.jpa.se.hibernate.postgres</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.junit</artifactId>
+			<artifactId>r-uu.lib.junit</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.keycloak.admin</artifactId>
+			<artifactId>r-uu.lib.keycloak.admin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.mapstruct.core</artifactId>
+			<artifactId>r-uu.lib.mapstruct.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.mapstruct.spi</artifactId>
+			<artifactId>r-uu.lib.mapstruct.spi</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.mp.config</artifactId>
+			<artifactId>r-uu.lib.mp.config</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.util</artifactId>
+			<artifactId>r-uu.lib.util</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.ws.rs</artifactId>
+			<artifactId>r-uu.lib.ws.rs</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.archunit</artifactId>
+			<artifactId>r-uu.lib.archunit</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.cdi</artifactId>
+			<artifactId>r-uu.lib.cdi</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.cdi.se.demo</artifactId>
+			<artifactId>r-uu.lib.cdi.se.demo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx</artifactId>
+			<artifactId>r-uu.lib.fx</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx.comp</artifactId>
+			<artifactId>r-uu.lib.fx.comp</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx.comp.demo</artifactId>
+			<artifactId>r-uu.lib.fx.comp.demo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx.core</artifactId>
+			<artifactId>r-uu.lib.fx.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx.demo</artifactId>
+			<artifactId>r-uu.lib.fx.demo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen</artifactId>
+			<artifactId>r-uu.lib.gen</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.core</artifactId>
+			<artifactId>r-uu.lib.gen.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java</artifactId>
+			<artifactId>r-uu.lib.gen.java</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.core</artifactId>
+			<artifactId>r-uu.lib.gen.java.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.bean</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.bean</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.bean.editor</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.bean.editor</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.bean.editor.demo</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.bean.editor.demo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.comp</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.comp</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.tableview</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.tableview</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jackson</artifactId>
+			<artifactId>r-uu.lib.jackson</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jasperreports</artifactId>
+			<artifactId>r-uu.lib.jasperreports</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jasperreports.client</artifactId>
+			<artifactId>r-uu.lib.jasperreports.client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jasperreports.server</artifactId>
+			<artifactId>r-uu.lib.jasperreports.server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jdbc</artifactId>
+			<artifactId>r-uu.lib.jdbc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jdbc.core</artifactId>
+			<artifactId>r-uu.lib.jdbc.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa</artifactId>
+			<artifactId>r-uu.lib.jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.core.mapstruct</artifactId>
+			<artifactId>r-uu.lib.jpa.core.mapstruct</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.core.mapstruct.demo.bidirectional</artifactId>
+			<artifactId>r-uu.lib.jpa.core.mapstruct.demo.bidirectional</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.core.mapstruct.test</artifactId>
+			<artifactId>r-uu.lib.jpa.core.mapstruct.test</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.se</artifactId>
+			<artifactId>r-uu.lib.jpa.se</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.se.hibernate</artifactId>
+			<artifactId>r-uu.lib.jpa.se.hibernate</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jpa.se.hibernate.postgres.demo</artifactId>
+			<artifactId>r-uu.lib.jpa.se.hibernate.postgres.demo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jsonb</artifactId>
+			<artifactId>r-uu.lib.jsonb</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.office</artifactId>
+			<artifactId>r-uu.lib.office</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.office.word</artifactId>
+			<artifactId>r-uu.lib.office.word</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.postgres.toolbox</artifactId>
+			<artifactId>r-uu.lib.postgres.toolbox</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.postgres.ui</artifactId>
+			<artifactId>r-uu.lib.postgres.ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

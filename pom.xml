@@ -12,7 +12,7 @@
 
   <parent>
     <groupId>r-uu</groupId>
-    <artifactId>r-uu.lib.java.bom</artifactId>
+    <artifactId>r-uu.lib.bom</artifactId>
     <version>0.0.1</version>
     <relativePath>lib/bom/pom.xml</relativePath>
   </parent>

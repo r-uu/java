@@ -13,20 +13,27 @@
 
 ## Ersteinrichtung
 
-### 1. lib-java bauen (einmalig)
+### 1. Gesamtes Repo bauen (einmalig)
 
-Das BOM dieses Projekts kommt aus `lib-java`. Es muss einmal lokal installiert sein:
+lib und pragma liegen im selben Mono-Repo. Ein Build vom Root installiert beides:
 
 ```bash
-cd ~/develop/github/lib-java
+cd ~/develop/github/java
 mvn install
 ```
 
-### 2. Dieses Projekt bauen
+Alternativ nur lib vorab installieren (wenn ausschließlich an pragma gearbeitet wird):
 
 ```bash
-cd ~/develop/github/app-pragma-java
-mvn install
+cd ~/develop/github/java
+mvn install -pl lib -am
+```
+
+### 2. Nur pragma bauen
+
+```bash
+cd ~/develop/github/java
+mvn install -pl app/pragma -am
 ```
 
 Der Build kopiert dabei automatisch die Hibernate-JARs nach

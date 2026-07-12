@@ -5,12 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.java.fx.core</artifactId>
+	<artifactId>r-uu.lib.fx.core</artifactId>
+	<name>${project.artifactId}</name>
 	<description>module library for java fx core</description>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.java.fx</artifactId>
+		<artifactId>r-uu.lib.fx</artifactId>
 		<version>0.0.1</version>
 	</parent>
 
@@ -51,15 +52,15 @@
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.core</artifactId>
+			<artifactId>r-uu.lib.gen.core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.fx.comp</artifactId>
+			<artifactId>r-uu.lib.gen.java.fx.comp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.util</artifactId>
+			<artifactId>r-uu.lib.util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.kordamp.ikonli</groupId>

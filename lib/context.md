@@ -1,4 +1,4 @@
-# Projektkontext: lib-java
+# Projektkontext: lib
 
 ## Hinweise für KI-Agenten
 
@@ -12,11 +12,11 @@ Ziel des Projekts ist die Bereitstellung allgemein wiederverwendbarer Java-Libra
 
 ## Projektgrenzen
 
-Das Projekt lehnt sich zwar an das alte `java/main/root/lib`-Projekt an, definiert aber einen klaren Schnitt: es soll keine Abhängigkeiten zu `java/main/root/lib` geben. Insbesondere sollen die Projekte unter `java/main/root` nicht von den Projekten unter `lib-java` abhängig sein.
+Das Projekt lehnt sich zwar an das alte `jeeeraaah`-Projekt (github.com/r-uu/main_java) an, definiert aber einen klaren Schnitt: es soll keine Abhängigkeiten zu `jeeeraaah` geben. Insbesondere sollen die Projekte unter `main_java` nicht von den Projekten unter `lib/` abhängig sein.
 
 Die Trennung gilt in beide Richtungen:
-- `lib-java` darf keine Abhängigkeiten zu Projekten unter `java/main/root/lib` einführen.
-- Projekte unter `java/main/root` sollen nicht von Projekten unter `lib-java` abhängig sein.
+- `lib/` darf keine Abhängigkeiten zu Projekten unter `main_java` einführen.
+- Projekte unter `main_java` sollen nicht von Projekten unter `lib/` abhängig sein.
 
 ## Dokumentation
 
@@ -28,7 +28,7 @@ Die bereitgestellten maven modules müssen immer so gewählt werden, dass sie be
 
 ### Bill of Material
 
-Alle Maven Module nutzen die Abhängigkeiten aus dem Modul [r-uu.bom](bom/pom.xml). Dort werden auch die (default) dependency-versions festgelegt.
+Alle Maven Module nutzen die Abhängigkeiten aus dem Modul [r-uu.lib.bom](bom/pom.xml). Dort werden auch die (default) dependency-versions festgelegt.
 
 #### Nutzung von properties im bom
 

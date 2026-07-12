@@ -4,11 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.java.jdbc.postgres</artifactId>
+	<artifactId>r-uu.lib.jdbc.postgres</artifactId>
+	<name>${project.artifactId}</name>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.java.jdbc</artifactId>
+		<artifactId>r-uu.lib.jdbc</artifactId>
 		<version>0.0.1</version>
 	</parent>
 
@@ -16,11 +17,11 @@
 		<!-- Internal dependencies alphabetisch nach artifactId -->
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.jdbc.core</artifactId>
+			<artifactId>r-uu.lib.jdbc.core</artifactId>
         </dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.junit</artifactId>
+			<artifactId>r-uu.lib.junit</artifactId>
 			<scope>test</scope>
         </dependency>
 

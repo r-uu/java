@@ -4,12 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.java.gen.java.fx.comp</artifactId>
+	<artifactId>r-uu.lib.gen.java.fx.comp</artifactId>
+	<name>${project.artifactId}</name>
 	<description>module library for java fx comp(onents) generator</description>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.java.gen.java.fx</artifactId>
+		<artifactId>r-uu.lib.gen.java.fx</artifactId>
 		<version>0.0.1</version>
 	</parent>
 
@@ -21,15 +22,15 @@
 
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.gen.java.core</artifactId>
+			<artifactId>r-uu.lib.gen.java.core</artifactId>
         </dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.fx.comp</artifactId>
+			<artifactId>r-uu.lib.fx.comp</artifactId>
         </dependency>
 		<dependency>
 			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.java.util</artifactId>
+			<artifactId>r-uu.lib.util</artifactId>
         </dependency>
 	</dependencies>
 

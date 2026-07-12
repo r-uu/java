@@ -5,24 +5,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>r-uu.app.java.pragma.bean</artifactId>
+  <artifactId>r-uu.app.pragma.bean</artifactId>
   <name>${project.artifactId}</name>
   <description>plain Java bean implementation of Task for pragma</description>
 
   <parent>
     <groupId>r-uu</groupId>
-    <artifactId>r-uu.app.java.pragma</artifactId>
+    <artifactId>r-uu.app.pragma</artifactId>
     <version>0.0.1</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.core</artifactId>
+      <artifactId>r-uu.app.pragma.core</artifactId>
     </dependency>
     <dependency>
       <groupId>r-uu</groupId>
-      <artifactId>r-uu.app.java.pragma.dto</artifactId>
+      <artifactId>r-uu.app.pragma.backend.dto</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jspecify</groupId>

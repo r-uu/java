@@ -5,11 +5,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>r-uu.lib.java.gen.core</artifactId>
+    <artifactId>r-uu.lib.gen.core</artifactId>
+    <name>${project.artifactId}</name>
 
     <parent>
         <groupId>r-uu</groupId>
-        <artifactId>r-uu.lib.java.gen</artifactId>
+        <artifactId>r-uu.lib.gen</artifactId>
         <version>0.0.1</version>
     </parent>
 
@@ -17,7 +18,7 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>r-uu</groupId>
-            <artifactId>r-uu.lib.java.util</artifactId>
+            <artifactId>r-uu.lib.util</artifactId>
         </dependency>
 
         <!-- External dependencies -->

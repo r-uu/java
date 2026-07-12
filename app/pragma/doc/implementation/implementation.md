@@ -5,7 +5,7 @@
 - **Backend:** Java 25, Jakarta EE 10, JPA (Hibernate), JAX-RS (Jersey auf dem Client)
 - **Server:** Open Liberty 25.0.0.12, Datasource PostgreSQL via JDBC
 - **Frontend:** JavaFX (in diesem Repo), Kotlin CMP (in `pragma-cmp`)
-- **Build:** Maven (mit BOM aus `ruu-java-lib`)
+- **Build:** Maven (mit BOM aus `lib/`)
 - **JSON:** Jackson mit Field-Visibility (FIELD=ANY, GETTER/SETTER/IS_GETTER=NONE)
 
 ## Technologie-Stack-Detail
@@ -145,13 +145,12 @@ Set<T> collectLeaves(T root) { ... }
 
 ## Repository-Struktur
 
-| Repo           | Inhalt                                                           |
-|----------------|------------------------------------------------------------------|
-| `pragma-java`  | Jakarta EE Backend + JavaFX Frontend (dieses Repo)               |
-| `pragma-cmp`   | Kotlin Compose Multiplatform Frontend                            |
-| `ruu-java-lib` | Allgemeine Java-Bibliothek inkl. BOM-Modul (projektübergreifend) |
+| Repo          | Inhalt                                                                          |
+|---------------|---------------------------------------------------------------------------------|
+| `java`        | Libraries (`lib/`) + Jakarta EE Backend & JavaFX Frontend (`app/pragma/`) — dieses Repo |
+| `pragma-cmp`  | Kotlin Compose Multiplatform Frontend                                           |
 
-Das BOM-Modul lebt als Maven-Submodul in `ruu-java-lib` und verwaltet gemeinsame maven Dependency-Versionen für alle Projekte (pragma, pragma, weitere). Nicht alle Dependencies werden im BOM verwaltet — nur die projektübergreifend relevanten.
+Das BOM-Modul (`r-uu.lib.bom`) lebt als Maven-Submodul in `lib/bom/` und verwaltet gemeinsame maven Dependency-Versionen für alle Projekte. Nicht alle Dependencies werden im BOM verwaltet — nur die projektübergreifend relevanten.
 
 In pragma werden alle maven Dependency-Versionen nach Möglichkeit im BOM verwaltet.
 
@@ -160,39 +159,39 @@ In pragma werden alle maven Dependency-Versionen nach Möglichkeit im BOM verwal
 Package-Prefix: `de.ruu.app.pragma`
 
 ```
-app-pragma-java/
-├── pom.xml                       (r-uu.app.java.pragma, parent: r-uu.app.java.pragma.bom)
-├── bom/                          (r-uu.app.java.pragma.bom)      — App-BOM, parent: r-uu.lib.java.bom
+app/pragma/
+├── pom.xml                       (r-uu.app.pragma, parent: r-uu.app.pragma.bom)
+├── bom/                          (r-uu.app.pragma.bom)      — App-BOM, parent: r-uu.lib.bom
 ├── core/                         (r-uu.app.pragma.core)          — Interfaces (Task, TaskGroup, Has*)
 ├── bean/                         (r-uu.app.pragma.bean)          — POJO-Implementierung
 ├── backend/
 │   ├── pom.xml                   (r-uu.app.pragma.backend)
-│   ├── dto/                      (r-uu.app.pragma.dto)           — DTOs für REST (Jackson)
-│   ├── jpa/                      (r-uu.app.pragma.jpa)           — JPA-Entities (Hibernate)
-│   └── rest/                     (r-uu.app.pragma.rest, WAR)     — JAX-RS REST-API + Liberty Server
+│   ├── dto/                      (r-uu.app.pragma.backend.dto)           — DTOs für REST (Jackson)
+│   ├── jpa/                      (r-uu.app.pragma.backend.jpa)           — JPA-Entities (Hibernate)
+│   └── rest/                     (r-uu.app.pragma.backend.rest, WAR)     — JAX-RS REST-API + Liberty Server
 │       └── src/main/liberty/config/
 │           ├── server.xml        — Liberty-Konfiguration (Port 9090, Datasource jdbc/pragma)
 │           └── server.env        — Umgebungsvariablen (Ports, DB-Credentials)
 └── frontend/
     ├── pom.xml                   (r-uu.app.pragma.frontend)
-    ├── rest-client/              (r-uu.app.pragma.rest-client)   — JAX-RS Client (Jersey)
+    ├── rest-client/              (r-uu.app.pragma.frontend.rest.client)   — JAX-RS Client (Jersey)
     │   └── src/main/java/de/ruu/app/pragma/client/
     │       ├── TaskGroupClient.java
     │       ├── TaskClient.java
     │       └── dbcommand/        — DB-Hilfsprogramme (clear/populate)
-    └── fx/                       (r-uu.app.pragma.fx, geplant)   — JavaFX UI
+    └── fx/                       (r-uu.app.pragma.frontend.fx, geplant)   — JavaFX UI
 ```
 
 ## BOM-Hierarchie und Versions-Entkopplung (Variante B)
 
-pragma hat ein eigenes BOM-Modul `bom` (`r-uu.app.java.pragma.bom`). Parent-Kette:
+pragma hat ein eigenes BOM-Modul `bom` (`r-uu.app.pragma.bom`). Parent-Kette:
 
 ```
-r-uu.lib.java.bom        (lib-java repo — Build-/Plugin-/Property-Config, externe Dep-Versionen)
+r-uu.lib.bom        (lib/ — Build-/Plugin-/Property-Config, externe Dep-Versionen)
         ▲ parent
-r-uu.app.java.pragma.bom (dieses Repo — App-Modul-Versionen + gepinnte lib-Versionen)
+r-uu.app.pragma.bom (dieses Repo — App-Modul-Versionen + gepinnte lib-Versionen)
         ▲ parent
-r-uu.app.java.pragma     (Root / Aggregator)
+r-uu.app.pragma     (Root / Aggregator)
         ▲ parent
 core / bean / backend/* / frontend/*   (deklarieren Dependencies ohne <version>)
 ```
@@ -208,11 +207,11 @@ Das lib-BOM deklariert seine eigenen Module mit `<version>${project.version}</ve
 **geerbt**, löst `${project.version}` gegen *dieses* (das App-)Projekt auf — die App-Version würde
 also stillschweigend an die lib-Version gekoppelt.
 
-Deshalb pinnt das App-BOM jedes tatsächlich genutzte `r-uu.lib.java.*`-Modul **direkt** auf die
+Deshalb pinnt das App-BOM jedes tatsächlich genutzte `r-uu.lib.*`-Modul **direkt** auf die
 lib-Version (Klartext, keine Property — gemäß Projektregel). Aktuell gepinnt:
 `fx.comp`, `fx.core`, `jpa.core`, `junit`, `postgres.ui` (alle `0.0.1`).
 
-Die App-Module selbst (`r-uu.app.java.pragma.*`) bleiben bei `${project.version}` und folgen damit
+Die App-Module selbst (`r-uu.app.pragma.*`) bleiben bei `${project.version}` und folgen damit
 bewusst der App-Version.
 
 ### Warum kein `<scope>import</scope>`
@@ -225,14 +224,14 @@ lib-Version der App-Version, via direktem Pin bleibt sie unabhängig.
 
 ### Regel beim Hinzufügen neuer lib-Dependencies
 
-Nutzt ein Modul ein *neues* `r-uu.lib.java.*`-Artefakt, muss dafür ein direkter Pin in
+Nutzt ein Modul ein *neues* `r-uu.lib.*`-Artefakt, muss dafür ein direkter Pin in
 `bom/pom.xml` ergänzt werden. Ohne Pin fällt es auf die geerbte App-Version zurück; sobald
 App- und lib-Version divergieren, führt das zu einem Build-Fehler (Artefakt in App-Version nicht
 vorhanden).
 
 **DRY-Alternative (nicht umgesetzt):** Das lib-BOM in einen Build-Config-Parent und einen reinen
 Versionskatalog aufteilen; die App könnte den Katalog dann per `import` beziehen und bräuchte keine
-Pins. Das erfordert umfangreiche Änderungen in lib-java.
+Pins. Das erfordert umfangreiche Änderungen in lib/.
 
 ## Open Liberty Server
 
@@ -294,7 +293,7 @@ Basis-URL: `http://localhost:9090/pragma/api`
 
 ## Hinweise
 
-- Das lib-BOM (`r-uu.lib.java.bom:0.0.1`) muss vor dem Build dieses Projekts im lokalen Maven-Repository vorhanden sein (`mvn install` in `lib-java`).
+- Das lib-BOM (`r-uu.lib.bom:0.0.1`) muss vor dem Build dieses Projekts im lokalen Maven-Repository vorhanden sein (`mvn install` aus dem Repo-Root oder aus `lib/`).
 - `backend/rest/src/main/liberty/config/lib/global/` ist gitignored — Hibernate-JARs werden beim Build durch `maven-dependency-plugin` dorthin kopiert.
 - `docker-compose.yml` im Projektroot startet PostgreSQL 17 (Container `pragma-postgres`).
 
@@ -306,7 +305,7 @@ Empfehlung: Setze auf JavaFXSmartGraph. Es spart dir bei der Implementierung von
 
 ## Aufbau der FX UI
 
-Die pragma-UI soll sich an der jeeeraaah-UI orientieren. Sie soll insbesondere das FXC-Framework aus lib-java verwenden. Einstieg in die pragma-UI soll eine FXC-App sein, die zunächst folgende Kacheln anzeigt:
+Die pragma-UI soll sich an der jeeeraaah-UI orientieren. Sie soll insbesondere das FXC-Framework aus lib/ verwenden. Einstieg in die pragma-UI soll eine FXC-App sein, die zunächst folgende Kacheln anzeigt:
 
 - Hierarchy View: zeigt FXCView Hierarchies (orientiert sich an de.ruu.app.jeeeraaah.frontend.ui.fx.task.hierarchy.Hierarchies)
 - Gantt View:     zeigt FXCView Gantt       (orientiert sich an de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt.Gantt)
