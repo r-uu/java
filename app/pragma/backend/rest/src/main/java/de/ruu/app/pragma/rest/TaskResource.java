@@ -111,8 +111,8 @@ public class TaskResource
         if (group == null) throw new NotFoundException("TaskGroup not found: " + request.groupId());
         TaskJPA entity = new TaskJPA(request.name(), group);
         entity.description (request.description());
-        entity.plannedStart(request.plannedStart());
-        entity.plannedEnd  (request.plannedEnd());
+        entity.scheduledStart(request.plannedStart());
+        entity.scheduledFinish(request.plannedEnd());
         entity.closed      (request.closed());
         em.persist(entity);
         return Response.status(Response.Status.CREATED).entity(Mappings.toDto(entity)).build();
@@ -127,8 +127,8 @@ public class TaskResource
             throw new WebApplicationException(Response.Status.CONFLICT);
         entity.name       (dto.name());
         entity.description(dto.description().orElse(null));
-        entity.plannedStart(dto.plannedStart().orElse(null));
-        entity.plannedEnd  (dto.plannedEnd()  .orElse(null));
+        entity.scheduledStart(dto.scheduledStart().orElse(null));
+        entity.scheduledFinish(dto.scheduledFinish()  .orElse(null));
         entity.closed      (dto.closed());
         return Mappings.toDto(entity);
     }

@@ -187,8 +187,8 @@ class TaskBeanTest
         LocalDate date = LocalDate.of(2026, 1, 1);
         assertThat(a.name("A2"))          .isSameAs(a);
         assertThat(a.description("d"))    .isSameAs(a);
-        assertThat(a.plannedStart(date))  .isSameAs(a);
-        assertThat(a.plannedEnd(date))    .isSameAs(a);
+        assertThat(a.scheduledStart(date))  .isSameAs(a);
+        assertThat(a.scheduledFinish(date))    .isSameAs(a);
         assertThat(a.closed(true))        .isSameAs(a);
     }
 

@@ -2,14 +2,7 @@ package de.ruu.app.pragma.fx;
 
 import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.core.Task;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import org.jspecify.annotations.Nullable;
@@ -22,30 +15,36 @@ import java.util.Set;
 
 public class TaskFx implements Task<TaskGroupFx, TaskFx>
 {
-    private final LongProperty                        id           = new SimpleLongProperty();
+    private final LongProperty                        id                  = new SimpleLongProperty();
     private @Nullable Short                           version;
-    private final StringProperty                      name         = new SimpleStringProperty();
-    private final StringProperty                      description  = new SimpleStringProperty();
-    private final ObjectProperty<@Nullable LocalDate> plannedStart = new SimpleObjectProperty<>();
-    private final ObjectProperty<@Nullable LocalDate> plannedEnd   = new SimpleObjectProperty<>();
-    private final BooleanProperty                     closed       = new SimpleBooleanProperty(false);
-    private final ObjectProperty<@Nullable TaskFx>    parentTask   = new SimpleObjectProperty<>();
-    private final ObjectProperty<TaskGroupFx>         taskGroup    = new SimpleObjectProperty<>();
+    private final StringProperty                      name                = new SimpleStringProperty();
+    private final ObjectProperty<@Nullable TaskFx>    parentTask          = new SimpleObjectProperty<>();
+    private final ObjectProperty<TaskGroupFx>         taskGroup           = new SimpleObjectProperty<>();
     private @Nullable ObservableSet<TaskFx>           subTasks;     // null = not loaded
     private @Nullable ObservableSet<TaskFx>           predecessors; // null = not loaded
     private @Nullable ObservableSet<TaskFx>           successors;   // null = not loaded
+    private final StringProperty                      description         = new SimpleStringProperty();
+    private final DoubleProperty                      workEstimateInitial = new SimpleDoubleProperty();
+    private final DoubleProperty                      workEstimateCurrent = new SimpleDoubleProperty();
+    private final DoubleProperty                      workActual          = new SimpleDoubleProperty();
+    private final ObjectProperty<@Nullable LocalDate> scheduledStart      = new SimpleObjectProperty<>();
+    private final ObjectProperty<@Nullable LocalDate> scheduledEnd        = new SimpleObjectProperty<>();
+    private final BooleanProperty                     closed              = new SimpleBooleanProperty(false);
 
-    public LongProperty                        idProperty()             { return id;           }
-    public StringProperty                      nameProperty()           { return name;         }
-    public StringProperty                      descriptionProperty()    { return description;  }
-    public ObjectProperty<@Nullable LocalDate> plannedStartProperty()   { return plannedStart; }
-    public ObjectProperty<@Nullable LocalDate> plannedEndProperty()     { return plannedEnd;   }
-    public BooleanProperty                     closedProperty()         { return closed;       }
-    public ObjectProperty<@Nullable TaskFx>    parentTaskProperty()     { return parentTask;   }
-    public ObjectProperty<TaskGroupFx>         taskGroupProperty()      { return taskGroup;    }
-    public @Nullable ObservableSet<TaskFx>     subTasksObservable()     { return subTasks;     }
-    public @Nullable ObservableSet<TaskFx>     predecessorsObservable() { return predecessors; }
-    public @Nullable ObservableSet<TaskFx>     successorsObservable()   { return successors;   }
+    public LongProperty                        idProperty                 () { return id;                  }
+    public StringProperty                      nameProperty               () { return name;                }
+    public ObjectProperty<@Nullable TaskFx>    parentTaskProperty         () { return parentTask;          }
+    public ObjectProperty<TaskGroupFx>         taskGroupProperty          () { return taskGroup;           }
+    public @Nullable ObservableSet<TaskFx>     subTasksObservable         () { return subTasks;            }
+    public @Nullable ObservableSet<TaskFx>     predecessorsObservable     () { return predecessors;        }
+    public @Nullable ObservableSet<TaskFx>     successorsObservable       () { return successors;          }
+    public StringProperty                      descriptionProperty        () { return description;         }
+    public DoubleProperty                      workEstimateInitialProperty() { return workEstimateInitial; }
+    public DoubleProperty                      workEstimateCurrentProperty() { return workEstimateCurrent; }
+    public DoubleProperty                      workActualProperty         () { return workActual;          }
+    public ObjectProperty<@Nullable LocalDate> scheduledStartProperty     () { return scheduledStart;      }
+    public ObjectProperty<@Nullable LocalDate> scheduledEndProperty       () { return scheduledEnd;        }
+    public BooleanProperty                     closedProperty             () { return closed;              }
 
     public TaskFx(String name, TaskGroupFx taskGroup)
     {
@@ -61,8 +60,8 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
         this.version = in.version();
         this.name.set(in.name());
         this.description.set(in.description().orElse(null));
-        this.plannedStart.set(in.plannedStart().orElse(null));
-        this.plannedEnd.set(in.plannedEnd().orElse(null));
+        this.scheduledStart.set(in.scheduledStart().orElse(null));
+        this.scheduledEnd.set(in.scheduledFinish().orElse(null));
         this.closed.set(in.closed());
         Objects.requireNonNull(group, "group");
         group.addTask(this);
@@ -71,26 +70,28 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     /** Package-private — called exclusively by TaskGroupFx.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupFx group) { this.taskGroup.set(group); }
 
-    @Override public @Nullable Long    id()              { return id.get() == 0 ? null : id.get(); }
-    public    @Nullable Short          version()         { return version;                          }
-    @Override public           String  name()            { return name.get();                       }
-    @Override public           TaskFx  name(String name) { this.name.set(Objects.requireNonNull(name, "name")); return this; }
+    @Override public @Nullable Long      id                 () { return id.get() == 0 ? null : id.get();                }
+              public @Nullable Short     version            () { return version;                                        }
+    @Override public           String    name               () { return name.get();                                     }
+    @Override public TaskGroupFx         taskGroup          () { return taskGroup.get();                                }
+    @Override public Optional<String>    description        () { return Optional.ofNullable(description.get());         }
+    @Override public Optional<Double>    workEstimateInitial() { return Optional.ofNullable(workEstimateInitial.get()); }
+    @Override public Optional<Double>    workEstimateCurrent() { return Optional.ofNullable(workEstimateCurrent.get()); }
+    @Override public Optional<Double>    workActual         () { return Optional.ofNullable(workActual         .get()); }
+    @Override public Optional<LocalDate> scheduledStart     () { return Optional.ofNullable(scheduledStart     .get()); }
+    @Override public Optional<LocalDate> scheduledFinish    () { return Optional.ofNullable(scheduledEnd       .get()); }
+    @Override public Boolean             closed             () { return closed.get();                                   }
 
-    @Override public Optional<String>    description () { return Optional.ofNullable(description.get());  }
-    @Override public Optional<LocalDate> plannedStart() { return Optional.ofNullable(plannedStart.get()); }
-    @Override public Optional<LocalDate> plannedEnd  () { return Optional.ofNullable(plannedEnd.get());   }
-    @Override public Boolean             closed      () { return closed.get();                             }
+    @Override public TaskFx name               (          String    n) { name               .set(Objects.requireNonNull(n, "name")); return this; }
+    @Override public TaskFx description        (@Nullable String    d) { description        .set(d)                                ; return this; }
+    @Override public TaskFx workEstimateInitial(@Nullable Double    i) { workEstimateInitial.set(i)                                ; return this; }
+    @Override public TaskFx workEstimateCurrent(@Nullable Double    c) { workEstimateCurrent.set(c)                                ; return this; }
+    @Override public TaskFx workActual         (@Nullable Double    a) { workActual         .set(a)                                ; return this; }
+    @Override public TaskFx scheduledStart     (@Nullable LocalDate s) { scheduledStart     .set(s)                                ; return this; }
+    @Override public TaskFx scheduledFinish    (@Nullable LocalDate e) { scheduledEnd       .set(e)                                ; return this; }
+    @Override public TaskFx closed             (          Boolean   c) { closed             .set(c)                                ; return this; }
 
-    @Override public TaskFx description (@Nullable String    d) { this.description.set(d);  return this; }
-    @Override public TaskFx plannedStart(@Nullable LocalDate d) { this.plannedStart.set(d); return this; }
-    @Override public TaskFx plannedEnd  (@Nullable LocalDate d) { this.plannedEnd.set(d);   return this; }
-    @Override public TaskFx closed      (          Boolean   c) { this.closed.set(c);        return this; }
-
-    @Override
-    public TaskGroupFx taskGroup() { return taskGroup.get(); }
-
-    @Override
-    public TaskFx taskGroup(TaskGroupFx group)
+    @Override public TaskFx taskGroup(TaskGroupFx group)
     {
         if (Objects.requireNonNull(group, "group") != this.taskGroup.get()) group.addTask(this);
         return this;

@@ -15,13 +15,31 @@ public interface Task<G extends TaskGroup<? extends Task<G, ?>>, T extends Task<
             HasMutableSuccessors<T>,
             HasMutableTaskGroup<G>
 {
-    Optional<String>    description();
-    Optional<LocalDate> plannedStart();
-    Optional<LocalDate> plannedEnd();
-    Boolean             closed();
+    Optional<String>    description        ();
+    Optional<Double>    workEstimateInitial();
+    Optional<Double>    workEstimateCurrent();
+    Optional<Double>    workActual         ();
+    /** calculated from {@link #workEstimateCurrent()} - {@link #workActual()} */
+    default
+    Optional<Double>    workRemaining      ()
+    {
+        return workEstimateCurrent().flatMap(estimate -> workActual().map(actual -> estimate - actual));
+    }
+    /** progress in percentage, calculated from {@link #workActual()} and {@link #workRemaining()} */
+    default
+    Optional<Double>    workProgress       ()
+    {
+        return workActual().flatMap(actual -> workRemaining().map(remaining -> (actual / (actual + remaining)) * 100));
+    }
+    Optional<LocalDate> scheduledStart     ();
+    Optional<LocalDate> scheduledFinish    ();
+    Boolean             closed             ();
 
-    T description (@Nullable String    description);
-    T plannedStart(@Nullable LocalDate plannedStart);
-    T plannedEnd  (@Nullable LocalDate plannedEnd);
-    T closed      (          Boolean   closed);
+    T description        (@Nullable String    description        );
+    T workEstimateInitial(@Nullable Double    workEstimateInitial);
+    T workEstimateCurrent(@Nullable Double    workEstimateCurrent);
+    T workActual         (@Nullable Double    workActual         );
+    T scheduledStart     (@Nullable LocalDate scheduledStart     );
+    T scheduledFinish    (@Nullable LocalDate scheduledFinish    );
+    T closed             (          Boolean   closed             );
 }

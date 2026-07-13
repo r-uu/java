@@ -145,8 +145,8 @@ class TaskHierarchyPanel
             TaskBean t = item.getValue();
             tfId    .setText(t.id()   == null ? "" : t.id().toString());
             tfName  .setText(t.name() == null ? "" : t.name());
-            dpStart .setValue(t.plannedStart().orElse(null));
-            dpEnd   .setValue(t.plannedEnd()  .orElse(null));
+            dpStart .setValue(t.scheduledStart().orElse(null));
+            dpEnd   .setValue(t.scheduledFinish()  .orElse(null));
             taDesc  .setText(t.description().orElse(""));
             cbClosed.setSelected(t.closed());
             btnSave .setDisable(t.id() == null);

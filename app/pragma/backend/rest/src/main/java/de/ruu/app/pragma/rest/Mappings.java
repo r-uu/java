@@ -80,8 +80,8 @@ final class Mappings
         }));
 
         out.description (in.description().orElse(null));
-        out.plannedStart(in.plannedStart().orElse(null));
-        out.plannedEnd  (in.plannedEnd()  .orElse(null));
+        out.scheduledStart(in.scheduledStart().orElse(null));
+        out.scheduledFinish(in.scheduledFinish()  .orElse(null));
         out.closed      (in.closed());
 
         return out;

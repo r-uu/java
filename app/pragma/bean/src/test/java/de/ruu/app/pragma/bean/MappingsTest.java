@@ -74,14 +74,14 @@ class MappingsTest
     {
         LocalDate start = LocalDate.of(2026, 1, 1);
         LocalDate end   = LocalDate.of(2026, 1, 31);
-        taskA.description("desc").plannedStart(start).plannedEnd(end).closed(true);
+        taskA.description("desc").scheduledStart(start).scheduledFinish(end).closed(true);
 
         TaskDto dto = Mappings.toDto(taskA);
 
         assertThat(dto.name())        .isEqualTo("Task A");
         assertThat(dto.description()) .hasValue("desc");
-        assertThat(dto.plannedStart()).hasValue(start);
-        assertThat(dto.plannedEnd())  .hasValue(end);
+        assertThat(dto.scheduledStart()).hasValue(start);
+        assertThat(dto.scheduledFinish())  .hasValue(end);
         assertThat(dto.closed())      .isTrue();
     }
 
@@ -156,7 +156,7 @@ class MappingsTest
         TaskDto      tDto = new TaskDto("T", gDto)
             .id(3L).version((short) 1)
             .description("hello")
-            .plannedStart(start)
+            .scheduledStart(start)
             .closed(true);
 
         TaskBean bean = Mappings.toBean(tDto);
@@ -165,7 +165,7 @@ class MappingsTest
         assertThat(bean.id())          .isEqualTo(3L);
         assertThat(bean.version())     .isEqualTo((short) 1);
         assertThat(bean.description()) .hasValue("hello");
-        assertThat(bean.plannedStart()).hasValue(start);
+        assertThat(bean.scheduledStart()).hasValue(start);
         assertThat(bean.closed())      .isTrue();
     }
 

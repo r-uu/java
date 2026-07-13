@@ -100,8 +100,8 @@ public final class Mappings
         ctx.put(in, out);
 
         out.description (in.description().orElse(null));
-        out.plannedStart(in.plannedStart().orElse(null));
-        out.plannedEnd  (in.plannedEnd()  .orElse(null));
+        out.scheduledStart(in.scheduledStart().orElse(null));
+        out.scheduledFinish(in.scheduledFinish()  .orElse(null));
         out.closed      (in.closed());
 
         in.parentTask().ifPresent(p -> {

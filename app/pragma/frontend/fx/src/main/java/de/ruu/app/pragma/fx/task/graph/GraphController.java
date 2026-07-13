@@ -316,8 +316,8 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         lName.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         lName.setMaxWidth(NODE_WIDTH - 10);
 
-        String startText = task.plannedStart().map(d -> "von: " + d.format(DATE_FMT)).orElse("");
-        String endText   = task.plannedEnd()  .map(d -> "bis: " + d.format(DATE_FMT)).orElse("");
+        String startText = task.scheduledStart().map(d -> "von: " + d.format(DATE_FMT)).orElse("");
+        String endText   = task.scheduledFinish()  .map(d -> "bis: " + d.format(DATE_FMT)).orElse("");
         String dateText  = startText.isEmpty() && endText.isEmpty() ? ""
                          : startText + (startText.isEmpty() || endText.isEmpty() ? "" : "  ") + endText;
 

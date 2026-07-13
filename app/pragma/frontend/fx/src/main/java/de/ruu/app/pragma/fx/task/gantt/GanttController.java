@@ -234,8 +234,8 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 dayCol.setCellValueFactory(cdf -> {
                     TaskBean task = cdf.getValue().getValue();
                     if (task == null) return new SimpleStringProperty("");
-                    LocalDate ps = task.plannedStart().orElse(null);
-                    LocalDate pe = task.plannedEnd()  .orElse(null);
+                    LocalDate ps = task.scheduledStart().orElse(null);
+                    LocalDate pe = task.scheduledFinish()  .orElse(null);
                     if (ps != null && pe != null && !date.isBefore(ps) && !date.isAfter(pe))
                         return new SimpleStringProperty("x");
                     return new SimpleStringProperty("");
@@ -301,8 +301,8 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 return;
             }
             TaskBean task = sel.getValue();
-            dtPckrTaskStart.setValue(task.plannedStart().orElse(null));
-            dtPckrTaskEnd  .setValue(task.plannedEnd()  .orElse(null));
+            dtPckrTaskStart.setValue(task.scheduledStart().orElse(null));
+            dtPckrTaskEnd  .setValue(task.scheduledFinish()  .orElse(null));
             btnSaveDates.setDisable(task.id() == null);
         }
         finally
@@ -318,8 +318,8 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
 
         TaskBean task = sel.getValue();
-        task.plannedStart(dtPckrTaskStart.getValue());
-        task.plannedEnd  (dtPckrTaskEnd  .getValue());
+        task.scheduledStart(dtPckrTaskStart.getValue());
+        task.scheduledFinish(dtPckrTaskEnd  .getValue());
 
         try
         {

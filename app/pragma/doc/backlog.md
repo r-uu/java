@@ -124,15 +124,38 @@ ohne vollständigen Liberty-Server.
 ## Empfohlene Reihenfolge
 
 ```
-P3-6  (SmartGraph-Cleanup)            ← trivial, saubert Classpath
-P3-7  (Tests TaskFx/TaskGroupFx)      ← parallel möglich
-P3-8  (REST Unit-Tests)               ← parallel möglich
-P2-7  (Logging Produktion)            ← trivial, wenn Produktiveinsatz näher rückt
-P2-6  (Layout-Datei robuster)         ← klein, wenn DBClear häufig genutzt wird
-P4-8  (Containerisierung)             ← Voraussetzung für P1-1
-P1-1  (hbm2ddl → Flyway)             ← aufwändig, nach P4-8
-P4-1  (Status-Enum)                   ← klare Domänenverbesserung
-P4-2  (actualStart/actualEnd)         ← sinnvoll nach P4-1
-P4-*  (restliche Domänenfunktionen)   ← nach obigem Sprint
-P4-9  (mapstruct)                     ← strategisch, nach Stabilisierung evaluieren
+P3-6  (SmartGraph-Cleanup)          ← trivial, saubert Classpath
+P3-7  (Tests TaskFx/TaskGroupFx)    ← parallel möglich
+P3-8  (REST Unit-Tests)             ← parallel möglich
+P2-7  (Logging Produktion)          ← trivial, wenn Produktiveinsatz näher rückt
+P2-6  (Layout-Datei robuster)       ← klein, wenn DBClear häufig genutzt wird
+P4-8  (Containerisierung)           ← Voraussetzung für P1-1
+P1-1  (hbm2ddl → Flyway)            ← aufwändig, nach P4-8
+P4-1  (Status-Enum)                 ← klare Domänenverbesserung
+P4-2  (actualStart/actualEnd)       ← sinnvoll nach P4-1
+P4-*  (restliche Domänenfunktionen) ← nach obigem Sprint
+P4-9  (mapstruct)                   ← strategisch, nach Stabilisierung evaluieren
 ```
+
+# Planung / neue Features
+
+## open project
+
+open project bietet features (opf), die in pragma übernommen werden sollten.
+
+### opf-1: domain model - work: estimates and progress
+
+Die projektweit einheitliche Einheit für work wird auf 1h festgelegt. Für jeden Task werden folgende Attribute verwaltet:
+
+| Attribut              | Bedeutung                                         |
+|-----------------------|---------------------------------------------------|
+| work estimate initial | initial geschätzter Aufwand                       |
+| work estimate current | aktuelle Schätzung                                |
+|                       | kann sich im Projektverlauf ändern                |
+| work actual           | tatsächlicher Aufwand aktuell                     |
+|                       | kann sich sowohl von work estimate initial        |
+|                       | als auch von work estimate current unterscheiden  |
+| work remaining        | verbleibender Aufwand                             |
+|                       | errechnet aus work estimate current - work actual |
+| work progress         | errechneter prozentueller Fortschritt             |
+

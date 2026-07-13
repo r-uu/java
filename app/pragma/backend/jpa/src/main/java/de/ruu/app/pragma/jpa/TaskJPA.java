@@ -96,13 +96,13 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
     @Override public           TaskJPA name(String name) { this.name = requireNonNull(name, "name"); return this; }
 
     @Override public Optional<String>    description () { return Optional.ofNullable(description);  }
-    @Override public Optional<LocalDate> plannedStart() { return Optional.ofNullable(plannedStart); }
-    @Override public Optional<LocalDate> plannedEnd  () { return Optional.ofNullable(plannedEnd);   }
+    @Override public Optional<LocalDate> scheduledStart() { return Optional.ofNullable(plannedStart); }
+    @Override public Optional<LocalDate> scheduledFinish() { return Optional.ofNullable(plannedEnd);   }
     @Override public Boolean             closed      () { return closed;                             }
 
     @Override public TaskJPA description (@Nullable String    d) { this.description = d; return this; }
-    @Override public TaskJPA plannedStart(@Nullable LocalDate d) { this.plannedStart = d; return this; }
-    @Override public TaskJPA plannedEnd  (@Nullable LocalDate d) { this.plannedEnd   = d; return this; }
+    @Override public TaskJPA scheduledStart(@Nullable LocalDate scheduledStart) { this.plannedStart = scheduledStart; return this; }
+    @Override public TaskJPA scheduledFinish(@Nullable LocalDate scheduledEnd) { this.plannedEnd   = scheduledEnd; return this; }
     @Override public TaskJPA closed      (          Boolean   c) { this.closed       = c; return this; }
 
     @Override

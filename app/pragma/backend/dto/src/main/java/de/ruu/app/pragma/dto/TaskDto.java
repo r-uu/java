@@ -17,19 +17,22 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "jsonId", scope = TaskDto.class)
 public class TaskDto implements Task<TaskGroupDto, TaskDto>
 {
-    private final  UUID            jsonId  = UUID.randomUUID();
+    private final     UUID         jsonId  = UUID.randomUUID();
     private @Nullable Long         id;
     private @Nullable Short        version;
-    private @NotBlank  String       name;
+    private @NotBlank String       name;
     private @Nullable TaskDto      parentTask;
     private           TaskGroupDto taskGroup;
     private @Nullable Set<TaskDto> subTasks;      // null = not yet loaded
     private @Nullable Set<TaskDto> predecessors;  // null = not yet loaded
     private @Nullable Set<TaskDto> successors;    // null = not yet loaded
     private @Nullable String       description;
-    private @Nullable LocalDate    plannedStart;
-    private @Nullable LocalDate    plannedEnd;
-    private           Boolean      closed       = false;
+    private @Nullable Double       workEstimateInitial;
+    private @Nullable Double       workEstimateCurrent;
+    private @Nullable Double       workActual;
+    private @Nullable LocalDate    scheduledStart;
+    private @Nullable LocalDate    scheduledFinish;
+    private           Boolean      closed = false;
 
     /** For JSON deserialization only. */
     protected TaskDto() { name = ""; }
@@ -55,27 +58,33 @@ public class TaskDto implements Task<TaskGroupDto, TaskDto>
     /** Package-private — called exclusively by TaskGroupDto.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupDto group) { this.taskGroup = group; }
 
-    @Override public @Nullable Long                   id()                                 { return id;                                                        }
-    public    @Nullable Short                         version()                            { return version;                                                   }
-    @Override public           String                 name()                               { return name;                                                      }
-    public             TaskDto                        id     (@Nullable Long  id)          { this.id      = id;      return this; }
-    public             TaskDto                        version(@Nullable Short v)           { this.version = v;       return this; }
-    @Override public           TaskDto                name(String name)                    { this.name = Objects.requireNonNull(name, "name"); return this; }
-    @Override public           Optional<TaskDto>      parentTask()                         { return Optional.ofNullable(parentTask); }
-    @Override public           TaskDto                parentTask(@Nullable TaskDto parent) { this.parentTask = parent; return this;  }
-    @Override public           Optional<Set<TaskDto>> subTasks()                           { return Optional.ofNullable(subTasks);     }
-    @Override public           Optional<Set<TaskDto>> predecessors()                       { return Optional.ofNullable(predecessors); }
-    @Override public           Optional<Set<TaskDto>> successors()                         { return Optional.ofNullable(successors);   }
+    @Override public @Nullable Long                   id          ()                         { return id;                                                        }
+    public    @Nullable Short                         version     ()                         { return version;                                                   }
+    @Override public           String                 name        ()                         { return name;                                                      }
+    public             TaskDto                        id          (@Nullable Long  id)       { this.id      = id;      return this; }
+    public             TaskDto                        version     (@Nullable Short v)        { this.version = v;       return this; }
+    @Override public           TaskDto                name        (String name)              { this.name = Objects.requireNonNull(name, "name"); return this; }
+    @Override public           Optional<TaskDto>      parentTask  ()                         { return Optional.ofNullable(parentTask); }
+    @Override public           TaskDto                parentTask  (@Nullable TaskDto parent) { this.parentTask = parent; return this;  }
+    @Override public           Optional<Set<TaskDto>> subTasks    ()                         { return Optional.ofNullable(subTasks);     }
+    @Override public           Optional<Set<TaskDto>> predecessors()                         { return Optional.ofNullable(predecessors); }
+    @Override public           Optional<Set<TaskDto>> successors  ()                         { return Optional.ofNullable(successors);   }
 
-    @Override public Optional<String>    description () { return Optional.ofNullable(description);  }
-    @Override public Optional<LocalDate> plannedStart() { return Optional.ofNullable(plannedStart); }
-    @Override public Optional<LocalDate> plannedEnd  () { return Optional.ofNullable(plannedEnd);   }
-    @Override public Boolean             closed      () { return closed;                             }
+    @Override public Optional<String>    description        () { return Optional.ofNullable(description);         }
+    @Override public Optional<Double>    workEstimateInitial() { return Optional.ofNullable(workEstimateInitial); }
+    @Override public Optional<Double>    workEstimateCurrent() { return Optional.ofNullable(workEstimateCurrent); }
+    @Override public Optional<Double>    workActual         () { return Optional.ofNullable(workActual);          }
+    @Override public Optional<LocalDate> scheduledStart     () { return Optional.ofNullable(scheduledStart);      }
+    @Override public Optional<LocalDate> scheduledFinish    () { return Optional.ofNullable(scheduledFinish);     }
+    @Override public Boolean             closed             () { return closed;                                   }
 
-    @Override public TaskDto description (@Nullable String    d) { this.description = d; return this; }
-    @Override public TaskDto plannedStart(@Nullable LocalDate d) { this.plannedStart = d; return this; }
-    @Override public TaskDto plannedEnd  (@Nullable LocalDate d) { this.plannedEnd   = d; return this; }
-    @Override public TaskDto closed      (          Boolean   c) { this.closed       = c; return this; }
+    @Override public TaskDto description        (@Nullable String    d) { this.description         = d; return this; }
+    @Override public TaskDto workEstimateInitial(@Nullable Double    e) { this.workEstimateInitial = e; return this; }
+    @Override public TaskDto workEstimateCurrent(@Nullable Double    e) { this.workEstimateCurrent = e; return this; }
+    @Override public TaskDto workActual         (@Nullable Double    a) { this.workActual          = a; return this; }
+    @Override public TaskDto scheduledStart     (@Nullable LocalDate s) { this.scheduledStart      = s; return this; }
+    @Override public TaskDto scheduledFinish    (@Nullable LocalDate e) { this.scheduledFinish     = e; return this; }
+    @Override public TaskDto closed             (          Boolean   c) { this.closed              = c; return this; }
 
     @Override
     public TaskGroupDto taskGroup() { return taskGroup; }

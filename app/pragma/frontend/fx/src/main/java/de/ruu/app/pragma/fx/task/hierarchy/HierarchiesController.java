@@ -382,8 +382,8 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
 
         TaskBean task = sel.getValue();
-        task.plannedStart(panel.dpStart.getValue());
-        task.plannedEnd  (panel.dpEnd  .getValue());
+        task.scheduledStart(panel.dpStart.getValue());
+        task.scheduledFinish(panel.dpEnd  .getValue());
         task.description (panel.taDesc.getText().isBlank() ? null : panel.taDesc.getText());
         task.closed      (panel.cbClosed.isSelected());
 

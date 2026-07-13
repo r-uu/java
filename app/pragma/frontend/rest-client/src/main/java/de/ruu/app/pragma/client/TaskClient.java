@@ -142,8 +142,8 @@ public class TaskClient
         var request  = new TaskCreateRequest(
             bean.name(), groupId,
             bean.description().orElse(null),
-            bean.plannedStart().orElse(null),
-            bean.plannedEnd()  .orElse(null),
+            bean.scheduledStart().orElse(null),
+            bean.scheduledFinish()  .orElse(null),
             bean.closed()
         );
         try (Response response = target("/tasks")
