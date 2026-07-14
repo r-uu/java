@@ -58,14 +58,15 @@ public class TaskDto implements Task<TaskGroupDto, TaskDto>
     /** Package-private — called exclusively by TaskGroupDto.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupDto group) { this.taskGroup = group; }
 
-    @Override public @Nullable Long                   id          ()                         { return id;                                                        }
-    public    @Nullable Short                         version     ()                         { return version;                                                   }
+    @Override public @Nullable Long  id     () { return id;      }
+              public @Nullable Short version() { return version; }
+
     @Override public           String                 name        ()                         { return name;                                                      }
-    public             TaskDto                        id          (@Nullable Long  id)       { this.id      = id;      return this; }
-    public             TaskDto                        version     (@Nullable Short v)        { this.version = v;       return this; }
-    @Override public           TaskDto                name        (String name)              { this.name = Objects.requireNonNull(name, "name"); return this; }
+              public           TaskDto                id          (@Nullable Long   i)       { id      = i                                ; return this; }
+              public           TaskDto                version     (@Nullable Short  v)       { version = v                                ; return this; }
+    @Override public           TaskDto                name        (          String n)       { name    = Objects.requireNonNull(n, "name"); return this; }
     @Override public           Optional<TaskDto>      parentTask  ()                         { return Optional.ofNullable(parentTask); }
-    @Override public           TaskDto                parentTask  (@Nullable TaskDto parent) { this.parentTask = parent; return this;  }
+    @Override public                    TaskDto       parentTask  (@Nullable TaskDto p)      { parentTask = p                             ; return this;  }
     @Override public           Optional<Set<TaskDto>> subTasks    ()                         { return Optional.ofNullable(subTasks);     }
     @Override public           Optional<Set<TaskDto>> predecessors()                         { return Optional.ofNullable(predecessors); }
     @Override public           Optional<Set<TaskDto>> successors  ()                         { return Optional.ofNullable(successors);   }

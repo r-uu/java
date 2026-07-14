@@ -20,11 +20,11 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 @Entity
 @Table(name = "task")
@@ -41,26 +41,14 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 4000)
-    private @Nullable String    description;
-
-    @Column
-    private @Nullable LocalDate plannedStart;
-
-    @Column
-    private @Nullable LocalDate plannedEnd;
-
-    @Column(nullable = false, columnDefinition = "boolean not null default false")
-    private           Boolean   closed = false;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_task_id")
+    private @Nullable TaskJPA parentTask;
 
     // EAGER: taskGroup is always loaded — Optional.empty() never occurs for a valid task
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "task_group_id", nullable = false)
     private TaskGroupJPA taskGroup;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_task_id")
-    private @Nullable TaskJPA parentTask;
 
     @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private @Nullable Set<TaskJPA> subTasks;
@@ -76,6 +64,27 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
     @ManyToMany(mappedBy = "predecessors", fetch = FetchType.LAZY)
     private @Nullable Set<TaskJPA> successors;
 
+    @Column(length = 4000)
+    private @Nullable String    description;
+
+    @Column
+    private @Nullable Double workEstimateInitial;
+
+    @Column
+    private @Nullable Double workEstimateCurrent;
+
+    @Column
+    private @Nullable Double workActual;
+
+    @Column
+    private @Nullable LocalDate scheduledStart;
+
+    @Column
+    private @Nullable LocalDate scheduledFinish;
+
+    @Column(nullable = false, columnDefinition = "boolean not null default false")
+    private           Boolean   closed = false;
+
     /** JPA-required no-arg constructor. */
     protected TaskJPA() { name = ""; taskGroup = new TaskGroupJPA(); }
 
@@ -89,21 +98,31 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
     /** Package-private — called exclusively by TaskGroupJPA.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupJPA group) { this.taskGroup = group; }
 
-    @Override public @Nullable Long   id     () { return id;      }
-    @Override public @Nullable Short  version() { return version; }
-    @Override public           String name   () { return name;    }
+    @Override public @Nullable Long  id     () { return id     ; }
+    @Override public @Nullable Short version() { return version; }
 
-    @Override public           TaskJPA name(String name) { this.name = requireNonNull(name, "name"); return this; }
+    @Override public String                 name               () { return            name                ; }
+    @Override public Optional<    TaskJPA>  parentTask         () { return ofNullable(parentTask         ); }
+    @Override public Optional<Set<TaskJPA>> subTasks           () { return ofNullable(subTasks           ); }
+    @Override public Optional<Set<TaskJPA>> predecessors       () { return ofNullable(predecessors       ); }
+    @Override public Optional<Set<TaskJPA>> successors         () { return ofNullable(successors         ); }
+    @Override public Optional<String>       description        () { return ofNullable(description        ); }
+    @Override public Optional<Double>       workEstimateInitial() { return ofNullable(workEstimateInitial); }
+    @Override public Optional<Double>       workEstimateCurrent() { return ofNullable(workEstimateCurrent); }
+    @Override public Optional<Double>       workActual         () { return ofNullable(workActual         ); }
+    @Override public Optional<LocalDate>    scheduledStart     () { return ofNullable(scheduledStart     ); }
+    @Override public Optional<LocalDate>    scheduledFinish    () { return ofNullable(scheduledFinish    ); }
+    @Override public Boolean                closed             () { return            closed              ; }
 
-    @Override public Optional<String>    description () { return Optional.ofNullable(description);  }
-    @Override public Optional<LocalDate> scheduledStart() { return Optional.ofNullable(plannedStart); }
-    @Override public Optional<LocalDate> scheduledFinish() { return Optional.ofNullable(plannedEnd);   }
-    @Override public Boolean             closed      () { return closed;                             }
-
-    @Override public TaskJPA description (@Nullable String    d) { this.description = d; return this; }
-    @Override public TaskJPA scheduledStart(@Nullable LocalDate scheduledStart) { this.plannedStart = scheduledStart; return this; }
-    @Override public TaskJPA scheduledFinish(@Nullable LocalDate scheduledEnd) { this.plannedEnd   = scheduledEnd; return this; }
-    @Override public TaskJPA closed      (          Boolean   c) { this.closed       = c; return this; }
+    @Override public TaskJPA name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
+    @Override public TaskJPA parentTask         (@Nullable TaskJPA   p) { parentTask          =                p         ; return this; }
+    @Override public TaskJPA description        (@Nullable String    d) { description         =                d         ; return this; }
+    @Override public TaskJPA workEstimateInitial(@Nullable Double    i) { workEstimateInitial =                i         ; return this; }
+    @Override public TaskJPA workEstimateCurrent(@Nullable Double    c) { workEstimateCurrent =                c         ; return this; }
+    @Override public TaskJPA workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
+    @Override public TaskJPA scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
+    @Override public TaskJPA scheduledFinish    (@Nullable LocalDate e) { scheduledFinish     =                e         ; return this; }
+    @Override public TaskJPA closed             (          Boolean   c) { closed              =                c         ; return this; }
 
     @Override
     public TaskGroupJPA taskGroup() { return taskGroup; }
@@ -114,16 +133,6 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
         if (requireNonNull(group, "group") != this.taskGroup) group.addTask(this);
         return this;
     }
-
-    @Override
-    public Optional<TaskJPA> parentTask() { return Optional.ofNullable(parentTask); }
-
-    @Override
-    public TaskJPA parentTask(@Nullable TaskJPA parent) { this.parentTask = parent; return this; }
-
-    @Override public Optional<Set<TaskJPA>> subTasks()     { return Optional.ofNullable(subTasks);     }
-    @Override public Optional<Set<TaskJPA>> predecessors() { return Optional.ofNullable(predecessors); }
-    @Override public Optional<Set<TaskJPA>> successors()   { return Optional.ofNullable(successors);   }
 
     @Override
     public void addSubTask(TaskJPA child)
