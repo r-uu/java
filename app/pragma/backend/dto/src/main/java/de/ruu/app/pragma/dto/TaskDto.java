@@ -66,10 +66,10 @@ public class TaskDto implements Task<TaskGroupDto, TaskDto>
               public           TaskDto                version     (@Nullable Short  v)       { version = v                                ; return this; }
     @Override public           TaskDto                name        (          String n)       { name    = Objects.requireNonNull(n, "name"); return this; }
     @Override public           Optional<TaskDto>      parentTask  ()                         { return Optional.ofNullable(parentTask); }
-    @Override public                    TaskDto       parentTask  (@Nullable TaskDto p)      { parentTask = p                             ; return this;  }
     @Override public           Optional<Set<TaskDto>> subTasks    ()                         { return Optional.ofNullable(subTasks);     }
     @Override public           Optional<Set<TaskDto>> predecessors()                         { return Optional.ofNullable(predecessors); }
     @Override public           Optional<Set<TaskDto>> successors  ()                         { return Optional.ofNullable(successors);   }
+    @Override public                    TaskDto       parentTask  (@Nullable TaskDto p)      { parentTask = p                             ; return this;  }
 
     @Override public Optional<String>    description        () { return Optional.ofNullable(description);         }
     @Override public Optional<Double>    workEstimateInitial() { return Optional.ofNullable(workEstimateInitial); }
