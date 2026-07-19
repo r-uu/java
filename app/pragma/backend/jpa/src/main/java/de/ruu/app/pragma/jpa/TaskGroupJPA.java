@@ -1,6 +1,6 @@
 package de.ruu.app.pragma.jpa;
 
-import de.ruu.app.pragma.core.TaskGroupEntity;
+import de.ruu.app.pragma.core.PersistentTaskGroup;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ import static java.util.Optional.ofNullable;
 
 @Entity
 @Table(name = "task_group")
-public class TaskGroupJPA implements TaskGroupEntity<TaskJPA>
+public class TaskGroupJPA implements PersistentTaskGroup<TaskJPA>
 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_group_seq")

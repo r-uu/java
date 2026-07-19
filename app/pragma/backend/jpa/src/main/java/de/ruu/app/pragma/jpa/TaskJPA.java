@@ -1,21 +1,7 @@
 package de.ruu.app.pragma.jpa;
 
-import de.ruu.app.pragma.core.TaskEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import de.ruu.app.pragma.core.PersistentTask;
+import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
@@ -28,7 +14,7 @@ import static java.util.Optional.ofNullable;
 
 @Entity
 @Table(name = "task")
-public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
+public class TaskJPA implements PersistentTask<TaskGroupJPA, TaskJPA>
 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_seq")

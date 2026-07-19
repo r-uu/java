@@ -1,6 +1,6 @@
 package de.ruu.app.pragma.fx;
 
-import de.ruu.app.pragma.bean.TaskBean;
+import de.ruu.app.pragma.core.PersistentTask;
 import de.ruu.app.pragma.core.Task;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -9,11 +9,13 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class TaskFx implements Task<TaskGroupFx, TaskFx>
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
 {
     private final LongProperty                        id                  = new SimpleLongProperty();
     private @Nullable Short                           version;
@@ -48,13 +50,13 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
 
     public TaskFx(String name, TaskGroupFx taskGroup)
     {
-        this.name.set(Objects.requireNonNull(name, "name"));
-        Objects.requireNonNull(taskGroup, "taskGroup");
+        this.name.set(requireNonNull(name, "name"));
+        requireNonNull(taskGroup, "taskGroup");
         taskGroup.addTask(this);
     }
 
-    /** Mapping constructor — copies scalar fields from a TaskBean. */
-    public TaskFx(TaskGroupFx group, TaskBean in)
+    /** Mapping constructor — copies persisted metadata and scalar task fields from any PersistentTask. */
+    public TaskFx(TaskGroupFx group, PersistentTask<?, ?> in)
     {
         if (in.id() != null) this.id.set(in.id());
         this.version = in.version();
@@ -63,54 +65,55 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
         this.scheduledStart.set(in.scheduledStart().orElse(null));
         this.scheduledEnd.set(in.scheduledFinish().orElse(null));
         this.closed.set(in.closed());
-        Objects.requireNonNull(group, "group");
+        requireNonNull(group, "group");
         group.addTask(this);
     }
 
     /** Package-private — called exclusively by TaskGroupFx.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupFx group) { this.taskGroup.set(group); }
 
-    @Override public @Nullable Long      id                 () { return id.get() == 0 ? null : id.get();                }
-              public @Nullable Short     version            () { return version;                                        }
-    @Override public           String    name               () { return name.get();                                     }
-    @Override public TaskGroupFx         taskGroup          () { return taskGroup.get();                                }
-    @Override public Optional<String>    description        () { return Optional.ofNullable(description.get());         }
-    @Override public Optional<Double>    workEstimateInitial() { return Optional.ofNullable(workEstimateInitial.get()); }
-    @Override public Optional<Double>    workEstimateCurrent() { return Optional.ofNullable(workEstimateCurrent.get()); }
-    @Override public Optional<Double>    workActual         () { return Optional.ofNullable(workActual         .get()); }
-    @Override public Optional<LocalDate> scheduledStart     () { return Optional.ofNullable(scheduledStart     .get()); }
-    @Override public Optional<LocalDate> scheduledFinish    () { return Optional.ofNullable(scheduledEnd       .get()); }
-    @Override public Boolean             closed             () { return closed.get();                                   }
+    @Override public @Nullable Long  id      () { return id.get(); }
+    @Override public @Nullable Short version () { return version ; }
 
-    @Override public TaskFx name               (          String    n) { name               .set(Objects.requireNonNull(n, "name")); return this; }
-    @Override public TaskFx description        (@Nullable String    d) { description        .set(d)                                ; return this; }
-    @Override public TaskFx workEstimateInitial(@Nullable Double    i) { workEstimateInitial.set(i)                                ; return this; }
-    @Override public TaskFx workEstimateCurrent(@Nullable Double    c) { workEstimateCurrent.set(c)                                ; return this; }
-    @Override public TaskFx workActual         (@Nullable Double    a) { workActual         .set(a)                                ; return this; }
-    @Override public TaskFx scheduledStart     (@Nullable LocalDate s) { scheduledStart     .set(s)                                ; return this; }
-    @Override public TaskFx scheduledFinish    (@Nullable LocalDate e) { scheduledEnd       .set(e)                                ; return this; }
-    @Override public TaskFx closed             (          Boolean   c) { closed             .set(c)                                ; return this; }
+    @Override public          String      name               () { return            name               .get() ; }
+    @Override public          TaskGroupFx taskGroup          () { return            taskGroup          .get() ; }
+    @Override public Optional<String>     description        () { return ofNullable(description        .get()); }
+    @Override public Optional<Double>     workEstimateInitial() { return ofNullable(workEstimateInitial.get()); }
+    @Override public Optional<Double>     workEstimateCurrent() { return ofNullable(workEstimateCurrent.get()); }
+    @Override public Optional<Double>     workActual         () { return ofNullable(workActual         .get()); }
+    @Override public Optional<LocalDate>  scheduledStart     () { return ofNullable(scheduledStart     .get()); }
+    @Override public Optional<LocalDate>  scheduledFinish    () { return ofNullable(scheduledEnd       .get()); }
+    @Override public          Boolean     closed             () { return            closed             .get() ; }
+
+    @Override public TaskFx name               (          String    n) { name               .set(requireNonNull(n, "name")); return this; }
+    @Override public TaskFx description        (@Nullable String    d) { description        .set(d)                        ; return this; }
+    @Override public TaskFx workEstimateInitial(@Nullable Double    i) { workEstimateInitial.set(i)                        ; return this; }
+    @Override public TaskFx workEstimateCurrent(@Nullable Double    c) { workEstimateCurrent.set(c)                        ; return this; }
+    @Override public TaskFx workActual         (@Nullable Double    a) { workActual         .set(a)                        ; return this; }
+    @Override public TaskFx scheduledStart     (@Nullable LocalDate s) { scheduledStart     .set(s)                        ; return this; }
+    @Override public TaskFx scheduledFinish    (@Nullable LocalDate e) { scheduledEnd       .set(e)                        ; return this; }
+    @Override public TaskFx closed             (          Boolean   c) { closed             .set(c)                        ; return this; }
 
     @Override public TaskFx taskGroup(TaskGroupFx group)
     {
-        if (Objects.requireNonNull(group, "group") != this.taskGroup.get()) group.addTask(this);
+        if (requireNonNull(group, "group") != this.taskGroup.get()) group.addTask(this);
         return this;
     }
 
     @Override
-    public Optional<TaskFx> parentTask() { return Optional.ofNullable(parentTask.get()); }
+    public Optional<TaskFx> parentTask() { return ofNullable(parentTask.get()); }
 
     @Override
     public TaskFx parentTask(@Nullable TaskFx parent) { this.parentTask.set(parent); return this; }
 
-    @Override public Optional<Set<TaskFx>> subTasks()     { return Optional.ofNullable(subTasks);     }
-    @Override public Optional<Set<TaskFx>> predecessors() { return Optional.ofNullable(predecessors); }
-    @Override public Optional<Set<TaskFx>> successors()   { return Optional.ofNullable(successors);   }
+    @Override public Optional<Set<TaskFx>> subTasks()     { return ofNullable(subTasks);     }
+    @Override public Optional<Set<TaskFx>> predecessors() { return ofNullable(predecessors); }
+    @Override public Optional<Set<TaskFx>> successors()   { return ofNullable(successors);   }
 
     @Override
     public void addSubTask(TaskFx child)
     {
-        Objects.requireNonNull(child, "child");
+        requireNonNull(child, "child");
         if (subTasks == null) subTasks = FXCollections.observableSet(new LinkedHashSet<>());
         if (subTasks.add(child)) child.parentTask(this);
     }
@@ -118,7 +121,7 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     @Override
     public void removeSubTask(TaskFx child)
     {
-        Objects.requireNonNull(child, "child");
+        requireNonNull(child, "child");
         if (subTasks != null && subTasks.remove(child))
             child.parentTask().filter(p -> p == this).ifPresent(p -> child.parentTask(null));
     }
@@ -126,7 +129,7 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     @Override
     public void addPredecessor(TaskFx predecessor)
     {
-        Objects.requireNonNull(predecessor, "predecessor");
+        requireNonNull(predecessor, "predecessor");
         if (predecessors == null) predecessors = FXCollections.observableSet(new LinkedHashSet<>());
         if (predecessors.add(predecessor)) predecessor.addSuccessor(this);
     }
@@ -134,7 +137,7 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     @Override
     public void removePredecessor(TaskFx predecessor)
     {
-        Objects.requireNonNull(predecessor, "predecessor");
+        requireNonNull(predecessor, "predecessor");
         if (predecessors != null && predecessors.remove(predecessor))
             predecessor.removeSuccessor(this);
     }
@@ -142,7 +145,7 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     @Override
     public void addSuccessor(TaskFx successor)
     {
-        Objects.requireNonNull(successor, "successor");
+        requireNonNull(successor, "successor");
         if (successors == null) successors = FXCollections.observableSet(new LinkedHashSet<>());
         if (successors.add(successor)) successor.addPredecessor(this);
     }
@@ -150,7 +153,7 @@ public class TaskFx implements Task<TaskGroupFx, TaskFx>
     @Override
     public void removeSuccessor(TaskFx successor)
     {
-        Objects.requireNonNull(successor, "successor");
+        requireNonNull(successor, "successor");
         if (successors != null && successors.remove(successor))
             successor.removePredecessor(this);
     }

@@ -1,7 +1,8 @@
 package de.ruu.app.pragma.bean;
 
+import de.ruu.app.pragma.core.PersistentTask;
 import de.ruu.app.pragma.core.Task;
-import de.ruu.app.pragma.dto.TaskDto;
+import jakarta.validation.constraints.NotBlank;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
@@ -12,11 +13,11 @@ import java.util.Set;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
-public class TaskBean implements Task<TaskGroupBean, TaskBean>
+public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
 {
     private @Nullable Long          id;
     private @Nullable Short         version;
-    private           String        name;
+    private @NotBlank String        name;
     private @Nullable TaskBean      parentTask;
     private           TaskGroupBean taskGroup;
     private @Nullable Set<TaskBean> subTasks;     // null = not yet loaded
@@ -37,8 +38,8 @@ public class TaskBean implements Task<TaskGroupBean, TaskBean>
         taskGroup.addTask(this);
     }
 
-    /** Mapping constructor — copies scalar fields from a TaskDto. */
-    public TaskBean(TaskGroupBean group, TaskDto in)
+    /** Mapping constructor — copies persisted metadata and scalar task fields from any PersistentTask. */
+    public TaskBean(TaskGroupBean group, PersistentTask<?, ?> in)
     {
         this.id                  = in.id();
         this.version             = in.version();
@@ -58,29 +59,30 @@ public class TaskBean implements Task<TaskGroupBean, TaskBean>
     void taskGroupInternal(TaskGroupBean group) { this.taskGroup = group; }
 
     @Override public @Nullable Long                    id                 () { return id;                              }
-    public    @Nullable Short                          version            () { return version;                         }
-    @Override public           String                  name               () { return name;                            }
-    @Override public           Optional<TaskBean>      parentTask         () { return ofNullable(parentTask         ); }
-    @Override public           Optional<Set<TaskBean>> subTasks           () { return ofNullable(subTasks           ); }
-    @Override public           Optional<Set<TaskBean>> predecessors       () { return ofNullable(predecessors       ); }
-    @Override public           Optional<Set<TaskBean>> successors         () { return ofNullable(successors         ); }
-    @Override public           Optional<String>        description        () { return ofNullable(description        ); }
-    @Override public           Optional<LocalDate>     scheduledStart     () { return ofNullable(scheduledStart     ); }
-    @Override public           Optional<LocalDate>     scheduledFinish    () { return ofNullable(scheduledFinish    ); }
-    @Override public           Optional<Double>        workEstimateInitial() { return ofNullable(workEstimateInitial); }
-    @Override public           Optional<Double>        workEstimateCurrent() { return ofNullable(workEstimateCurrent); }
-    @Override public           Optional<Double>        workActual         () { return ofNullable(workActual         ); }
-    @Override public           Boolean                 closed             () { return closed;                      }
+    @Override public @Nullable Short                   version            () { return version;                         }
 
-    @Override public TaskBean name               (          String    name               ) { this.name                = requireNonNull(name, "name"); return this; }
-    @Override public TaskBean description        (@Nullable String    description        ) { this.description         = description;                  return this; }
-    @Override public TaskBean workEstimateInitial(@Nullable Double    workEstimateInitial) { this.workEstimateInitial = workEstimateInitial;          return this; }
-    @Override public TaskBean workEstimateCurrent(@Nullable Double    workEstimateCurrent) { this.workEstimateCurrent = workEstimateCurrent;          return this; }
-    @Override public TaskBean workActual         (@Nullable Double    workActual         ) { this.workActual          = workActual;                   return this; }
-    @Override public TaskBean scheduledStart     (@Nullable LocalDate scheduledStart     ) { this.scheduledStart      = scheduledStart;               return this; }
-    @Override public TaskBean scheduledFinish    (@Nullable LocalDate scheduledFinish    ) { this.scheduledFinish     = scheduledFinish;              return this; }
-    @Override public TaskBean closed             (          Boolean   closed             ) { this.closed              = closed;                       return this; }
-    @Override public TaskBean parentTask         (@Nullable TaskBean  parent             ) { this.parentTask          = parent;                       return this; }
+    @Override public          String         name               () { return name                           ; }
+    @Override public Optional<TaskBean>      parentTask         () { return ofNullable(parentTask         ); }
+    @Override public Optional<Set<TaskBean>> subTasks           () { return ofNullable(subTasks           ); }
+    @Override public Optional<Set<TaskBean>> predecessors       () { return ofNullable(predecessors       ); }
+    @Override public Optional<Set<TaskBean>> successors         () { return ofNullable(successors         ); }
+    @Override public Optional<String>        description        () { return ofNullable(description        ); }
+    @Override public Optional<LocalDate>     scheduledStart     () { return ofNullable(scheduledStart     ); }
+    @Override public Optional<LocalDate>     scheduledFinish    () { return ofNullable(scheduledFinish    ); }
+    @Override public Optional<Double>        workEstimateInitial() { return ofNullable(workEstimateInitial); }
+    @Override public Optional<Double>        workEstimateCurrent() { return ofNullable(workEstimateCurrent); }
+    @Override public Optional<Double>        workActual         () { return ofNullable(workActual         ); }
+    @Override public          Boolean        closed             () { return closed                         ; }
+
+    @Override public TaskBean name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
+    @Override public TaskBean parentTask         (@Nullable TaskBean  p) { parentTask          =                p         ; return this; }
+    @Override public TaskBean description        (@Nullable String    d) { description         =                d         ; return this; }
+    @Override public TaskBean workEstimateInitial(@Nullable Double    e) { workEstimateInitial =                e         ; return this; }
+    @Override public TaskBean workEstimateCurrent(@Nullable Double    e) { workEstimateCurrent =                e         ; return this; }
+    @Override public TaskBean workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
+    @Override public TaskBean scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
+    @Override public TaskBean scheduledFinish    (@Nullable LocalDate f) { scheduledFinish     =                f         ; return this; }
+    @Override public TaskBean closed             (          Boolean   c) { closed              =                c         ; return this; }
 
     @Override
     public TaskGroupBean taskGroup() { return taskGroup; }

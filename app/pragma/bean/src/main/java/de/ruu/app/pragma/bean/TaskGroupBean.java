@@ -1,7 +1,7 @@
 package de.ruu.app.pragma.bean;
 
+import de.ruu.app.pragma.core.PersistentTaskGroup;
 import de.ruu.app.pragma.core.TaskGroup;
-import de.ruu.app.pragma.dto.TaskGroupDto;
 import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashSet;
@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class TaskGroupBean implements TaskGroup<TaskBean>
+public class TaskGroupBean implements PersistentTaskGroup<TaskBean>
 {
     private @Nullable Long          id;
     private @Nullable Short         version;
@@ -18,8 +18,8 @@ public class TaskGroupBean implements TaskGroup<TaskBean>
 
     public TaskGroupBean(String name) { this.name = Objects.requireNonNull(name, "name"); }
 
-    /** Mapping constructor — copies id, version and name from a TaskGroupDto. */
-    public TaskGroupBean(TaskGroupDto in)
+    /** Mapping constructor — copies persisted metadata and scalar group fields from any PersistentTaskGroup. */
+    public TaskGroupBean(PersistentTaskGroup<?> in)
     {
         this.id      = in.id();
         this.version = in.version();
@@ -27,7 +27,7 @@ public class TaskGroupBean implements TaskGroup<TaskBean>
     }
 
     @Override public @Nullable Long                    id()              { return id;                         }
-    public    @Nullable Short                          version()         { return version;                    }
+    @Override public @Nullable Short                   version()         { return version;                    }
     @Override public           String                  name()            { return name;                       }
     @Override public           TaskGroupBean           name(String name) { this.name = Objects.requireNonNull(name, "name"); return this; }
     @Override public           Optional<Set<TaskBean>> tasks()           { return Optional.ofNullable(tasks); }

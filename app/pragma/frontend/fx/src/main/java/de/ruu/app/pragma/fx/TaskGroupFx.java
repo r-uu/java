@@ -1,6 +1,6 @@
 package de.ruu.app.pragma.fx;
 
-import de.ruu.app.pragma.bean.TaskGroupBean;
+import de.ruu.app.pragma.core.PersistentTaskGroup;
 import de.ruu.app.pragma.core.TaskGroup;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class TaskGroupFx implements TaskGroup<TaskFx>
+public class TaskGroupFx implements PersistentTaskGroup<TaskFx>
 {
     private final LongProperty              id      = new SimpleLongProperty();
     private @Nullable Short                 version;
@@ -28,8 +28,8 @@ public class TaskGroupFx implements TaskGroup<TaskFx>
 
     public TaskGroupFx(String name) { this.name.set(Objects.requireNonNull(name, "name")); }
 
-    /** Mapping constructor — copies id, version and name from a TaskGroupBean. */
-    public TaskGroupFx(TaskGroupBean in)
+    /** Mapping constructor — copies persisted metadata and scalar group fields from any PersistentTaskGroup. */
+    public TaskGroupFx(PersistentTaskGroup<?> in)
     {
         if (in.id() != null) this.id.set(in.id());
         this.version = in.version();
@@ -37,7 +37,7 @@ public class TaskGroupFx implements TaskGroup<TaskFx>
     }
 
     @Override public @Nullable Long         id()              { return id.get() == 0 ? null : id.get(); }
-    public    @Nullable Short               version()         { return version;                          }
+    @Override public @Nullable Short        version()         { return version;                          }
     @Override public           String       name()            { return name.get();                       }
     @Override public           TaskGroupFx  name(String name) { this.name.set(Objects.requireNonNull(name, "name")); return this; }
     @Override public           Optional<Set<TaskFx>> tasks()  { return Optional.ofNullable(tasks); }

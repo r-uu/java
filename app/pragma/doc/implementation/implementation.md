@@ -109,13 +109,13 @@ public interface TaskGroup<T extends Task<?, ?>> extends RawTaskGroup, HasMutabl
     void removeTask(T task);
 }
 
-// Persistence-Schicht: ergänzt version() für JPA @Version
-public interface TaskEntity
-        <G extends TaskGroupEntity<? extends TaskEntity<G, ?>>, T extends TaskEntity<G, T>>
-        extends Task<G, T>      { Long version(); }
+// Read-only Persistenz-Metadaten-Vertrag über alle Schichten
+public interface PersistentTask
+        <G extends PersistentTaskGroup<? extends PersistentTask<G, ?>>, T extends PersistentTask<G, T>>
+        extends Task<G, T>, Entity<Long> {}
 
-public interface TaskGroupEntity<T extends TaskEntity<?, ?>>
-        extends TaskGroup<T>    { Long version(); }
+public interface PersistentTaskGroup<T extends PersistentTask<?, ?>>
+        extends TaskGroup<T>, Entity<Long> {}
 ```
 
 ### Implementierungen
@@ -128,6 +128,11 @@ public interface TaskGroupEntity<T extends TaskEntity<?, ?>>
 | JavaFX    | `TaskFx`        | `TaskGroupFx`        | `frontend/fx` (geplant) |
 
 ### Trade-offs
+
+`PersistentTask` / `PersistentTaskGroup` benennen bewusst keinen JPA-spezifischen Objekttyp,
+sondern einen schichtübergreifenden, read-only Vertrag für DB-verwaltete Metadaten `id()` und
+`version()`. Schreibzugriffe darauf erfolgen nicht per Setter, sondern ausschließlich über die
+Persistenzschicht; andere Schichten transportieren diese Werte nur mit.
 
 **Vorteil:** Generische Utilities (z. B. Baumtraversierung) funktionieren schichtenübergreifend:
 ```java

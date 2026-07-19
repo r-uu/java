@@ -1,5 +1,7 @@
 package de.ruu.app.pragma.bean;
 
+import de.ruu.app.pragma.core.PersistentTask;
+import de.ruu.app.pragma.core.PersistentTaskGroup;
 import de.ruu.app.pragma.dto.TaskDto;
 import de.ruu.app.pragma.dto.TaskGroupDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +43,7 @@ class MappingsTest
 
     @Test void groupBean_toDto_idAndVersionPropagated()
     {
-        TaskGroupDto in  = new TaskGroupDto("G").id(7L).version((short) 3);
+        TaskGroupDto in  = persistedGroupDto(7L, (short) 3, "G");
         TaskGroupBean bean = new TaskGroupBean(in);
         TaskGroupDto  out  = Mappings.toDto(bean);
 
@@ -50,17 +54,15 @@ class MappingsTest
 
     @Test void groupBean_toDto_doesNotIncludeUnloadedTasks()
     {
-        // tasks() on groupBean is present (constructor triggered addTask),
-        // so the DTO's tasks Optional is also present
         TaskGroupDto dto = Mappings.toDto(groupBean);
-        assertThat(dto.tasks()).isPresent();
+        assertThat(dto.tasks()).isEmpty();
     }
 
     // ── TaskGroupDto → TaskGroupBean ───────────────────────────────────────
 
     @Test void groupDto_toBean_scalarFields()
     {
-        TaskGroupDto  dto  = new TaskGroupDto("Sprint 2").id(42L).version((short) 1);
+        TaskGroupDto  dto  = persistedGroupDto(42L, (short) 1, "Sprint 2");
         TaskGroupBean bean = Mappings.toBean(dto);
 
         assertThat(bean.name())   .isEqualTo("Sprint 2");
@@ -88,9 +90,9 @@ class MappingsTest
     @Test void taskBean_toDto_idAndVersionPropagated()
     {
         // simulate a bean loaded from DB (via DTO → Bean → roundtrip)
-        TaskGroupDto  gDto   = new TaskGroupDto("G").id(1L).version((short) 0);
+        TaskGroupDto  gDto   = persistedGroupDto(1L, (short) 0, "G");
         TaskGroupBean gBean  = new TaskGroupBean(gDto);
-        TaskDto       tDto   = new TaskDto("T", gDto).id(5L).version((short) 2);
+        TaskDto       tDto   = persistedTaskDto(5L, (short) 2, "T", gDto);
         TaskBean      tBean  = new TaskBean(gBean, tDto);
 
         TaskDto out = Mappings.toDto(tBean);
@@ -123,12 +125,7 @@ class MappingsTest
     {
         taskB.addPredecessor(taskA);
 
-        // map just taskB — group context provides taskA via ctx
-        TaskGroupDto groupDto = Mappings.toDto(groupBean);
-        // find dtoB in group's tasks
-        TaskDto dtoB = groupDto.tasks().get().stream()
-            .filter(t -> "Task B".equals(t.name()))
-            .findFirst().orElseThrow();
+        TaskDto dtoB = Mappings.toDto(taskB);
 
         assertThat(dtoB.predecessors()).hasValueSatisfying(preds ->
             assertThat(preds).anyMatch(p -> "Task A".equals(p.name())));
@@ -138,10 +135,7 @@ class MappingsTest
     {
         taskA.addSuccessor(taskB);
 
-        TaskGroupDto groupDto = Mappings.toDto(groupBean);
-        TaskDto dtoA = groupDto.tasks().get().stream()
-            .filter(t -> "Task A".equals(t.name()))
-            .findFirst().orElseThrow();
+        TaskDto dtoA = Mappings.toDto(taskA);
 
         assertThat(dtoA.successors()).hasValueSatisfying(succs ->
             assertThat(succs).anyMatch(s -> "Task B".equals(s.name())));
@@ -153,8 +147,7 @@ class MappingsTest
     {
         LocalDate start = LocalDate.of(2026, 2, 1);
         TaskGroupDto gDto = new TaskGroupDto("G");
-        TaskDto      tDto = new TaskDto("T", gDto)
-            .id(3L).version((short) 1)
+        TaskDto      tDto = persistedTaskDto(3L, (short) 1, "T", gDto)
             .description("hello")
             .scheduledStart(start)
             .closed(true);
@@ -205,5 +198,57 @@ class MappingsTest
             assertThat(ts).anyMatch(t -> "Child".equals(t.name())));
         TaskBean childBean = parentBean.subTasks().get().iterator().next();
         assertThat(childBean.parentTask()).hasValue(parentBean);
+    }
+
+    private TaskGroupDto persistedGroupDto(long id, short version, String name)
+    {
+        return new TaskGroupDto(new TestPersistentTaskGroup(id, version, name));
+    }
+
+    private TaskDto persistedTaskDto(long id, short version, String name, TaskGroupDto group)
+    {
+        return new TaskDto(group, new TestPersistentTask(id, version, name, group));
+    }
+
+    private record TestPersistentTaskGroup(Long id, Short version, String name)
+            implements PersistentTaskGroup<TestPersistentTask>
+    {
+        @Override public Optional<Set<TestPersistentTask>> tasks() { return Optional.empty(); }
+        @Override public void addTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void removeTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public PersistentTaskGroup<TestPersistentTask> name(String name) { throw new UnsupportedOperationException(); }
+    }
+
+    private record TestPersistentTask(Long id, Short version, String name, TaskGroupDto taskGroup)
+            implements PersistentTask<TaskGroupDto, TestPersistentTask>
+    {
+        @Override public Optional<TestPersistentTask> parentTask() { return Optional.empty(); }
+        @Override public Optional<Set<TestPersistentTask>> subTasks() { return Optional.empty(); }
+        @Override public Optional<Set<TestPersistentTask>> predecessors() { return Optional.empty(); }
+        @Override public Optional<Set<TestPersistentTask>> successors() { return Optional.empty(); }
+        @Override public Optional<String> description() { return Optional.empty(); }
+        @Override public Optional<Double> workEstimateInitial() { return Optional.empty(); }
+        @Override public Optional<Double> workEstimateCurrent() { return Optional.empty(); }
+        @Override public Optional<Double> workActual() { return Optional.empty(); }
+        @Override public Optional<LocalDate> scheduledStart() { return Optional.empty(); }
+        @Override public Optional<LocalDate> scheduledFinish() { return Optional.empty(); }
+        @Override public Boolean closed() { return false; }
+        @Override public TestPersistentTask name(String name) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask parentTask(TestPersistentTask parentTask) { throw new UnsupportedOperationException(); }
+        @Override public void addSubTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void removeSubTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void addPredecessor(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void removePredecessor(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void addSuccessor(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public void removeSuccessor(TestPersistentTask task) { throw new UnsupportedOperationException(); }
+        @Override public TaskGroupDto taskGroup() { return taskGroup; }
+        @Override public TestPersistentTask taskGroup(TaskGroupDto taskGroup) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask description(String description) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask workEstimateInitial(Double workEstimateInitial) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask workEstimateCurrent(Double workEstimateCurrent) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask workActual(Double workActual) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask scheduledStart(LocalDate scheduledStart) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask scheduledFinish(LocalDate scheduledFinish) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask closed(Boolean closed) { throw new UnsupportedOperationException(); }
     }
 }
