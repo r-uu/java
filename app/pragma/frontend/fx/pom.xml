@@ -106,15 +106,9 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-    </dependency>
-    <!-- Routes Log4j API calls to SLF4J → eliminates "could not find a logging provider" warning -->
-    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-to-slf4j</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.jspecify</groupId>
       <artifactId>jspecify</artifactId>

@@ -15,3 +15,6 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+/gen/java/fx/bean/src/gen/
+/gen/java/fx/tableview/src/gen/
+/gen/java/core/src/gen/
