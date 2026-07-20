@@ -4,10 +4,13 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.task.edit.TaskEditor;
+import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButtonBuilder;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -64,6 +67,8 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     @Inject private TaskGroupClient taskGroupClient;
     @Inject private TaskClient      taskClient;
+    @Inject private Instance<TaskEditor> taskEditors;
+    @Inject private TaskGroupEditor taskGroupEditor;
 
     private de.ruu.app.pragma.fx.TaskGroupManagementDialog groupManagementDialog;
 
@@ -107,11 +112,14 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
         // build panels
         predPanel   = new TaskHierarchyPanel("predecessor tasks",  true,
-                "Vorgänger hinzufügen", "Vorgänger bearbeiten", "Vorgänger-Verknüpfung entfernen");
+                "Vorgänger hinzufügen", "Vorgänger bearbeiten", "Vorgänger-Verknüpfung entfernen",
+                taskEditors.get());
         centerPanel = new TaskHierarchyPanel("super/sub tasks",    false,
-                "Aufgabe hinzufügen",   "Aufgabe umbenennen",   "Aufgabe löschen");
+                "Aufgabe hinzufügen",   "Aufgabe umbenennen",   "Aufgabe löschen",
+                taskEditors.get());
         succPanel   = new TaskHierarchyPanel("successor tasks",    false,
-                "Nachfolger hinzufügen","Nachfolger bearbeiten","Nachfolger-Verknüpfung entfernen");
+                "Nachfolger hinzufügen","Nachfolger bearbeiten","Nachfolger-Verknüpfung entfernen",
+                taskEditors.get());
 
         embedPanel(panePred,   predPanel);
         embedPanel(paneCenter, centerPanel);
@@ -138,9 +146,9 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
                  .addListener((obs, old, sel) -> succPanel.fillDetail(sel));
 
         // save buttons
-        predPanel  .btnSave.setOnAction(e -> saveDates(predPanel));
-        centerPanel.btnSave.setOnAction(e -> saveDates(centerPanel));
-        succPanel  .btnSave.setOnAction(e -> saveDates(succPanel));
+        predPanel  .btnSave.setOnAction(e -> saveTask(predPanel));
+        centerPanel.btnSave.setOnAction(e -> saveTask(centerPanel));
+        succPanel  .btnSave.setOnAction(e -> saveTask(succPanel));
 
         // center CRUD
         centerPanel.btnAdd .setOnAction(e -> onAddTask());
@@ -257,13 +265,38 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         TaskGroupBean group = cbGroups.valueProperty().get();
         if (group == null || group.id() == null) return;
 
+        TaskBean selectedTask = centerPanel.selectedTask();
+
+        boolean createAsSub = false;
+        if (selectedTask != null && selectedTask.id() != null)
+        {
+            ButtonType btnRoot = new ButtonType("Root-Aufgabe");
+            ButtonType btnSub  = new ButtonType("Unteraufgabe von \"" + selectedTask.name() + "\"");
+            Alert choice = new Alert(Alert.AlertType.CONFIRMATION);
+            choice.setTitle("Aufgabe hinzufügen");
+            choice.setHeaderText("Wo soll die neue Aufgabe angelegt werden?");
+            choice.getButtonTypes().setAll(btnRoot, btnSub, ButtonType.CANCEL);
+            Optional<ButtonType> result = choice.showAndWait();
+            if (result.isEmpty() || result.get() == ButtonType.CANCEL) return;
+            createAsSub = result.get() == btnSub;
+        }
+
+        final TaskBean parent = createAsSub ? selectedTask : null;
         TextInputDialog dlg = new TextInputDialog();
         dlg.setTitle("Aufgabe hinzufügen");
-        dlg.setHeaderText("Neue Aufgabe in Gruppe \"" + group.name() + "\"");
+        dlg.setHeaderText(parent != null
+                ? "Neue Unteraufgabe von \"" + parent.name() + "\""
+                : "Neue Root-Aufgabe in Gruppe \"" + group.name() + "\"");
         dlg.setContentText("Name:");
         dlg.showAndWait().map(String::trim).filter(s -> !s.isEmpty()).ifPresent(name ->
         {
-            try { taskClient.create(new TaskBean(group, name)); reloadCurrentGroup(); }
+            try
+            {
+                TaskBean newTask = new TaskBean(group, name);
+                if (parent != null) newTask.parentTask(parent);
+                taskClient.create(newTask);
+                reloadCurrentGroup();
+            }
             catch (Exception e) { log.error("failed to create task", e); showError("Aufgabe anlegen", e); }
         });
     }
@@ -376,19 +409,15 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     // ── save ──────────────────────────────────────────────────────────────────
 
-    private void saveDates(TaskHierarchyPanel panel)
+    private void saveTask(TaskHierarchyPanel panel)
     {
         TreeItem<TaskBean> sel = panel.selectedItem();
         if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
 
         TaskBean task = sel.getValue();
-        task.scheduledStart(panel.dpStart.getValue());
-        task.scheduledFinish(panel.dpEnd  .getValue());
-        task.description (panel.taDesc.getText().isBlank() ? null : panel.taDesc.getText());
-        task.closed      (panel.cbClosed.isSelected());
-
         try
         {
+            panel.applyEditableFields(task);
             TaskBean updated = taskClient.update(task);
             panel.fillDetail(sel); // resets dirty
             sel.setValue(updated);
@@ -402,7 +431,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
     private void onManageGroups()
     {
         if (groupManagementDialog == null)
-            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, this::loadGroups);
+            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, taskGroupEditor, this::loadGroups);
         groupManagementDialog.showAndWait();
     }
 
@@ -465,9 +494,9 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void clearDirty()
     {
-        predPanel  .dirtyProperty().set(false);
-        centerPanel.dirtyProperty().set(false);
-        succPanel  .dirtyProperty().set(false);
+        predPanel.clearDirty();
+        centerPanel.clearDirty();
+        succPanel.clearDirty();
     }
 
     private boolean dirty()

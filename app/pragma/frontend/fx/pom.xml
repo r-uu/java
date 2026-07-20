@@ -109,6 +109,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
     </dependency>
+    <!-- Routes Log4j API calls to SLF4J → eliminates "could not find a logging provider" warning -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jspecify</groupId>
@@ -337,6 +342,12 @@
                 <goals><goal>run</goal></goals>
                 <configuration>
                   <target>
+                    <mkdir dir="${project.build.directory}/win-exe/config"/>
+                    <echo file="${project.build.directory}/win-exe/config/application.properties" append="false"># pragma application configuration
+# Overwrite default values here, e.g.:
+#pragma.rest-api.host=localhost
+#pragma.rest-api.port=9090
+</echo>
                     <echo file="${project.build.directory}/win-exe/pragma.bat"><![CDATA[@echo off
 setlocal enabledelayedexpansion
 
