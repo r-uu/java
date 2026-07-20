@@ -7,7 +7,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -307,14 +306,12 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 
 	protected void showPopup()
 	{
-		Bounds bounds = textField.localToScreen(textField.getBoundsInLocal());
-		if (bounds == null) return; // control not yet attached to a window
 		// Preselect first item
 		Platform.runLater(() -> {
 			listView.getSelectionModel().selectFirst();
 			listView.scrollTo(0);
 			listView.requestFocus();
 		});
-		popup.show(textField, bounds.getMinX(), bounds.getMaxY());
+		popup.show(textField, 0, textField.getHeight());
 	}
 }

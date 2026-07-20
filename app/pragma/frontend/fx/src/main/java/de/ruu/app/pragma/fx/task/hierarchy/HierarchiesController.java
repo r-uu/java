@@ -91,7 +91,6 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
                 .textProvider(TaskGroupBean::name)
                 .prompt("group …")
                 .build();
-        cbGroups.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(cbGroups, Priority.ALWAYS);
         cbGroupsContainer.getChildren().add(cbGroups);
         cbGroups.valueProperty()
