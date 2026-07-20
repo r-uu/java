@@ -19,3 +19,7 @@ Thumbs.db
 
 # Liberty global library — populated at build time by maven-dependency-plugin
 app/pragma/backend/rest/src/main/liberty/config/lib/global/
+
+/lib/gen/java/core/src/gen/
+/lib/gen/java/fx/bean/src/gen/
+/lib/gen/java/fx/tableview/src/gen/
