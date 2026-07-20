@@ -158,4 +158,3 @@ Die projektweit einheitliche Einheit für work wird auf 1h festgelegt. Für jede
 | work remaining        | verbleibender Aufwand                             |
 |                       | errechnet aus work estimate current - work actual |
 | work progress         | errechneter prozentueller Fortschritt             |
-
