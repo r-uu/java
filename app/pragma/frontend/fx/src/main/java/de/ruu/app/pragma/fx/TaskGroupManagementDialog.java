@@ -2,14 +2,16 @@ package de.ruu.app.pragma.fx;
 
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -32,13 +34,15 @@ public class TaskGroupManagementDialog
 
     private final TaskGroupClient client;
     private final Runnable        onGroupsChanged;
+    private final TaskGroupEditor taskGroupEditor;
 
     private Stage                   stage;
     private ListView<TaskGroupBean> listView;
 
-    public TaskGroupManagementDialog(TaskGroupClient client, Runnable onGroupsChanged)
+    public TaskGroupManagementDialog(TaskGroupClient client, TaskGroupEditor taskGroupEditor, Runnable onGroupsChanged)
     {
         this.client          = client;
+        this.taskGroupEditor = taskGroupEditor;
         this.onGroupsChanged = onGroupsChanged;
     }
 
@@ -103,16 +107,19 @@ public class TaskGroupManagementDialog
 
     private void onAdd()
     {
-        TextInputDialog dlg = new TextInputDialog();
-        dlg.setTitle("Gruppe hinzufügen");
-        dlg.setHeaderText(null);
-        dlg.setContentText("Name:");
-        dlg.showAndWait()
-           .map(String::trim).filter(s -> !s.isEmpty())
-           .ifPresent(name -> {
-               try { client.create(new TaskGroupBean(name)); reload(); }
-               catch (Exception e) { log.error("failed to create group", e); showError("Gruppe anlegen", e); }
-           });
+        TaskGroupBean draft = new TaskGroupBean("new task group");
+        editGroup("Gruppe hinzufügen", draft).ifPresent(group -> {
+            try
+            {
+                client.create(group);
+                reload();
+            }
+            catch (Exception e)
+            {
+                log.error("failed to create group", e);
+                showError("Gruppe anlegen", e);
+            }
+        });
     }
 
     private void onRename()
@@ -120,16 +127,21 @@ public class TaskGroupManagementDialog
         TaskGroupBean sel = listView.getSelectionModel().getSelectedItem();
         if (sel == null || sel.id() == null) return;
 
-        TextInputDialog dlg = new TextInputDialog(sel.name());
-        dlg.setTitle("Gruppe umbenennen");
-        dlg.setHeaderText(null);
-        dlg.setContentText("Name:");
-        dlg.showAndWait()
-           .map(String::trim).filter(s -> !s.isEmpty() && !s.equals(sel.name()))
-           .ifPresent(name -> {
-               try { sel.name(name); client.update(sel); reload(); }
-               catch (Exception e) { log.error("failed to rename group", e); showError("Gruppe umbenennen", e); }
-           });
+        TaskGroupBean draft = new TaskGroupBean(sel);
+        editGroup("Gruppe umbenennen", draft)
+            .filter(group -> !group.name().equals(sel.name()))
+            .ifPresent(group -> {
+                try
+                {
+                    client.update(group);
+                    reload();
+                }
+                catch (Exception e)
+                {
+                    log.error("failed to rename group", e);
+                    showError("Gruppe umbenennen", e);
+                }
+            });
     }
 
     private void onDelete()
@@ -164,5 +176,29 @@ public class TaskGroupManagementDialog
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+    private java.util.Optional<TaskGroupBean> editGroup(String title, TaskGroupBean draft)
+    {
+        taskGroupEditor.localRoot();
+        taskGroupEditor.service().taskGroup(draft);
+
+        Dialog<TaskGroupBean> dialog = new Dialog<>();
+        DialogPane pane = dialog.getDialogPane();
+        pane.setContent(taskGroupEditor.localRoot());
+        pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        pane.setPrefWidth(420);
+
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+        dialog.setResultConverter(btn -> {
+            if (btn == ButtonType.OK)
+            {
+                taskGroupEditor.service().applyTo(draft);
+                return draft;
+            }
+            return null;
+        });
+        return dialog.showAndWait();
     }
 }

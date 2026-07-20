@@ -47,7 +47,7 @@
       name="pragma"
       type="war"
       contextRoot="/pragma"
-      location="r-uu.app.java.pragma.rest-0.0.1.war" />
+      location="r-uu.app.pragma.backend.rest-0.0.1.war" />
 
   <jvmOptions>
     <option value="-Xms256m" />

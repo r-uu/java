@@ -62,6 +62,9 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
         this.version = in.version();
         this.name.set(in.name());
         this.description.set(in.description().orElse(null));
+        this.workEstimateInitial.set(in.workEstimateInitial().orElse(0.0));
+        this.workEstimateCurrent.set(in.workEstimateCurrent().orElse(0.0));
+        this.workActual.set(in.workActual().orElse(0.0));
         this.scheduledStart.set(in.scheduledStart().orElse(null));
         this.scheduledEnd.set(in.scheduledFinish().orElse(null));
         this.closed.set(in.closed());

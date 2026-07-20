@@ -4,6 +4,7 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.FXUtil;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
@@ -65,6 +66,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     @Inject private TaskGroupClient taskGroupClient;
     @Inject private TaskClient      taskClient;
+    @Inject private TaskGroupEditor taskGroupEditor;
 
     // ── state ────────────────────────────────────────────────────────────────
 
@@ -147,7 +149,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     private void onManageGroups()
     {
         if (groupManagementDialog == null)
-            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, this::loadGroups);
+            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, taskGroupEditor, this::loadGroups);
         groupManagementDialog.showAndWait();
     }
 

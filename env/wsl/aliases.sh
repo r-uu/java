@@ -1,9 +1,9 @@
 #!/bin/bash
 # Project-specific WSL aliases for r-uu-java.
 # Loaded by wsl-env bootstrap when ~/.wsl-project points to this repo.
-#   ruu-project-set /home/r-uu/develop/github/r-uu-java
+#   ruu-project-set /home/r-uu/develop/github/java
 
-export RUU_JAVA="/home/r-uu/develop/github/r-uu-java"
+export RUU_JAVA="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export RUU_LIB="$RUU_JAVA/lib"
 export RUU_APP="$RUU_JAVA/app"
 export RUU_PRAGMA="$RUU_APP/pragma"

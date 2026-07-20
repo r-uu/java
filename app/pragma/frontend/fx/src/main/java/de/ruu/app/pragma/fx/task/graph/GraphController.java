@@ -4,6 +4,7 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButtonBuilder;
@@ -84,6 +85,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
 
     @Inject private TaskGroupClient taskGroupClient;
     @Inject private TaskClient      taskClient;
+    @Inject private TaskGroupEditor taskGroupEditor;
 
     /** Task-ID → node; populated after each group load, used for save/load layout. */
     private Map<Long, Group> currentNodeById = new HashMap<>();
@@ -152,7 +154,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
     private void onManageGroups()
     {
         if (groupManagementDialog == null)
-            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, this::loadGroups);
+            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, taskGroupEditor, this::loadGroups);
         groupManagementDialog.showAndWait();
     }
 

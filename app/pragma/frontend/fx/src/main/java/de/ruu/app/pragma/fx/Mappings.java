@@ -100,6 +100,9 @@ public final class Mappings
         ctx.put(in, out);
 
         out.description (in.description().orElse(null));
+        out.workEstimateInitial(in.workEstimateInitial().orElse(null));
+        out.workEstimateCurrent(in.workEstimateCurrent().orElse(null));
+        out.workActual(in.workActual().orElse(null));
         out.scheduledStart(in.scheduledStart().orElse(null));
         out.scheduledFinish(in.scheduledFinish()  .orElse(null));
         out.closed      (in.closed());

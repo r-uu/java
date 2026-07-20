@@ -1,9 +1,9 @@
 #!/bin/bash
 # Project-specific WSL aliases for app-pragma-java.
 # Loaded by wsl-env bootstrap when ~/.wsl-project points to this repo.
-#   ruu-project-set /home/r-uu/develop/github/app-pragma-java
+#   ruu-project-set /home/r-uu/develop/github/java/app/pragma
 
-export RUU_PRAGMA="/home/r-uu/develop/github/app-pragma-java"
+export RUU_PRAGMA="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # ═══════════════════════════════════════════════════════════════════
 # Pragma

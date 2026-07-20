@@ -55,9 +55,9 @@ public abstract class FXUtil
 
 		final Window window = scene.getWindow();
 
-		if (window instanceof Stage)
+		if (window instanceof Stage stage)
 		{
-			return Optional.of((Stage) window);
+			return Optional.of(stage);
 		}
 
 		return Optional.empty();
@@ -101,7 +101,7 @@ public abstract class FXUtil
 
 	public static Optional<Region> asRegion(final Parent parent)
 	{
-		if (parent instanceof Region) return Optional.of((Region) parent);
+		if (parent instanceof Region region) return Optional.of(region);
 		return Optional.empty();
 	}
 
@@ -132,13 +132,13 @@ public abstract class FXUtil
 	{
 		for (final Node node : root.getChildrenUnmodifiable())
 		{
-			if (node instanceof TextInputControl)
+			if (node instanceof TextInputControl textInputControl)
 			{
-				((TextInputControl) node).setEditable(editable);
+				textInputControl.setEditable(editable);
 			}
-			else if (node instanceof Parent)
+			else if (node instanceof Parent parent)
 			{
-				setChildrenInTreeEditable((Parent) node, editable);
+				setChildrenInTreeEditable(parent, editable);
 			}
 		}
 	}
@@ -354,7 +354,7 @@ public abstract class FXUtil
 		for (Node child : parent.getChildrenUnmodifiable())
 		{
 			if (predicate.test(child)) child.setStyle(style);
-			if (child instanceof Parent) setStyleToChildren((Parent) child, style, predicate);
+			if (child instanceof Parent childAsParent) setStyleToChildren(childAsParent, style, predicate);
 		}
 	}
 
@@ -362,11 +362,11 @@ public abstract class FXUtil
 	{
 		for (Node child : parent.getChildrenUnmodifiable())
 		{
-			if (child instanceof Labeled)
+			if (child instanceof Labeled labeled)
 			{
-				if (predicate.test(child)) ((Labeled) child).setTextFill(paint);
+				if (predicate.test(labeled)) labeled.setTextFill(paint);
 			}
-			if (child instanceof Parent) setTextFillToChildren((Parent) child, paint, predicate);
+			if (child instanceof Parent childAsParent) setTextFillToChildren(childAsParent, paint, predicate);
 		}
 	}
 }
