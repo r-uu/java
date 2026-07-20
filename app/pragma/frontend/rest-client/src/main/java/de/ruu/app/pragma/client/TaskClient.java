@@ -144,7 +144,8 @@ public class TaskClient
             bean.description().orElse(null),
             bean.scheduledStart().orElse(null),
             bean.scheduledFinish()  .orElse(null),
-            bean.closed()
+            bean.closed(),
+            bean.parentTask().map(this::id).orElse(null)
         );
         try (Response response = target("/tasks")
                 .request(MediaType.APPLICATION_JSON)
@@ -306,6 +307,7 @@ public class TaskClient
         @Nullable String description,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
-        boolean closed
+        boolean closed,
+        @Nullable Long parentTaskId
     ) {}
 }

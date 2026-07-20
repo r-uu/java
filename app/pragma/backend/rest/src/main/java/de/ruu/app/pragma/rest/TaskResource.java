@@ -114,6 +114,11 @@ public class TaskResource
         entity.scheduledStart(request.plannedStart());
         entity.scheduledFinish(request.plannedEnd());
         entity.closed      (request.closed());
+        if (request.parentTaskId() != null) {
+            TaskJPA parentTask = em.find(TaskJPA.class, request.parentTaskId());
+            if (parentTask == null) throw new NotFoundException("Parent task not found: " + request.parentTaskId());
+            entity.parentTask(parentTask);
+        }
         em.persist(entity);
         return Response.status(Response.Status.CREATED).entity(Mappings.toDto(entity)).build();
     }
@@ -227,6 +232,7 @@ public class TaskResource
         @Nullable String description,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
-        boolean closed
+        boolean closed,
+        @Nullable Long parentTaskId
     ) {}
 }

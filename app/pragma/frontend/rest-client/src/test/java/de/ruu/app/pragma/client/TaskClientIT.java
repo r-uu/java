@@ -77,6 +77,26 @@ class TaskClientIT
     }
 
     @Test
+    void testCreateSubTask()
+    {
+        String parentName = "it-parent-task-" + System.currentTimeMillis();
+        TaskBean parentTask = taskClient.create(new TaskBean(testGroup, parentName));
+        assertThat(parentTask.id()).isNotNull();
+
+        String subTaskName = "it-sub-task-" + System.currentTimeMillis();
+        TaskBean subTask = new TaskBean(testGroup, subTaskName);
+        subTask.parentTask(parentTask);
+        TaskBean createdSubTask = taskClient.create(subTask);
+
+        assertThat(createdSubTask.id()).isNotNull();
+        assertThat(createdSubTask.parentTask()).isPresent();
+        assertThat(createdSubTask.parentTask().get().id()).isEqualTo(parentTask.id());
+
+        taskClient.delete(createdSubTask);
+        taskClient.delete(parentTask);
+    }
+
+    @Test
     void testFindById()
     {
         TaskBean created = taskClient.create(new TaskBean(testGroup, "it-findbyid-" + System.currentTimeMillis()));
