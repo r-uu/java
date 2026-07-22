@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "jsonId", scope = TaskGroupDto.class)
 public class TaskGroupDto implements PersistentTaskGroup<TaskDto>
 {
-    private final UUID jsonId  = UUID.randomUUID();
+    private UUID jsonId  = UUID.randomUUID();
 
     private @Nullable Long         id;
     private @Nullable Short        version;

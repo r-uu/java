@@ -337,7 +337,7 @@ Alle drei FXC-Views sowie die Haupt-App sind implementiert in `frontend/fx`:
 | `GanttService`      | FXCService-Interface                                                     |
 | `Gantt`             | FXCView — lädt `Gantt.fxml`                                              |
 | `GanttController`   | TreeTableView: Namensspalte + Tagesspalten (blau = planned); Datumeditor |
-| `GanttApp`          | FXCApp standalone                                                        |
+| `de.ruu.app.pragma.fx.task.WebViewJavaScriptGanttApp`          | FXCApp standalone                                                        |
 | `GanttAppRunner`    | `main()` entry point                                                     |
 
 Voraussetzung: `TaskDto`/`TaskJPA` haben `plannedStart`/`plannedEnd` (LocalDate, nullable).

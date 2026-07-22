@@ -49,6 +49,7 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 	private final Function<T, Node>      graphicsProvider;
 	private final Function<T, String>    textProvider;
 	private final Function<T, Tooltip>   toolTipProvider;
+	private boolean                      updatingText;
 
 	// convenience reference (shortcut) to the text field of the clearable text field
 	private final TextField textField = clearableTextField.textField();
@@ -119,7 +120,8 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 				// updated)
 				if (value.get() != null && comparator.compare(value.get(), itemsElement) == 0)
 				{
-					textField.setText(textProvider.apply(newItem));
+					updateTextField(textProvider.apply(newItem));
+					textField.positionCaret(textField.getText().length());
 					popup.hide();
 				}
 
@@ -183,12 +185,13 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 	{
 		if (newValue == null)
 		{
-			clearableTextField.textField().clear();
+			updateTextField("");
 		}
 		else
 		{
-			clearableTextField.textField().setText(textProvider.apply(newValue));
+			updateTextField(textProvider.apply(newValue));
 		}
+		textField.positionCaret(textField.getText().length());
 	}
 
 	private void setupPopup()
@@ -267,6 +270,8 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 
 	private void textFieldListener(String act)
 	{
+		if (updatingText) return;
+
 		if (isNull(act) || act.isEmpty())
 		{
 			popup.hide();
@@ -296,11 +301,21 @@ public class TextFieldAutoCompleteClearable<T> extends HBox
 		T selected = listView.getSelectionModel().getSelectedItem();
 		if (nonNull(selected))
 		{
-			String value = textProvider.apply(selected);
-			textField.setText(value);
-			textField.positionCaret(value.length());
 			popup.hide();
 			value(selected);
+		}
+	}
+
+	private void updateTextField(String value)
+	{
+		updatingText = true;
+		try
+		{
+			textField.setText(value);
+		}
+		finally
+		{
+			updatingText = false;
 		}
 	}
 

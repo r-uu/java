@@ -602,8 +602,28 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void sortTreeItems(TreeItem<TaskBean> parent)
     {
-        parent.getChildren().sort(Comparator.comparing(
-                item -> item.getValue() == null ? "" : item.getValue().name().toLowerCase()));
+        parent.getChildren().sort((item1, item2) ->
+        {
+            TaskBean t1 = item1.getValue();
+            TaskBean t2 = item2.getValue();
+            if (t1 == null || t2 == null) return 0;
+
+            boolean t1HasPreds = t1.predecessors().map(s -> !s.isEmpty()).orElse(false);
+            boolean t1HasSuccs = t1.successors().map(s -> !s.isEmpty()).orElse(false);
+            boolean t2HasPreds = t2.predecessors().map(s -> !s.isEmpty()).orElse(false);
+            boolean t2HasSuccs = t2.successors().map(s -> !s.isEmpty()).orElse(false);
+
+            // Tasks with predecessors come first
+            if (t1HasPreds && !t2HasPreds) return -1;
+            if (!t1HasPreds && t2HasPreds) return 1;
+
+            // Tasks with successors come last
+            if (t1HasSuccs && !t2HasSuccs) return 1;
+            if (!t1HasSuccs && t2HasSuccs) return -1;
+
+            // Alphabetical for tasks without pre/successors or if both have same types
+            return t1.name().toLowerCase().compareTo(t2.name().toLowerCase());
+        });
         parent.getChildren().forEach(this::sortTreeItems);
     }
 

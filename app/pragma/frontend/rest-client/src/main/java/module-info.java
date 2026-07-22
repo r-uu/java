@@ -3,7 +3,6 @@ module de.ruu.app.pragma.client
     requires de.ruu.app.pragma.dto;
     requires de.ruu.app.pragma.bean;
 
-    requires jakarta.activation;
     requires jakarta.annotation;
     requires jakarta.inject;
     requires jakarta.ws.rs;
