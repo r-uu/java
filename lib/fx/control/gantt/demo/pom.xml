@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.fx.control.gantt.demo</artifactId>
+	<name>${project.artifactId}</name>
+	<description>
+		Standalone demo application for the Gantt chart component.
+		Completely independent from Pragma or any business logic.
+		Can be run as executable JAR or embedded in integration tests.
+	</description>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.fx.control.gantt</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+
+		<!-- The Gantt library we're demonstrating -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.fx.control.gantt.core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<!-- CDI for dependency injection (only needed for CDI-based runners) -->
+		<!-- Compile scope for IDE support, but excluded from shade JAR via config -->
+		<dependency>
+			<groupId>org.jboss.weld.se</groupId>
+			<artifactId>weld-se-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Explicit weld core implementation for complete CDI setup -->
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-core-impl</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Logging at runtime (for demo app console output) -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Testing (for demo tests and integration tests) -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Shade plugin creates fat JAR with all dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<finalName>gantt-demo</finalName>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>de.ruu.lib.fx.control.gantt.demo.GanttDemoStandalone</mainClass>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/beans.xml</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>log4j2.xml</resource>
+								</transformer>
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>META-INF/module-info.class</exclude>
+										<exclude>META-INF/versions/**</exclude>
+									</excludes>
+								</filter>
+								<!-- Exclude CDI implementation from shade JAR (use GanttDemoStandalone, not CDI-based runners) -->
+								<filter>
+									<artifact>org.jboss.weld.se:weld-se-core</artifact>
+									<excludes>
+										<exclude>**</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>org.jboss.weld:weld-core-impl</artifact>
+									<excludes>
+										<exclude>**</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>jakarta.enterprise:jakarta.enterprise.cdi-api</artifact>
+									<excludes>
+										<exclude>**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

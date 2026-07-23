@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>r-uu.lib.fx.control.gantt.core</artifactId>
+	<name>${project.artifactId}</name>
+	<description>
+		Reusable, domain-agnostic Gantt chart library.
+		Provides UI component, data interfaces, and configuration.
+		No dependencies on application logic.
+	</description>
+
+	<parent>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.fx.control.gantt</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+
+		<!-- FXC framework for MVC component structure -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.fx.comp</artifactId>
+		</dependency>
+
+		<!-- FX utilities -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.fx.core</artifactId>
+		</dependency>
+
+		<!-- Core utilities -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.util</artifactId>
+		</dependency>
+
+		<!-- JavaFX for UI -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+		</dependency>
+
+		<!-- Jakarta EE (for @Inject, @Dependent) -->
+		<dependency>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.enterprise</groupId>
+			<artifactId>jakarta.enterprise.cdi-api</artifactId>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- Nullness annotations -->
+		<dependency>
+			<groupId>org.jspecify</groupId>
+			<artifactId>jspecify</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

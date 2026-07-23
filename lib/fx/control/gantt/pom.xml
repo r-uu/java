@@ -5,23 +5,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>r-uu.lib.fx</artifactId>
+	<artifactId>r-uu.lib.fx.control.gantt</artifactId>
 	<name>${project.artifactId}</name>
 	<packaging>pom</packaging>
-	<description>parent module for artifacts of group ruu.lib.fx</description>
+	<description>
+		Reusable Gantt chart component for JavaFX.
+		See README.md for architecture and usage.
+	</description>
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.lib.bom</artifactId>
+		<artifactId>r-uu.lib.fx.control</artifactId>
 		<version>0.0.1</version>
-		<relativePath>../bom</relativePath>
 	</parent>
 
 	<modules>
 		<module>core</module>
-		<module>comp</module>
-		<module>comp_demo</module>
-		<module>control</module>
 		<module>demo</module>
 	</modules>
 
