@@ -6,7 +6,6 @@ import de.ruu.lib.fx.control.gantt.api.GanttDataProvider;
 import de.ruu.lib.fx.control.gantt.api.GanttTask;
 import de.ruu.lib.fx.control.gantt.config.GanttChartConfig;
 import de.ruu.lib.fx.control.gantt.rendering.GanttChartRenderer;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
@@ -75,6 +74,7 @@ public class GanttChartController extends DefaultFXCController<GanttChartCompone
 		// Setup canvas event handlers
 		canvas.setOnMouseClicked(this::onCanvasClicked);
 		canvas.setOnMouseMoved(this::onCanvasMouseMoved);
+		configureCanvas();
 
 		// Load and display tasks
 		loadTasks();
@@ -82,8 +82,15 @@ public class GanttChartController extends DefaultFXCController<GanttChartCompone
 		// Setup rendering
 		setupRenderer();
 
-		// Trigger initial render
-		redrawCanvas();
+		// Trigger initial render after layout pass (canvas has a real size then)
+		javafx.application.Platform.runLater(this::redrawCanvas);
+	}
+
+	private void configureCanvas() {
+		canvas.widthProperty().bind(canvasPane.widthProperty());
+		canvas.heightProperty().bind(canvasPane.heightProperty());
+		canvas.widthProperty().addListener((observable, oldValue, newValue) -> redrawCanvas());
+		canvas.heightProperty().addListener((observable, oldValue, newValue) -> redrawCanvas());
 	}
 
 	/**
@@ -150,6 +157,9 @@ public class GanttChartController extends DefaultFXCController<GanttChartCompone
 	}
 
 	private void redrawCanvas() {
+		if (canvas.getWidth() <= 0 || canvas.getHeight() <= 0) {
+			return;
+		}
 		if (renderer == null) {
 			setupRenderer();
 		}

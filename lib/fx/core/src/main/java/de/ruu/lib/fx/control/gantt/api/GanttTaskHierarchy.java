@@ -1,7 +1,6 @@
 package de.ruu.lib.fx.control.gantt.api;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides hierarchical access to Gantt tasks.

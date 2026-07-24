@@ -11,8 +11,10 @@ module de.ruu.lib.fx.core
 	exports de.ruu.lib.fx.control.treeview;
 	exports de.ruu.lib.fx.css;
 	exports de.ruu.lib.fx.control.autocomplete.textfield;
+	exports de.ruu.lib.fx.control.gantt.demo to javafx.graphics;
 
 	opens de.ruu.lib.fx.control.buttons;
+	opens de.ruu.lib.fx.control.gantt.component to javafx.fxml;
 
 	requires de.ruu.lib.util;
 	requires de.ruu.lib.fx.comp;
