@@ -186,3 +186,132 @@ Daher: **Tracking-Backbone jetzt, UI-/Prozessstrenge schrittweise nach Bedarf**.
 2. Wann wird ein Änderungsgrund Pflicht (immer, je Feld, je Schwellwert)?
 3. Reicht Freitext oder braucht es zusätzlich Kategorien?
 4. Welche Auswertungen sollen zuerst sichtbar werden (und für wen)?
+
+### User, Groups, Member und Task-Zuständigkeit
+
+Zuletzt aktualisiert: 2026-07-27
+
+#### Zielbild
+
+Das Modell soll drei Dinge gleichzeitig leisten:
+- Anmeldung/Identität (`User`).
+- Kollaborative Struktur (`Group`, `Member`).
+- Flexible Zuordnung auf Tasks (User **und/oder** Group als Verantwortliche/Zuständige).
+
+Dabei soll das System im MVP schlank bleiben und später ohne Bruch ausbaubar sein.
+
+#### Domänenmodell (Vorschlag)
+
+##### 1) Identität und Anmeldung
+
+- `User`
+  - Fachliche Person im System (`id`, `username`, `displayName`, `email`, `active`).
+- `AuthAccount`
+  - Technische Anmeldeinformation (z. B. Passwort-Hash, Login-Status, letzte Anmeldung).
+  - 1:1 zu `User`, bewusst getrennt von Fachattributen.
+
+**Nutzen der Trennung:** Auth kann später gegen externes IAM (Keycloak/OIDC) getauscht werden, ohne das Fachmodell `User` umzubauen.
+
+##### 2) Gruppen und Mitgliedschaften
+
+- `Group`
+  - Team/Einheit (`id`, `name`, `description`, `active`).
+- `Membership`
+  - Verknüpfung `User ↔ Group` (n:m) mit Zusatzdaten:
+  - `roleInGroup` (z. B. OWNER, COORDINATOR, MEMBER)
+  - `validFrom`, `validTo` (optional)
+  - `active`
+
+**Warum eigene `Membership`-Entität:** zukünftige Anforderungen (Rollen, Gültigkeit, Historie) passen sauber hinein, ohne Sonderlogik in Join-Tabellen.
+
+##### 3) Einheitliche Zuweisung auf Tasks
+
+- `Assignable` (abstraktes Konzept / Interface)
+  - Implementiert von `User` und `Group`.
+- `TaskAssignment`
+  - Verknüpfung `Task ↔ Assignable` (n:m) mit:
+  - `assignmentType` (mind. `RESPONSIBLE`, `ASSIGNEE`)
+  - `share` oder `priority` (optional für Reihenfolge/Gewichtung)
+  - `validFrom`, `validTo` (optional)
+  - `note` (optional)
+
+**Interpretation:**
+- **RESPONSIBLE** = verantwortet Ergebnis/Freigabe.
+- **ASSIGNEE** = operativ zuständig für Umsetzung.
+
+Damit sind folgende Fälle ohne Modellbruch möglich:
+- genau ein verantwortlicher User,
+- verantwortliche Group + zuständiger User,
+- mehrere zuständige User/Groups.
+
+##### 4) Verfügbarkeit und Kapazität je User (Tag + Zeitraum)
+
+- `UserAvailability`
+  - Verfügbarkeit eines Users für einen Zeitraum:
+  - `userId`
+  - `fromDate`, `toDate`
+  - `capacityHoursPerDay` (z. B. 0, 4, 8)
+  - `availabilityType` (z. B. AVAILABLE, LIMITED, ABSENT)
+  - `note` (z. B. Urlaub, Teilzeit, Schulung)
+
+- `UserAvailabilityRule` (optional für wiederkehrende Muster)
+  - Wiederkehrende Regeln (z. B. „jeden Freitag 4h“, „Mo-Do 8h“).
+  - Konkrete Tageswerte können aus Regeln berechnet und durch `UserAvailability` übersteuert werden.
+
+**Prinzip:** Regeln liefern Default-Werte, explizite Einträge für konkrete Zeiträume/Tage haben Vorrang.
+
+#### Komfort- und Flexibilitätsregeln
+
+1. Kein Sonderfall für User vs. Group in der Task-Logik (immer über `Assignable`).
+2. `TaskAssignment` bleibt die einzige Quelle für Zuständigkeiten.
+3. UI zeigt standardmäßig nur aktive Zuordnungen; Historie bleibt optional einblendbar.
+4. Für MVP möglichst wenige Pflichtfelder (keine frühe Prozessüberfrachtung).
+
+#### MVP-Schnitt (schlank starten)
+
+- `User`, `Group`, `Membership`, `TaskAssignment` einführen.
+- `assignmentType` zunächst auf `RESPONSIBLE` und `ASSIGNEE` begrenzen.
+- Keine komplexe Rechte-Matrix im ersten Schritt.
+- Login-Basis (Session/JWT) bereitstellen, aber Berechtigungsmodell zunächst einfach halten.
+- `UserAvailability` für konkrete Zeiträume einführen (ohne komplexe Regel-Engine).
+- Kapazität im MVP als `capacityHoursPerDay` modellieren.
+
+#### Ausbaupfad (später)
+
+- Erweiterte Assignment-Typen (z. B. REVIEWER, INFORMED).
+- Stellvertretung/Delegation.
+- Wiederkehrende Verfügbarkeitsregeln (`UserAvailabilityRule`) und Ausnahmekalender.
+- Aggregation User → Group-Verfügbarkeit (teambezogene Kapazität).
+- Regelbasierte Validierung (z. B. pro Task genau 1 RESPONSIBLE).
+- Auswertungen: Lastverteilung pro User/Group, Ownership-Lücken, Bottlenecks.
+- Kapazitäts-/Auslastungsansichten pro Tag/Woche/Zeitraum.
+
+#### Verfügbarkeitslogik (leichtgewichtig, aber belastbar)
+
+1. Tageskapazität eines Users wird aus `UserAvailability` im angefragten Zeitraum bestimmt.
+2. Fehlt ein Eintrag, gilt ein System-Default (z. B. 8h/Tag) oder die aktive Regel.
+3. `ABSENT` erzwingt 0h, unabhängig von Default/Regel.
+4. Spätere Auslastungslogik nutzt die Summe geplanter Task-Aufwände gegen verfügbare Stunden.
+
+#### Beispiel (konzeptionell)
+
+Task `T-4711`:
+- `RESPONSIBLE` → Group „Backend Team“
+- `ASSIGNEE` → User „anna“
+- `ASSIGNEE` → User „sam“
+
+Ergebnis: Verantwortung ist teambezogen stabil, operative Zuständigkeit bleibt flexibel bei Personalwechsel.
+
+Verfügbarkeit „anna“:
+- 2026-08-01 bis 2026-08-31: `capacityHoursPerDay = 6`
+- 2026-08-12 bis 2026-08-16: `availabilityType = ABSENT` (Urlaub)
+
+#### Offene Entscheidungen
+
+1. Soll pro Task genau **ein** `RESPONSIBLE` erzwungen werden?
+2. Sollen Groups andere Groups enthalten dürfen (verschachtelte Teams)?
+3. Muss `Membership` historisiert werden oder reicht nur aktueller Zustand?
+4. Soll Auth lokal (Passwort) starten oder direkt über externes IAM laufen?
+5. System-Default für Tageskapazität: 8h oder pro User verpflichtend pflegbar?
+6. Starten wir ohne wiederkehrende Regeln und führen diese erst später ein?
+7. Sollen Verfügbarkeiten nur für User gelten oder direkt auch für Groups pflegbar sein?

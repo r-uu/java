@@ -423,9 +423,13 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         TreeItem<TaskBean> sel = centerPanel.selectedItem();
         if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
 
-        TaskBean task = sel.getValue();
+        TaskBean selectedTask = sel.getValue();
         try
         {
+            // Always start from the latest persisted state to avoid false optimistic-lock conflicts
+            // after relation edits (predecessor/successor changes) that can bump the task version.
+            TaskBean task = taskClient.findByIdWithRelated(selectedTask.id())
+                .orElseThrow(() -> new IllegalStateException("Task not found: " + selectedTask.id()));
             taskEditor.service().applyTo(task);
             TaskBean updated = taskClient.update(task);
             sel.setValue(updated);
@@ -435,7 +439,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
             reloadSidePanels(updated);
             updateButtonStates();
         }
-        catch (Exception e) { log.error("failed to save task data for {}", task.name(), e); showError("Save", e); }
+        catch (Exception e) { log.error("failed to save task data for {}", selectedTask.name(), e); showError("Save", e); }
     }
 
     // ── manage groups ────────────────────────────────────────────────────────
