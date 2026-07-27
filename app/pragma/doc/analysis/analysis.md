@@ -59,7 +59,7 @@ Am oberen rechten Rand der Tabs befinden sich Buttons "Backup" und "Restore". Ü
 ### Hierarchies Tab
 
 - Die Sortierung der Tasks in der super-/sub-Hierarchie sollte bequem konfigurierbar sein (z. B. nach Alphabet, nach Start- oder Enddatum, nach Fälligkeitsdatum, etc.).
-- Eine nützliche und mächtige Filterfunktion sollte es ermöglichen, die Darstellung auf bestimmte Tasks zu beschränken (z. B. nur Tasks mit bestimmten Status, nur Tasks mit bestimmten Tags, etc.).
+- Eine nützliche und mächtige Filterfunktion sollte es ermöglichen, die Darstellung in der super-/sub-Hierarchie auf bestimmte Tasks zu beschränken (z. B. nur Tasks mit bestimmten Status, nur Tasks mit bestimmten Tags, etc.).
 - Predecessor-/Successor-Beziehungen sollen entsprechend der jeweiligen Beziehung in einer Baumstruktur dargestellt werden. Gibt es mehrere Beziehungen auf einer Ebene, sollen diese alphabetisch sortiert werden. Evtl. sollen die Beziehungen auch nach anderen Kriterien sortierbar sein (z. B. nach Start- oder Enddatum, nach Fälligkeitsdatum, etc.).
 
 ### Gantt Tab
