@@ -28,7 +28,7 @@ public class DBClear
 
     public static void run(TaskGroupClient groupClient, TaskClient taskClient)
     {
-        log.info("Clearing database ...");
+        log.info("clearing database started ...");
         // Remove all predecessor/successor relationships first to avoid FK constraint violations
         // when deleting tasks (task_predecessors_successors references tasks by FK).
         taskClient.findAll().forEach(task ->
@@ -36,6 +36,6 @@ public class DBClear
                 taskClient.removePredecessor(task, pred)));
         // Delete all groups — cascades to their tasks (and sub-task hierarchies).
         groupClient.findAll().forEach(groupClient::delete);
-        log.info("Done.");
+        log.info("clearing database finished.");
     }
 }

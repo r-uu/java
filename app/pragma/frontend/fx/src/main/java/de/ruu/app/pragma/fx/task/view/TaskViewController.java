@@ -17,7 +17,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.jspecify.annotations.NonNull;
 
@@ -28,10 +27,9 @@ import java.util.Optional;
 class TaskViewController extends DefaultFXCController<TaskView, TaskViewService> implements TaskViewService
 {
   @FXML private VBox root;
-  @FXML private GridPane grdPnCore;
   @FXML private GridPane grdPnEstimates;
   @FXML private GridPane grdPnWork;
-  @FXML private HBox hBxWork;
+  @FXML private GridPane grdPnPlanning;
 
   @FXML private TextField tfId;
   @FXML private TextField tfName;
@@ -64,6 +62,7 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
 
     FXUtil.wrapInTitledBorder("estimates", grdPnEstimates);
     FXUtil.wrapInTitledBorder("work", grdPnWork);
+    FXUtil.wrapInTitledBorder("planning", grdPnPlanning);
 
     tfName.textProperty().addListener((obs, o, n) -> markDirty());
     dtPckrStart.valueProperty().addListener((obs, o, n) -> markDirty());

@@ -1064,12 +1064,6 @@
 					<version>3.1.1</version>
 				</plugin>
 
-				<!-- JavaFX Maven Plugin for jlink/jpackage -->
-				<plugin>
-					<groupId>org.openjfx</groupId>
-					<artifactId>javafx-maven-plugin</artifactId>
-					<version>0.0.8</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 

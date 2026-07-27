@@ -34,7 +34,7 @@ class TaskEditorController extends DefaultFXCController<TaskEditor, TaskEditorSe
     taskView.service().setEditable(true);
   }
 
-  @Override public @NonNull Optional<TaskBean> task() { return taskView.service().task(); }
+  @Override public Optional<TaskBean> task() { return taskView.service().task(); }
   @Override public void task(TaskBean task) { taskView.service().task(task); }
   @Override public void clear() { taskView.service().clear(); }
   @Override public void applyTo(TaskBean task) { taskView.service().applyTo(task); }

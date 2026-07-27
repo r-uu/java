@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -8,70 +8,77 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" spacing="6" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
-  <GridPane fx:id="grdPnCore" hgap="5" vgap="3">
-    <columnConstraints>
-      <ColumnConstraints hgrow="NEVER" minWidth="95"/>
-      <ColumnConstraints hgrow="ALWAYS"/>
-      <ColumnConstraints hgrow="NEVER" minWidth="95"/>
-      <ColumnConstraints hgrow="NEVER"/>
-    </columnConstraints>
-    <rowConstraints>
-      <RowConstraints vgrow="NEVER"/>
-      <RowConstraints vgrow="NEVER"/>
-      <RowConstraints vgrow="NEVER"/>
-      <RowConstraints vgrow="ALWAYS"/>
-    </rowConstraints>
-    <children>
-      <Label text="id" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-      <TextField fx:id="tfId" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-      <Label text="name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-      <TextField fx:id="tfName" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-      <Label text="planned start" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-      <DatePicker fx:id="dtPckrStart" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
-      <Label text="planned end" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-      <DatePicker fx:id="dtPckrEnd" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-      <Label text="status" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-      <ComboBox fx:id="cbxStatus" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
-      <Label text="priority" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
-      <ComboBox fx:id="cbxPriority" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
-      <Label text="description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-      <TextArea fx:id="taDescription" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2" />
-    </children>
-  </GridPane>
+<VBox fx:id="root" spacing="8" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <HBox alignment="CENTER_LEFT" spacing="6">
+      <children>
+        <Label text="id"/>
+        <TextField fx:id="tfId" editable="false" prefColumnCount="10"/>
+      </children>
+    </HBox>
 
-  <HBox fx:id="hBxWork" spacing="6">
-    <children>
-      <GridPane fx:id="grdPnEstimates" hgap="5" vgap="3" HBox.hgrow="ALWAYS">
-        <columnConstraints>
-          <ColumnConstraints hgrow="NEVER" minWidth="95"/>
-          <ColumnConstraints hgrow="ALWAYS"/>
-        </columnConstraints>
-        <children>
-          <Label text="initial [h]" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-          <TextField fx:id="tfWorkEstimateInitial" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-          <Label text="current [h]" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-          <TextField fx:id="tfWorkEstimateCurrent" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        </children>
-      </GridPane>
+    <Label text="name"/>
+    <TextField fx:id="tfName"/>
 
-      <GridPane fx:id="grdPnWork" hgap="5" vgap="3" HBox.hgrow="ALWAYS">
-        <columnConstraints>
-          <ColumnConstraints hgrow="NEVER" minWidth="95"/>
-          <ColumnConstraints hgrow="ALWAYS"/>
-        </columnConstraints>
-        <children>
-          <Label text="actual [h]" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-          <TextField fx:id="tfWorkActual" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-          <Label text="remaining [h]" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-          <TextField fx:id="tfWorkRemaining" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-          <Label text="progress [%]" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-          <TextField fx:id="tfWorkProgress" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        </children>
-      </GridPane>
-    </children>
-  </HBox>
+    <GridPane hgap="8" vgap="4">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="60"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="60"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+      </columnConstraints>
+      <children>
+        <Label text="priority" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="cbxPriority" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="status" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="cbxStatus" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+      </children>
+    </GridPane>
+
+    <Label text="description"/>
+    <TextArea fx:id="taDescription" prefRowCount="5" VBox.vgrow="ALWAYS"/>
+
+    <GridPane fx:id="grdPnPlanning" hgap="8" vgap="4">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="110"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+      </columnConstraints>
+      <children>
+        <Label text="planned start" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <DatePicker fx:id="dtPckrStart" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="planned end" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <DatePicker fx:id="dtPckrEnd" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+      </children>
+    </GridPane>
+
+    <GridPane fx:id="grdPnEstimates" hgap="8" vgap="4">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="110"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+      </columnConstraints>
+      <children>
+        <Label text="initial [h]" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="tfWorkEstimateInitial" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="current [h]" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="tfWorkEstimateCurrent" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+      </children>
+    </GridPane>
+
+    <GridPane fx:id="grdPnWork" hgap="8" vgap="4">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="110"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+      </columnConstraints>
+      <children>
+        <Label text="actual [h]" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="tfWorkActual" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="remaining [h]" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="tfWorkRemaining" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="progress [%]" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="tfWorkProgress" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+      </children>
+    </GridPane>
+  </children>
 </VBox>

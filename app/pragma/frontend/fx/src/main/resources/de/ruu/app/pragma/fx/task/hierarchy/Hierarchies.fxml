@@ -35,7 +35,7 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnInspectorToggle" mnemonicParsing="false"
                     prefHeight="20" prefWidth="20">
-                <text>◀</text>
+                <graphic><FontIcon iconLiteral="fas-angle-right" iconSize="11"/></graphic>
                 <tooltip><Tooltip text="hide inspector"/></tooltip>
             </Button>
         </HBox>

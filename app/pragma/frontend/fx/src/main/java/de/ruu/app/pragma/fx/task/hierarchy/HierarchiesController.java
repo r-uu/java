@@ -19,12 +19,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -43,6 +45,8 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         implements HierarchiesService
 {
     private static final Logger log = LogManager.getLogger(HierarchiesController.class);
+    private static final String INSPECTOR_HIDE_ICON = "fas-angle-right";
+    private static final String INSPECTOR_SHOW_ICON = "fas-angle-left";
 
     // ── top bar ──────────────────────────────────────────────────────────────
 
@@ -485,16 +489,25 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         {
             if (brdPaneMain.getRight() == null)
                 brdPaneMain.setRight(vBxInspectorContainer);
-            btnInspectorToggle.setText("◀");
-            btnInspectorToggle.setTooltip(new javafx.scene.control.Tooltip("Hide inspector"));
+            btnInspectorToggle.setText(null);
+            btnInspectorToggle.setGraphic(inspectorToggleIcon(INSPECTOR_HIDE_ICON));
+            btnInspectorToggle.setTooltip(new Tooltip("Hide inspector"));
         }
         else
         {
             if (brdPaneMain.getRight() != null)
                 brdPaneMain.setRight(null);
-            btnInspectorToggle.setText("▶");
-            btnInspectorToggle.setTooltip(new javafx.scene.control.Tooltip("Show inspector"));
+            btnInspectorToggle.setText(null);
+            btnInspectorToggle.setGraphic(inspectorToggleIcon(INSPECTOR_SHOW_ICON));
+            btnInspectorToggle.setTooltip(new Tooltip("Show inspector"));
         }
+    }
+
+    private FontIcon inspectorToggleIcon(String iconLiteral)
+    {
+        FontIcon icon = new FontIcon(iconLiteral);
+        icon.setIconSize(11);
+        return icon;
     }
 
     private void disableAll(boolean disabled)

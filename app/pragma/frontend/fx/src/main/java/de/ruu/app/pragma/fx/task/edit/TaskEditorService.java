@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TaskEditorService extends FXCService
 {
-  @NonNull Optional<TaskBean> task();
+  Optional<TaskBean> task();
   void task(TaskBean task);
   void clear();
   void applyTo(TaskBean task);

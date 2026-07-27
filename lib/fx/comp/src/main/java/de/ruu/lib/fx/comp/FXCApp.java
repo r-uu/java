@@ -3,6 +3,10 @@ package de.ruu.lib.fx.comp;
 import static de.ruu.lib.util.BooleanFunctions.not;
 import static java.util.Objects.isNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 
 import de.ruu.lib.cdi.se.EventDispatcher;
@@ -10,8 +14,10 @@ import de.ruu.lib.util.AbstractEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.spi.CDI;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +55,7 @@ import org.apache.logging.log4j.LogManager;
 public abstract class FXCApp extends Application
 {
 	private static final Logger log = LogManager.getLogger(FXCApp.class);
+	private static final boolean RUNNING_ON_WSL = detectRunningOnWsl();
 
 	/** Event that will be fired as soon as the primary stage of this {@link FXCApp} was shown. */
 	public static class FXStageShowingEvent extends AbstractEvent<FXCApp, Stage>
@@ -110,6 +117,7 @@ public abstract class FXCApp extends Application
 	{
 		primaryStage.initStyle(getStageStyle());
 		primaryStage.setTitle(getStageTitle());
+		primaryStage.setResizable(true);
 
 		if (getStageIcon().isPresent())
 		{
@@ -125,7 +133,11 @@ public abstract class FXCApp extends Application
 			final DefaultFXCView<?, ?, ?> view = optionalView.get();
 
 			primaryStage.setScene(view.scene());
-			primaryStage.sizeToScene();
+			configureWslTitleBarMaximizeFallback(primaryStage);
+			if (sizeStageToSceneOnStartup())
+			{
+				primaryStage.sizeToScene();
+			}
 			primaryStage.show();
 
 			onApplicationStarted(view);
@@ -222,6 +234,14 @@ public abstract class FXCApp extends Application
 		return "";
 	}
 
+	/**
+	 * @return {@code true} if startup should explicitly call {@link Stage#sizeToScene()} before showing the stage.
+	 */
+	protected boolean sizeStageToSceneOnStartup()
+	{
+		return true;
+	}
+
 	/** @return <code>Optional</code> containing default stage icon (<code>null</code>) */
 	protected Optional<Image> getStageIcon()
 	{
@@ -244,5 +264,76 @@ public abstract class FXCApp extends Application
 	{
 		log.debug("\n" + "-".repeat(10) + "firing app stopped event");
 		CDI.current().getBeanManager().getEvent().fire(new FXCAppStoppedEvent(this));
+	}
+
+	private void configureWslTitleBarMaximizeFallback(final Stage stage)
+	{
+		if (!RUNNING_ON_WSL)
+		{
+			return;
+		}
+
+		final double[] restoreBounds = new double[4];
+		final boolean[] hasRestoreBounds = new boolean[] { false };
+		stage.maximizedProperty().addListener((obs, wasMaximized, isMaximized) ->
+		{
+			if (Boolean.TRUE.equals(isMaximized))
+			{
+				restoreBounds[0] = stage.getX();
+				restoreBounds[1] = stage.getY();
+				restoreBounds[2] = stage.getWidth();
+				restoreBounds[3] = stage.getHeight();
+				hasRestoreBounds[0] = true;
+				applyVisualBounds(stage);
+				return;
+			}
+			if (hasRestoreBounds[0] && Boolean.FALSE.equals(isMaximized))
+			{
+				stage.setX(restoreBounds[0]);
+				stage.setY(restoreBounds[1]);
+				stage.setWidth(restoreBounds[2]);
+				stage.setHeight(restoreBounds[3]);
+			}
+		});
+	}
+
+	private static void applyVisualBounds(final Stage stage)
+	{
+		final Screen targetScreen = Screen.getScreensForRectangle(stage.getX(), stage.getY(),
+			Math.max(1, stage.getWidth()), Math.max(1, stage.getHeight()))
+			.stream()
+			.findFirst()
+			.orElse(Screen.getPrimary());
+		final Rectangle2D visualBounds = targetScreen.getVisualBounds();
+		stage.setX(visualBounds.getMinX());
+		stage.setY(visualBounds.getMinY());
+		stage.setWidth(visualBounds.getWidth());
+		stage.setHeight(visualBounds.getHeight());
+	}
+
+	private static boolean detectRunningOnWsl()
+	{
+		final String distro = System.getenv("WSL_DISTRO_NAME");
+		if (distro != null && !distro.isBlank())
+		{
+			return true;
+		}
+
+		final Path osReleasePath = Path.of("/proc/sys/kernel/osrelease");
+		if (!Files.exists(osReleasePath))
+		{
+			return false;
+		}
+
+		try
+		{
+			final String osRelease = Files.readString(osReleasePath).toLowerCase(Locale.ROOT);
+			return osRelease.contains("microsoft") || osRelease.contains("wsl");
+		}
+		catch (IOException e)
+		{
+			log.debug("could not read {} for WSL detection", osReleasePath, e);
+			return false;
+		}
 	}
 }

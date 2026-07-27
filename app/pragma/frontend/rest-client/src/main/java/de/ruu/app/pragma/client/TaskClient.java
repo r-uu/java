@@ -51,6 +51,12 @@ public class TaskClient
     private final String scheme = ConfigProvider.getConfig().getValue("pragma.rest-api.scheme", String.class);
     private final String host   = ConfigProvider.getConfig().getValue("pragma.rest-api.host",   String.class);
     private final int    port   = ConfigProvider.getConfig().getValue("pragma.rest-api.port",   Integer.class);
+    private final int connectTimeoutMs = ConfigProvider.getConfig()
+        .getOptionalValue("pragma.rest-api.connect-timeout-ms", Integer.class)
+        .orElse(5000);
+    private final int readTimeoutMs = ConfigProvider.getConfig()
+        .getOptionalValue("pragma.rest-api.read-timeout-ms", Integer.class)
+        .orElse(120000);
 
     private Client client;
 
@@ -60,8 +66,8 @@ public class TaskClient
         ObjectMapper mapper = createObjectMapper();
         client = ClientBuilder.newBuilder()
             .register(new JacksonJsonProvider(mapper))
-            .property(ClientProperties.CONNECT_TIMEOUT,  5000)
-            .property(ClientProperties.READ_TIMEOUT,    15000)
+            .property(ClientProperties.CONNECT_TIMEOUT, connectTimeoutMs)
+            .property(ClientProperties.READ_TIMEOUT,    readTimeoutMs)
             .build();
     }
 
