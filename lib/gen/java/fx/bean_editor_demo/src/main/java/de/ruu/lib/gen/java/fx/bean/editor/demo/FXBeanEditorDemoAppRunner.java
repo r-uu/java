@@ -1,8 +1,8 @@
 package de.ruu.lib.gen.java.fx.bean.editor.demo;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component Application Runner {@link FXBeanEditorDemoAppRunner}
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 class FXBeanEditorDemoAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(FXBeanEditorDemoAppRunner.class);
+	private static final Logger log = LogManager.getLogger(FXBeanEditorDemoAppRunner.class);
 	public static void main(String[] args)
 	{
 		log.debug("starting FXBeanEditorDemoAppRunner.class.getName()");

@@ -19,8 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class TaskGroupManagementDialog
 {
-    private static final Logger log = LoggerFactory.getLogger(TaskGroupManagementDialog.class);
+    private static final Logger log = LogManager.getLogger(TaskGroupManagementDialog.class);
 
     private final TaskGroupClient client;
     private final Runnable        onGroupsChanged;
@@ -67,9 +67,9 @@ public class TaskGroupManagementDialog
         });
         VBox.setVgrow(listView, Priority.ALWAYS);
 
-        Button btnAdd    = iconButton("far-plus-square", "Gruppe hinzufügen");
-        Button btnRename = iconButton("far-edit",        "Gruppe umbenennen");
-        Button btnDelete = iconButton("far-trash-alt",   "Gruppe löschen");
+        Button btnAdd    = iconButton("far-plus-square", "Add task group");
+        Button btnRename = iconButton("far-edit",        "Rename task group");
+        Button btnDelete = iconButton("far-trash-alt",   "Delete task group");
 
         btnAdd   .setOnAction(e -> onAdd());
         btnRename.setOnAction(e -> onRename());
@@ -90,7 +90,7 @@ public class TaskGroupManagementDialog
         root.setPadding(new Insets(8));
 
         stage = new Stage();
-        stage.setTitle("Task Groups verwalten");
+        stage.setTitle("Manage task groups");
         stage.setScene(new Scene(root, 320, 380));
         stage.initModality(Modality.APPLICATION_MODAL);
     }
@@ -108,7 +108,7 @@ public class TaskGroupManagementDialog
     private void onAdd()
     {
         TaskGroupBean draft = new TaskGroupBean("new task group");
-        editGroup("Gruppe hinzufügen", draft).ifPresent(group -> {
+        editGroup("Add group", draft).ifPresent(group -> {
             try
             {
                 client.create(group);
@@ -117,7 +117,7 @@ public class TaskGroupManagementDialog
             catch (Exception e)
             {
                 log.error("failed to create group", e);
-                showError("Gruppe anlegen", e);
+                showError("Create group", e);
             }
         });
     }
@@ -128,7 +128,7 @@ public class TaskGroupManagementDialog
         if (sel == null || sel.id() == null) return;
 
         TaskGroupBean draft = new TaskGroupBean(sel);
-        editGroup("Gruppe umbenennen", draft)
+        editGroup("Rename group", draft)
             .filter(group -> !group.name().equals(sel.name()))
             .ifPresent(group -> {
                 try
@@ -139,7 +139,7 @@ public class TaskGroupManagementDialog
                 catch (Exception e)
                 {
                     log.error("failed to rename group", e);
-                    showError("Gruppe umbenennen", e);
+                    showError("Rename group", e);
                 }
             });
     }
@@ -150,14 +150,14 @@ public class TaskGroupManagementDialog
         if (sel == null || sel.id() == null) return;
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-            "Gruppe \"" + sel.name() + "\" löschen?\n(Alle Tasks der Gruppe werden ebenfalls gelöscht.)",
+            "Delete group \"" + sel.name() + "\"?\n(All tasks in the group will also be deleted.)",
             ButtonType.OK, ButtonType.CANCEL);
-        confirm.setTitle("Gruppe löschen");
+        confirm.setTitle("Delete group");
         confirm.setHeaderText(null);
         if (confirm.showAndWait().filter(bt -> bt == ButtonType.OK).isPresent())
         {
             try { client.delete(sel); reload(); }
-            catch (Exception e) { log.error("failed to delete group", e); showError("Gruppe löschen", e); }
+            catch (Exception e) { log.error("failed to delete group", e); showError("Delete group", e); }
         }
     }
 

@@ -2,12 +2,12 @@ package de.ruu.lib.gen;
 
 import de.ruu.lib.util.Strings;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class LineIndenter
 {
-	private static final Logger log = LoggerFactory.getLogger(LineIndenter.class);
+	private static final Logger log = LogManager.getLogger(LineIndenter.class);
 	/** String used for indentation of lines in {@link #indent(String)} and {@link #indent(StringBuffer)}. */
 	private String indentation;
 

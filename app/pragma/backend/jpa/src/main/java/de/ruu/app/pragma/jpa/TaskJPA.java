@@ -1,6 +1,8 @@
 package de.ruu.app.pragma.jpa;
 
 import de.ruu.app.pragma.core.PersistentTask;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
 
@@ -68,8 +70,13 @@ public class TaskJPA implements PersistentTask<TaskGroupJPA, TaskJPA>
     @Column
     private @Nullable LocalDate scheduledFinish;
 
-    @Column(nullable = false, columnDefinition = "boolean not null default false")
-    private           Boolean   closed = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private           TaskStatus status = TaskStatus.NEW;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private           TaskPriority priority = TaskPriority.NORMAL;
 
     /** JPA-required no-arg constructor. */
     protected TaskJPA() { name = ""; taskGroup = new TaskGroupJPA(); }
@@ -98,7 +105,8 @@ public class TaskJPA implements PersistentTask<TaskGroupJPA, TaskJPA>
     @Override public Optional<Double>       workActual         () { return ofNullable(workActual         ); }
     @Override public Optional<LocalDate>    scheduledStart     () { return ofNullable(scheduledStart     ); }
     @Override public Optional<LocalDate>    scheduledFinish    () { return ofNullable(scheduledFinish    ); }
-    @Override public Boolean                closed             () { return            closed              ; }
+    @Override public TaskStatus             status             () { return            status              ; }
+    @Override public TaskPriority           priority           () { return            priority            ; }
 
     @Override public TaskJPA name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
     @Override public TaskJPA parentTask         (@Nullable TaskJPA   p) { parentTask          =                p         ; return this; }
@@ -108,7 +116,8 @@ public class TaskJPA implements PersistentTask<TaskGroupJPA, TaskJPA>
     @Override public TaskJPA workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
     @Override public TaskJPA scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
     @Override public TaskJPA scheduledFinish    (@Nullable LocalDate e) { scheduledFinish     =                e         ; return this; }
-    @Override public TaskJPA closed             (          Boolean   c) { closed              =                c         ; return this; }
+    @Override public TaskJPA status             (          TaskStatus s) { status              =                s         ; return this; }
+    @Override public TaskJPA priority           (          TaskPriority p) { priority            =                p         ; return this; }
 
     @Override
     public TaskGroupJPA taskGroup() { return taskGroup; }

@@ -7,12 +7,12 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import de.ruu.lib.fx.demo.bean.FXBean;
 import de.ruu.lib.gen.GeneratorException;
 import de.ruu.lib.gen.java.fx.tableview.GeneratorFXTableViewConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 class RunnerRUUFXDemoTableViewConfiguratorGenerator
 {
-	private static final Logger log = LoggerFactory.getLogger(RunnerRUUFXDemoTableViewConfiguratorGenerator.class);
+	private static final Logger log = LogManager.getLogger(RunnerRUUFXDemoTableViewConfiguratorGenerator.class);
 
 	public static void main(String[] args) throws GeneratorException, IOException
 	{

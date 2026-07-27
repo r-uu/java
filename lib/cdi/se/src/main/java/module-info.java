@@ -7,5 +7,5 @@ module de.ruu.lib.cdi.se
 	requires jakarta.el;
 	requires jakarta.inject;
 	requires jakarta.interceptor;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 }

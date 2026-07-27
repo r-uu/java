@@ -1,7 +1,7 @@
 package de.ruu.lib.keycloak.admin.validation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class JwtTokenParser
 {
-	private static final Logger log = LoggerFactory.getLogger(JwtTokenParser.class);
+	private static final Logger log = LogManager.getLogger(JwtTokenParser.class);
 
 	/**
 	 * Parses a JWT token and extracts common claims.

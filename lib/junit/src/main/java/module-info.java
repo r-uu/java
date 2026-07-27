@@ -5,7 +5,7 @@ module de.ruu.lib.junit
 	requires jakarta.inject;
 	requires java.desktop;
 	requires org.junit.platform.commons;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires microprofile.config.api;
 	requires de.ruu.lib.util;
 

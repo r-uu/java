@@ -1,8 +1,8 @@
 package de.ruu.lib.util.csv;
 
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface CSVRowProcessor
 {
@@ -10,7 +10,7 @@ public interface CSVRowProcessor
 
 	class CSVRowProcessorSimple implements CSVRowProcessor
 	{
-		static final Logger log = LoggerFactory.getLogger(CSVRowProcessorSimple.class);
+		static final Logger log = LogManager.getLogger(CSVRowProcessorSimple.class);
 
 		/** Public constructor. */
 		public CSVRowProcessorSimple() { }

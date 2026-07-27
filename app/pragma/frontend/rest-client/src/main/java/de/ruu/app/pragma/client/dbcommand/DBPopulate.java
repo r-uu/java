@@ -4,38 +4,44 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
 public class DBPopulate
 {
+    private static final Logger log = LogManager.getLogger(DBPopulate.class);
+
     public static void main(String[] args)
     {
         TaskGroupClient groupClient = new TaskGroupClient();
         groupClient.postConstruct();
-        TaskClient taskClient = new TaskClient();
-        taskClient.postConstruct();
+
+        TaskClient      taskClient  = new TaskClient();
+        taskClient .postConstruct();
+
         try
         {
             run(groupClient, taskClient);
         }
         finally
         {
-            taskClient.preDestroy();
+            taskClient .preDestroy();
             groupClient.preDestroy();
         }
     }
 
     public static void run(TaskGroupClient groupClient, TaskClient taskClient)
     {
-        System.out.println("populating database ...");
+        log.info("Populating database ...");
         populateDatabase(groupClient, taskClient);
-        System.out.println("done");
+        log.info("Done.");
     }
 
     private static void populateDatabase(TaskGroupClient groupClient, TaskClient taskClient)
     {
-        TaskGroupBean project = groupClient.create(new TaskGroupBean("project jeeeraaah"));
+        TaskGroupBean project = groupClient.create(new TaskGroupBean("project pragma"));
 
         TaskBean featureSet1 = taskClient.create(new TaskBean(project, "feature set 1")
                 .scheduledStart(LocalDate.of(2025, 1,  1))

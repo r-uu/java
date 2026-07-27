@@ -14,7 +14,7 @@ module de.ruu.lib.keycloak.admin
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
 	requires org.jspecify;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	exports de.ruu.lib.keycloak.admin;
 	exports de.ruu.lib.keycloak.admin.setup;

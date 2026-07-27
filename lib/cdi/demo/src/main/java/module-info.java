@@ -10,7 +10,7 @@ module de.ruu.lib.cdi.se.demo
 	requires jakarta.cdi;
 	requires jakarta.el;
 	requires jakarta.inject;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires de.ruu.lib.cdi.se;
 
 }

@@ -12,8 +12,8 @@ import de.ruu.lib.gen.java.element.GeneratorAnnotations;
 import de.ruu.lib.gen.java.element.GeneratorElement;
 import de.ruu.lib.gen.java.element.GeneratorModifiers;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Package statements look like {@code package x.y.z;} where x, y and z are the names

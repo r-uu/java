@@ -8,8 +8,8 @@ import de.ruu.lib.gen.java.fx.bean.FXBeanGenerator;
 import de.ruu.lib.gen.java.fx.bean.FXProperty;
 import de.ruu.lib.gen.java.fx.bean.editor.FXBeanViewFXMLGenerator;
 import de.ruu.lib.gen.java.fx.comp.GeneratorFXCompBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 class GeneratorRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(GeneratorRunner.class);
+	private static final Logger log = LogManager.getLogger(GeneratorRunner.class);
 	interface JavaModelDemo
 	{
 		@FXProperty boolean      aBoolean();

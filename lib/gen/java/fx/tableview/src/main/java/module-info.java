@@ -6,7 +6,7 @@ module de.ruu.lib.gen.java.fx.tableview
 	requires javafx.base;
 	requires javafx.controls;
 	requires javafx.graphics;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires de.ruu.lib.gen.core;
 	requires de.ruu.lib.gen.java;

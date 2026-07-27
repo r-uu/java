@@ -3,8 +3,8 @@ package de.ruu.lib.jsonb;
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serial;
 import java.lang.reflect.Type;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Disabled("there is a subtle problem with the jsonb configurator that causes the test to fail in github actions")
 class TestJsonBWithMaxEncapsulationForData
 {
-	private static final Logger log = LoggerFactory.getLogger(TestJsonBWithMaxEncapsulationForData.class);
+	private static final Logger log = LogManager.getLogger(TestJsonBWithMaxEncapsulationForData.class);
 
 	private final static Type SET_OF_PARENTS = new HashSet<Parent>()
 			{

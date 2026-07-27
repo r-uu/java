@@ -1,7 +1,7 @@
 package de.ruu.lib.keycloak.admin.validation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class KeycloakConfigValidator
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakConfigValidator.class);
+	private static final Logger log = LogManager.getLogger(KeycloakConfigValidator.class);
 
 	/**
 	 * Validates that all required roles exist in the Keycloak token.
@@ -220,11 +220,11 @@ public class KeycloakConfigValidator
 		{
 			if (valid)
 			{
-				return "✓ All required roles are present in token";
+				return "[OK] All required roles are present in token";
 			}
 			else
 			{
-				return String.format("✗ Missing %d required role(s): %s",
+				return String.format("[FAIL] Missing %d required role(s): %s",
 						missingRoles.size(),
 						String.join(", ", missingRoles));
 			}
@@ -307,11 +307,11 @@ public class KeycloakConfigValidator
 		{
 			if (valid)
 			{
-				return String.format("✓ Token audience contains expected value '%s'", expectedAudience);
+				return String.format("[OK] Token audience contains expected value '%s'", expectedAudience);
 			}
 			else
 			{
-				return String.format("✗ Token audience %s does not contain expected '%s'",
+				return String.format("[FAIL] Token audience %s does not contain expected '%s'",
 						tokenAudiences, expectedAudience);
 			}
 		}
@@ -323,8 +323,8 @@ public class KeycloakConfigValidator
 			List<String> recommendations = new ArrayList<>();
 			recommendations.add("Configure audience mapper in Keycloak:");
 			recommendations.add(String.format(
-					"  1. Navigate to: Clients → pragma-frontend → Client scopes → pragma-frontend-dedicated"));
-			recommendations.add("  2. Add mapper → By configuration → Audience");
+					"  1. Navigate to: Clients -> pragma-frontend -> Client scopes -> pragma-frontend-dedicated"));
+			recommendations.add("  2. Add mapper -> By configuration -> Audience");
 			recommendations.add(String.format("  3. Set 'Included Custom Audience' = %s", expectedAudience));
 			return recommendations;
 		}
@@ -389,11 +389,11 @@ public class KeycloakConfigValidator
 		{
 			if (consistent)
 			{
-				return "✓ Role naming is consistent";
+				return "[OK] Role naming is consistent";
 			}
 			else
 			{
-				return String.format("⚠ Detected %d potential naming inconsistenc%s",
+				return String.format("[WARN] Detected %d potential naming inconsistenc%s",
 						suspiciousRoles.size(),
 						suspiciousRoles.size() == 1 ? "y" : "ies");
 			}
@@ -407,7 +407,7 @@ public class KeycloakConfigValidator
 			recommendations.add("Consider standardizing role names:");
 			for (Map.Entry<String, String> entry : suggestions.entrySet())
 			{
-				recommendations.add(String.format("  '%s' → '%s'", entry.getKey(), entry.getValue()));
+				recommendations.add(String.format("  '%s' -> '%s'", entry.getKey(), entry.getValue()));
 			}
 			return recommendations;
 		}
@@ -473,12 +473,12 @@ public class KeycloakConfigValidator
 		{
 			if (warnings.isEmpty())
 			{
-				return String.format("✓ Token lifetimes configured (access=%ds, refresh=%ds)",
+				return String.format("[OK] Token lifetimes configured (access=%ds, refresh=%ds)",
 						accessTokenLifetimeSeconds, refreshTokenLifetimeSeconds);
 			}
 			else
 			{
-				return String.format("⚠ Token lifetime has %d warning(s)", warnings.size());
+				return String.format("[WARN] Token lifetime has %d warning(s)", warnings.size());
 			}
 		}
 
@@ -488,8 +488,8 @@ public class KeycloakConfigValidator
 
 			List<String> recommendations = new ArrayList<>();
 			recommendations.add("Review token lifetime configuration in Keycloak:");
-			recommendations.add("  Realm Settings → Tokens → Access Token Lifespan");
-			recommendations.add("  Realm Settings → Tokens → Refresh Token Lifespan");
+			recommendations.add("  Realm Settings -> Tokens -> Access Token Lifespan");
+			recommendations.add("  Realm Settings -> Tokens -> Refresh Token Lifespan");
 			return recommendations;
 		}
 
@@ -605,14 +605,14 @@ public class KeycloakConfigValidator
 				report.append("  ").append(tokenLifetime.summary()).append("\n");
 				if (!tokenLifetime.warnings().isEmpty())
 				{
-					tokenLifetime.warnings().forEach(w -> report.append("  ⚠ ").append(w).append("\n"));
+					tokenLifetime.warnings().forEach(w -> report.append("  [WARN] ").append(w).append("\n"));
 					tokenLifetime.recommendations().forEach(r -> report.append("  ").append(r).append("\n"));
 				}
 			}
 
 			report.append("\n");
 			report.append("=".repeat(60)).append("\n");
-			report.append("Overall Status: ").append(fullyValid() ? "✓ VALID" : "✗ ISSUES DETECTED").append("\n");
+			report.append("Overall Status: ").append(fullyValid() ? "[OK] VALID" : "[FAIL] ISSUES DETECTED").append("\n");
 
 			return report.toString();
 		}

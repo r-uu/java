@@ -105,7 +105,8 @@ public final class Mappings
         out.workActual(in.workActual().orElse(null));
         out.scheduledStart(in.scheduledStart().orElse(null));
         out.scheduledFinish(in.scheduledFinish()  .orElse(null));
-        out.closed      (in.closed());
+        out.status      (in.status());
+        out.priority    (in.priority());
 
         in.parentTask().ifPresent(p -> {
             TaskBean parentBean = (TaskBean) ctx.get(p);

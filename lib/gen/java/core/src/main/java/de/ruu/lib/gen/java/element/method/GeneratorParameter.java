@@ -9,8 +9,8 @@ import de.ruu.lib.gen.java.Generator;
 import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import de.ruu.lib.gen.java.element.GeneratorAnnotations;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface GeneratorParameter extends Generator
 {

@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -33,7 +33,7 @@ import java.util.List;
 @Disabled("Requires Keycloak running on localhost:8080")
 class KeycloakRealmManagerIT
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmManagerIT.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmManagerIT.class);
 
 	private KeycloakRealmManager manager;
 	private List<String> createdRoles;

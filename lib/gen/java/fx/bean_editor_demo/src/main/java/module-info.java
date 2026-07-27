@@ -6,7 +6,6 @@ module de.ruu.lib.gen.java.fx.bean.editor.demo
 	requires com.tngtech.archunit;
 
 	requires org.apache.logging.log4j;
-	requires org.slf4j;
 
 	requires javafx.base;
 	requires javafx.controls;

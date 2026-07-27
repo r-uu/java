@@ -258,7 +258,7 @@ module de.ruu.lib.util.config {
     requires transitive jakarta.cdi;
     requires transitive microprofile.config.api;
     requires static lombok;
-    requires org.slf4j;
+    requires org.apache.logging.log4j;
 }
 ```
 

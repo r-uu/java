@@ -5,8 +5,8 @@ import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.interceptor.Interceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.URL;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public abstract class CDIContainer
 {
-	private static final Logger log = LoggerFactory.getLogger(CDIContainer.class);
+	private static final Logger log = LogManager.getLogger(CDIContainer.class);
 
 	private CDIContainer()
 	{

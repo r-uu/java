@@ -3,7 +3,7 @@ module de.ruu.lib.jpa.core.mapstruct {
 
 	requires static java.compiler; // needed for MapStruct generated code
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires de.ruu.lib.jpa.core;
 	requires de.ruu.lib.mapstruct;

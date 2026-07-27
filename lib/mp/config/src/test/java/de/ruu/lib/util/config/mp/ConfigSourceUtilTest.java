@@ -1,8 +1,8 @@
 package de.ruu.lib.util.config.mp;
 
 import org.eclipse.microprofile.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConfigSourceUtilTest
 {
-	private static final Logger log = LoggerFactory.getLogger(ConfigSourceUtilTest.class);
+	private static final Logger log = LogManager.getLogger(ConfigSourceUtilTest.class);
 
 	@TempDir
 	Path tempDir;

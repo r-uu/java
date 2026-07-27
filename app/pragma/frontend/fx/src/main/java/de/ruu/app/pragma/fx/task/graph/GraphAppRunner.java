@@ -1,12 +1,12 @@
 package de.ruu.app.pragma.fx.task.graph;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class GraphAppRunner extends FXCAppRunner
 {
-    private static final Logger log = LoggerFactory.getLogger(GraphAppRunner.class);
+    private static final Logger log = LogManager.getLogger(GraphAppRunner.class);
 
     public static void main(String[] args)
     {

@@ -9,8 +9,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Processes all files in a directory. Processing is configured by processors that can be provided by {@link
@@ -23,7 +23,7 @@ public interface DirectoryEntryProvider
 
 	class DirectoryEntryProviderSimple implements DirectoryEntryProvider
 	{
-		static final Logger log = LoggerFactory.getLogger(DirectoryEntryProviderSimple.class);
+		static final Logger log = LogManager.getLogger(DirectoryEntryProviderSimple.class);
 
 		/** Public constructor. */
 		public DirectoryEntryProviderSimple() { }

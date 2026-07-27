@@ -8,8 +8,8 @@ import de.ruu.lib.fx.comp.FXCAppStartedEvent;
 import de.ruu.lib.fx.control.buttons.EditService.EditComponentReadyEvent;
 import de.ruu.lib.fx.control.buttons.EditService.EditComponentReadyEvent.EditComponentReadyEventDispatcher;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 class EditAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(EditAppRunner.class);
+	private static final Logger log = LogManager.getLogger(EditAppRunner.class);
 
 	public static void main(String[] args)
 	{

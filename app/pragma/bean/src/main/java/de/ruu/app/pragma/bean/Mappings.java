@@ -120,7 +120,8 @@ public final class Mappings
         out.description (in.description().orElse(null));
         out.scheduledStart(in.scheduledStart().orElse(null));
         out.scheduledFinish(in.scheduledFinish()  .orElse(null));
-        out.closed      (in.closed());
+        out.status      (in.status());
+        out.priority    (in.priority());
 
         in.parentTask().ifPresent(p -> {
             TaskDto parentDto = (TaskDto) ctx.get(p);

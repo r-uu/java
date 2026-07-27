@@ -4,6 +4,7 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.TaskGroupManagementDialog;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.FXUtil;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
@@ -19,8 +20,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -31,7 +32,7 @@ import java.util.*;
 @Dependent
 class GanttController extends DefaultFXCController<Gantt, GanttService> implements GanttService
 {
-    private static final Logger log = LoggerFactory.getLogger(GanttController.class);
+    private static final Logger log = LogManager.getLogger(GanttController.class);
 
     private static final DateTimeFormatter DE_FORMAT    = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DAY_FORMAT   = DateTimeFormatter.ofPattern("dd");
@@ -45,12 +46,13 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     @FXML private Button btnReload;
     @FXML private Label  lblStatus;
 
-    private TextFieldAutoCompleteClearableWithArrowButton<TaskGroupBean> cbGroups;
     @FXML private DatePicker dtPckrStart;
     @FXML private DatePicker dtPckrEnd;
     @FXML private Button     btnApply;
 
-    private de.ruu.app.pragma.fx.TaskGroupManagementDialog groupManagementDialog;
+    private TaskGroupManagementDialog                                    groupManagementDialog;
+		private TextFieldAutoCompleteClearableWithArrowButton<TaskGroupBean> tfaccTaskGroupSelection;
+
 
     // ── main table ───────────────────────────────────────────────────────────
 
@@ -71,6 +73,9 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     // ── state ────────────────────────────────────────────────────────────────
 
     private List<TaskBean> currentTasks = List.of();
+    private TaskBean       hoveredTask;
+    private Set<Long>      overlappingPredecessorIds = Set.of();
+    private Set<Long>      overlappingSuccessorIds   = Set.of();
 
     /** True when a user-initiated field change has not yet been saved. */
     private boolean dirty       = false;
@@ -81,25 +86,23 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     // ── initialization ───────────────────────────────────────────────────────
 
-    @Override
-    @FXML
-    protected void initialize()
+    @Override @FXML protected void initialize()
     {
-        cbGroups = TextFieldAutoCompleteClearableWithArrowButtonBuilder.<TaskGroupBean>create()
+        tfaccTaskGroupSelection = TextFieldAutoCompleteClearableWithArrowButtonBuilder.<TaskGroupBean>create()
                 .items(List.of())
                 .suggestionFilter((g, text) -> g.name().toLowerCase().contains(text.toLowerCase()))
                 .comparator(Comparator.comparing(TaskGroupBean::name))
                 .textProvider(TaskGroupBean::name)
                 .prompt("group …")
                 .build();
-        cbGroups.setMaxWidth(Double.MAX_VALUE);
-        vBxForGroup.getChildren().add(cbGroups);
-        cbGroups.valueProperty()
+        tfaccTaskGroupSelection.setMaxWidth(Double.MAX_VALUE);
+        vBxForGroup.getChildren().add(tfaccTaskGroupSelection);
+        tfaccTaskGroupSelection.valueProperty()
                 .addListener((obs, old, sel) -> {
                     if (handlingNav || sel == null) return;
                     if (!confirmDiscardChanges()) {
                         handlingNav = true;
-                        cbGroups.value(old);
+                        tfaccTaskGroupSelection.value(old);
                         handlingNav = false;
                         return;
                     }
@@ -123,6 +126,15 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         ttv.setShowRoot(false);
         ttv.setRoot(new TreeItem<>());
         ttv.setColumnResizePolicy(TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
+        // Clear all hover markers once the pointer leaves the table completely.
+        // (Clearing in cell-level mouse-exit is unstable because refresh() recreates cells.)
+        ttv.setOnMouseExited(evt -> {
+            if (hoveredTask != null)
+            {
+                clearHoveredTask();
+                ttv.refresh();
+            }
+        });
         ttv.getSelectionModel().selectedItemProperty()
            .addListener((obs, old, sel) -> {
                if (handlingNav) return;
@@ -149,7 +161,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     private void onManageGroups()
     {
         if (groupManagementDialog == null)
-            groupManagementDialog = new de.ruu.app.pragma.fx.TaskGroupManagementDialog(taskGroupClient, taskGroupEditor, this::loadGroups);
+            groupManagementDialog = new TaskGroupManagementDialog(taskGroupClient, taskGroupEditor, this::loadGroups);
         groupManagementDialog.showAndWait();
     }
 
@@ -157,7 +169,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     private void loadGroups()
     {
-        lblStatus.setText("Verbinde …");
+        lblStatus.setText("Connecting ...");
         Thread.ofVirtual().start(() ->
         {
             try
@@ -165,15 +177,15 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 List<TaskGroupBean> groups = taskGroupClient.findAll();
                 Platform.runLater(() ->
                 {
-                    cbGroups.items(groups);
-                    if (!groups.isEmpty()) cbGroups.value(groups.get(0));
+                    tfaccTaskGroupSelection.items(groups);
+                    if (!groups.isEmpty()) tfaccTaskGroupSelection.value(groups.get(0));
                     lblStatus.setText("");
                 });
             }
             catch (Exception e)
             {
                 log.error("failed to load groups", e);
-                Platform.runLater(() -> lblStatus.setText("⚠ Verbindungsfehler — Server erreichbar?"));
+                Platform.runLater(() -> lblStatus.setText("[WARN] Connection error - is the server reachable?"));
             }
         });
     }
@@ -182,7 +194,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     {
         try
         {
-            currentTasks = taskClient.findAll(group);
+            currentTasks = taskClient.findGroupTasksWithRelated(group);
             Platform.runLater(this::reloadTable);
         }
         catch (Exception e) { log.error("failed to load group {}", group.name(), e); }
@@ -193,6 +205,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         LocalDate start = dtPckrStart.getValue();
         LocalDate end   = dtPckrEnd  .getValue();
         if (start == null || end == null || !end.isAfter(start)) return;
+        clearHoveredTask();
 
         ttv.getColumns().clear();
         ttv.getRoot().getChildren().clear();
@@ -236,10 +249,12 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 dayCol.setCellValueFactory(cdf -> {
                     TaskBean task = cdf.getValue().getValue();
                     if (task == null) return new SimpleStringProperty("");
-                    LocalDate ps = task.scheduledStart().orElse(null);
-                    LocalDate pe = task.scheduledFinish()  .orElse(null);
+                    LocalDate ps = task.scheduledStart ().orElse(null);
+                    LocalDate pe = task.scheduledFinish().orElse(null);
+                    // We pass a non-empty marker string for "task covers this day".
+                    // updateItem(...) below does not check for a specific value; it only checks empty vs non-empty.
                     if (ps != null && pe != null && !date.isBefore(ps) && !date.isAfter(pe))
-                        return new SimpleStringProperty("x");
+                        return new SimpleStringProperty("filled");
                     return new SimpleStringProperty("");
                 });
 
@@ -251,13 +266,36 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                         if (empty || item == null || item.isEmpty())
                         {
                             setText(null);
+                            setGraphic(null);
+                            // Leaving a task bar (blue cell) into a non-bar cell should remove markers.
+                            setOnMouseEntered(evt -> {
+                                if (hoveredTask != null)
+                                {
+                                    clearHoveredTask();
+                                    ttv.refresh();
+                                }
+                            });
+                            setOnMouseExited(null);
                             setStyle("");
                         }
                         else
                         {
-                            setText("x");
+                            // Any non-empty item means: this day is covered by the row's task bar.
+                            setText(null);
                             setAlignment(Pos.CENTER);
-                            setStyle("-fx-background-color: #4a90e2; -fx-text-fill: white;");
+                            setOnMouseEntered(evt -> {
+                                TaskBean rowTask = getTreeTableRow() != null ? getTreeTableRow().getItem() : null;
+                                if (rowTask != null && rowTask != hoveredTask)
+                                {
+                                    setHoveredTask(rowTask);
+                                    ttv.refresh();
+                                }
+                            });
+                            setOnMouseExited(null);
+                            String relationMarker = relationMarkerFor(
+                                getTreeTableRow() != null ? getTreeTableRow().getItem() : null, date);
+                            setGraphic(relationMarker == null ? null : createRelationMarker(relationMarker));
+                            setStyle("-fx-background-color: #4a90e2;");
                         }
                     }
                 });
@@ -336,7 +374,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         {
             log.error("failed to save dates", e);
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-            alert.setTitle("Datumfelder speichern");
+            alert.setTitle("Save date fields");
             alert.setHeaderText(null);
             alert.showAndWait();
         }
@@ -344,13 +382,83 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     // ── helpers ──────────────────────────────────────────────────────────────
 
+    private void setHoveredTask(TaskBean task)
+    {
+        // Cache only overlapping relations of the currently hovered base task.
+        // During rendering we check each row against these ID sets and show p/s on matching bars.
+        hoveredTask = task;
+        overlappingPredecessorIds = relatedOverlapIds(task, task.predecessors());
+        overlappingSuccessorIds   = relatedOverlapIds(task, task.successors());
+    }
+
+    private void clearHoveredTask()
+    {
+        hoveredTask = null;
+        overlappingPredecessorIds = Set.of();
+        overlappingSuccessorIds   = Set.of();
+    }
+
+    private Set<Long> relatedOverlapIds(TaskBean baseTask, Optional<Set<TaskBean>> relatedTasks)
+    {
+        Set<Long> result = new HashSet<>();
+        relatedTasks.ifPresent(tasks -> tasks.stream()
+            .filter(related -> overlaps(baseTask, related))
+            .map(TaskBean::id)
+            .filter(Objects::nonNull)
+            .forEach(result::add));
+        return result;
+    }
+
+    private String relationMarkerFor(TaskBean rowTask, LocalDate day)
+    {
+        // A marker is row- and day-scoped:
+        // - p: this row's task is an overlapping predecessor of the currently hovered task
+        // - s: this row's task is an overlapping successor of the currently hovered task
+        // and the concrete day must also be inside the hovered task interval.
+        // This restricts markers to the real day-level intersection, not the whole related bar.
+        if (rowTask == null) return null;
+        Long rowTaskId = rowTask.id();
+        if (rowTaskId == null) return null;
+        if (!dayInTaskRange(hoveredTask, day)) return null;
+        if (overlappingPredecessorIds.contains(rowTaskId)) return "p";
+        if (overlappingSuccessorIds  .contains(rowTaskId)) return "s";
+        return null;
+    }
+
+    private Label createRelationMarker(String text)
+    {
+        Label marker = new Label(text);
+        marker.setStyle("-fx-font-size: 8px; -fx-font-weight: bold; -fx-text-fill: #000000;"
+            + "-fx-background-color: #f1c40f; -fx-background-radius: 2; -fx-padding: 0 2 0 2;");
+        return marker;
+    }
+
+    private boolean overlaps(TaskBean left, TaskBean right)
+    {
+        LocalDate leftStart  = left.scheduledStart ().orElse(null);
+        LocalDate leftEnd    = left.scheduledFinish().orElse(null);
+        LocalDate rightStart = right.scheduledStart ().orElse(null);
+        LocalDate rightEnd   = right.scheduledFinish().orElse(null);
+        if (leftStart == null || leftEnd == null || rightStart == null || rightEnd == null) return false;
+        return !leftEnd.isBefore(rightStart) && !rightEnd.isBefore(leftStart);
+    }
+
+    private boolean dayInTaskRange(TaskBean task, LocalDate day)
+    {
+        if (task == null || day == null) return false;
+        LocalDate start = task.scheduledStart ().orElse(null);
+        LocalDate end   = task.scheduledFinish().orElse(null);
+        if (start == null || end == null) return false;
+        return !day.isBefore(start) && !day.isAfter(end);
+    }
+
     private boolean confirmDiscardChanges()
     {
         if (!dirty) return true;
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Es gibt ungespeicherte Änderungen. Wirklich verwerfen?",
+                "There are unsaved changes. Discard them?",
                 ButtonType.OK, ButtonType.CANCEL);
-        confirm.setTitle("Ungespeicherte Änderungen");
+        confirm.setTitle("Unsaved changes");
         confirm.setHeaderText(null);
         return confirm.showAndWait().filter(bt -> bt == ButtonType.OK).isPresent();
     }

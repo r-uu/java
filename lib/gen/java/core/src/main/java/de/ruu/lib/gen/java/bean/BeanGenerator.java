@@ -37,8 +37,8 @@ import de.ruu.lib.gen.java.element.type.GeneratorClassImplements;
 import de.ruu.lib.gen.java.naming.ImportManager;
 import de.ruu.lib.util.Time;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * {@link BeanGenerator} produces java bean class for given {@link BeanGenerator#clazz}.
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BeanGenerator
 {
-	private static final Logger log = LoggerFactory.getLogger(BeanGenerator.class);
+	private static final Logger log = LogManager.getLogger(BeanGenerator.class);
 	@NonNull private final String packageName;    // package name for target
 	@NonNull private final String simpleFileName; // simple file name for target
 

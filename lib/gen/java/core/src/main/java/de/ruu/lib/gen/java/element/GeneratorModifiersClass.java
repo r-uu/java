@@ -5,8 +5,8 @@ import javax.lang.model.element.Element;
 import de.ruu.lib.gen.java.Visibility;
 import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** generator for modifiers of java class {@link Element}s (java classes may be abstract) */
 public interface GeneratorModifiersClass extends GeneratorModifiersAbstractable

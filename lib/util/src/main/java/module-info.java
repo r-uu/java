@@ -1,7 +1,7 @@
 module de.ruu.lib.util
 {
     requires static jakarta.annotation;
-    requires transitive org.slf4j;
+    requires transitive org.apache.logging.log4j;
     requires transitive java.compiler;
     
     requires static transitive org.jspecify;

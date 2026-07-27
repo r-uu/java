@@ -15,8 +15,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.Optional;
 class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, PostgresUtilUIService>
 		implements PostgresUtilUIService
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresUtilUIController.class);
+	private static final Logger log = LogManager.getLogger(PostgresUtilUIController.class);
 
 	public static final String POSTGRES_BACKUP_EXE_KEY         = "postgres.backup.exe";
 	public static final String POSTGRES_BACKUP_EXE_VALUE       = ".";

@@ -1,6 +1,6 @@
 module de.ruu.lib.docker.health
 {
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires java.sql;
 	requires org.postgresql.jdbc;  // PostgreSQL JDBC driver (automatic module)
 	requires de.ruu.lib.util.config.mp;

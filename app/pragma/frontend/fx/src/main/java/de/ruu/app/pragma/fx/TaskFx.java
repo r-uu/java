@@ -1,7 +1,9 @@
 package de.ruu.app.pragma.fx;
 
 import de.ruu.app.pragma.core.PersistentTask;
+import de.ruu.app.pragma.core.TaskPriority;
 import de.ruu.app.pragma.core.Task;
+import de.ruu.app.pragma.core.TaskStatus;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -31,7 +33,8 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
     private final DoubleProperty                      workActual          = new SimpleDoubleProperty();
     private final ObjectProperty<@Nullable LocalDate> scheduledStart      = new SimpleObjectProperty<>();
     private final ObjectProperty<@Nullable LocalDate> scheduledEnd        = new SimpleObjectProperty<>();
-    private final BooleanProperty                     closed              = new SimpleBooleanProperty(false);
+    private final ObjectProperty<TaskStatus>          status              = new SimpleObjectProperty<>(TaskStatus.NEW);
+    private final ObjectProperty<TaskPriority>        priority            = new SimpleObjectProperty<>(TaskPriority.NORMAL);
 
     public LongProperty                        idProperty                 () { return id;                  }
     public StringProperty                      nameProperty               () { return name;                }
@@ -46,7 +49,8 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
     public DoubleProperty                      workActualProperty         () { return workActual;          }
     public ObjectProperty<@Nullable LocalDate> scheduledStartProperty     () { return scheduledStart;      }
     public ObjectProperty<@Nullable LocalDate> scheduledEndProperty       () { return scheduledEnd;        }
-    public BooleanProperty                     closedProperty             () { return closed;              }
+    public ObjectProperty<TaskStatus>          statusProperty             () { return status;              }
+    public ObjectProperty<TaskPriority>        priorityProperty           () { return priority;            }
 
     public TaskFx(String name, TaskGroupFx taskGroup)
     {
@@ -67,7 +71,8 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
         this.workActual.set(in.workActual().orElse(0.0));
         this.scheduledStart.set(in.scheduledStart().orElse(null));
         this.scheduledEnd.set(in.scheduledFinish().orElse(null));
-        this.closed.set(in.closed());
+        this.status.set(in.status());
+        this.priority.set(in.priority());
         requireNonNull(group, "group");
         group.addTask(this);
     }
@@ -86,7 +91,8 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
     @Override public Optional<Double>     workActual         () { return ofNullable(workActual         .get()); }
     @Override public Optional<LocalDate>  scheduledStart     () { return ofNullable(scheduledStart     .get()); }
     @Override public Optional<LocalDate>  scheduledFinish    () { return ofNullable(scheduledEnd       .get()); }
-    @Override public          Boolean     closed             () { return            closed             .get() ; }
+    @Override public          TaskStatus   status             () { return            status             .get() ; }
+    @Override public          TaskPriority priority           () { return            priority           .get() ; }
 
     @Override public TaskFx name               (          String    n) { name               .set(requireNonNull(n, "name")); return this; }
     @Override public TaskFx description        (@Nullable String    d) { description        .set(d)                        ; return this; }
@@ -95,7 +101,8 @@ public class TaskFx implements PersistentTask<TaskGroupFx, TaskFx>
     @Override public TaskFx workActual         (@Nullable Double    a) { workActual         .set(a)                        ; return this; }
     @Override public TaskFx scheduledStart     (@Nullable LocalDate s) { scheduledStart     .set(s)                        ; return this; }
     @Override public TaskFx scheduledFinish    (@Nullable LocalDate e) { scheduledEnd       .set(e)                        ; return this; }
-    @Override public TaskFx closed             (          Boolean   c) { closed             .set(c)                        ; return this; }
+    @Override public TaskFx status             (          TaskStatus s) { status             .set(s)                        ; return this; }
+    @Override public TaskFx priority           (          TaskPriority p) { priority           .set(p)                        ; return this; }
 
     @Override public TaskFx taskGroup(TaskGroupFx group)
     {

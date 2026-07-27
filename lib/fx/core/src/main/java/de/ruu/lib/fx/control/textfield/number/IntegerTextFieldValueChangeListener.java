@@ -5,8 +5,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ import static java.util.Objects.isNull;
  */
 public class IntegerTextFieldValueChangeListener implements ChangeListener<String>
 {
-	private static final Logger log = LoggerFactory.getLogger(IntegerTextFieldValueChangeListener.class);
+	private static final Logger log = LogManager.getLogger(IntegerTextFieldValueChangeListener.class);
 
 	private final IntegerStringConverter converter = new IntegerStringConverter();
 	private final TextFormatter<Integer> formatter = new TextFormatter<>(converter);

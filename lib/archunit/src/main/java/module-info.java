@@ -6,6 +6,6 @@ module de.ruu.lib.archunit
 
 //	requires transitive com.tngtech.archunit;
 	requires com.tngtech.archunit;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 }

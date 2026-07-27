@@ -3,8 +3,8 @@ package de.ruu.lib.fx.control.gantt.demo;
 import de.ruu.lib.fx.control.gantt.api.GanttDataProvider;
 import de.ruu.lib.fx.control.gantt.api.GanttTask;
 import jakarta.enterprise.context.Dependent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Dependent
 public class MockGanttDataProvider implements GanttDataProvider {
-	private static final Logger log = LoggerFactory.getLogger(MockGanttDataProvider.class);
+	private static final Logger log = LogManager.getLogger(MockGanttDataProvider.class);
 	
 	private final Map<String, MockGanttTask> tasksById = new HashMap<>();
 	private int taskCounter = 0;

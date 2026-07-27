@@ -1,6 +1,6 @@
 package de.ruu.lib.util;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.apache.logging.log4j.LogManager;
 
 import static de.ruu.lib.util.BooleanFunctions.not;
 import static java.io.File.separatorChar;
@@ -280,5 +281,5 @@ public interface Files
 		}
 	}
 
-	private static Logger log() { return Slf4jLogProvider.logger(Files.class); }
+	private static Logger log() { return LogManager.getLogger(Files.class); }
 }

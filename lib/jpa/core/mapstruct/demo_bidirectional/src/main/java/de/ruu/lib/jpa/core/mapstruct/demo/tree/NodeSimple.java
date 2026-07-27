@@ -3,8 +3,8 @@ package de.ruu.lib.jpa.core.mapstruct.demo.tree;
 import de.ruu.lib.util.Strings;
 import jakarta.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class NodeSimple extends AbstractMappedNode<NodeDTO, NodeEntity> implements Node<NodeSimple>
 {
-	private static final Logger log = LoggerFactory.getLogger(NodeSimple.class);
+	private static final Logger log = LogManager.getLogger(NodeSimple.class);
 
 	@NonNull  private String           name;
 	@Nullable private NodeSimple       parent;

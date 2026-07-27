@@ -12,6 +12,8 @@ import de.ruu.app.pragma.bean.Mappings;
 import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.dto.TaskDto;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
@@ -138,13 +140,16 @@ public class TaskClient
      */
     public TaskBean create(TaskBean bean)
     {
+        // The request mirrors the REST contract field-by-field so defaults stay consistent
+        // between UI, client, API and database.
         long groupId = id(bean.taskGroup());
         var request  = new TaskCreateRequest(
             bean.name(), groupId,
             bean.description().orElse(null),
             bean.scheduledStart().orElse(null),
             bean.scheduledFinish()  .orElse(null),
-            bean.closed(),
+            bean.status(),
+            bean.priority(),
             bean.parentTask().map(this::id).orElse(null)
         );
         try (Response response = target("/tasks")
@@ -307,7 +312,8 @@ public class TaskClient
         @Nullable String description,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
-        boolean closed,
+        TaskStatus status,
+        TaskPriority priority,
         @Nullable Long parentTaskId
     ) {}
 }

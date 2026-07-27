@@ -14,8 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Base class for JavaFX {@link Application}s with CDI support. <code>FXCApp</code>s provide convenient support for
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class FXCApp extends Application
 {
-	private static final Logger log = LoggerFactory.getLogger(FXCApp.class);
+	private static final Logger log = LogManager.getLogger(FXCApp.class);
 
 	/** Event that will be fired as soon as the primary stage of this {@link FXCApp} was shown. */
 	public static class FXStageShowingEvent extends AbstractEvent<FXCApp, Stage>

@@ -15,8 +15,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Objects;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility class for managing Keycloak users programmatically.
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KeycloakUserManager implements AutoCloseable
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakUserManager.class);
+	private static final Logger log = LogManager.getLogger(KeycloakUserManager.class);
 
 	private final Keycloak keycloak;
 	private final String realmName;

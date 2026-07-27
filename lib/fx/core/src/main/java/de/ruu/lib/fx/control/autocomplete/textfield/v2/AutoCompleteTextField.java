@@ -15,8 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +30,7 @@ import static java.util.Objects.isNull;
 
 public class AutoCompleteTextField<T> extends StackPane
 {
-	private static final Logger log = LoggerFactory.getLogger(AutoCompleteTextField.class);
+	private static final Logger log = LogManager.getLogger(AutoCompleteTextField.class);
 
 	/** stores the current value of an instance at all time, accessible for clients via {@link #valueProperty()} */
 	private final ObjectProperty<T> value = new SimpleObjectProperty<>();

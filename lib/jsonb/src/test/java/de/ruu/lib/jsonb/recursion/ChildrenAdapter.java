@@ -3,8 +3,8 @@ package de.ruu.lib.jsonb.recursion;
 import de.ruu.lib.util.json.Sanitiser;
 import de.ruu.lib.jsonb.AbstractSetAdapter;
 import jakarta.json.JsonValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ChildrenAdapter extends AbstractSetAdapter<Child>
 {
-	private static final Logger log = LoggerFactory.getLogger(ChildrenAdapter.class);
+	private static final Logger log = LogManager.getLogger(ChildrenAdapter.class);
 
 	private final static Type CHILDREN_TYPE = new HashSet<Child>() { }.getClass().getGenericSuperclass();
 

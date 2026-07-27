@@ -17,5 +17,5 @@ module de.ruu.lib.jpa.se.hibernate.postgres.demo
 	requires de.ruu.lib.jpa.se.hibernate.postgres;
 	requires de.ruu.lib.util;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 }

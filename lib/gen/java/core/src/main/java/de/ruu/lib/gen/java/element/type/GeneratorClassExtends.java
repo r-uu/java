@@ -6,8 +6,8 @@ import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import org.jspecify.annotations.NonNull;
 
 import static de.ruu.lib.util.StringBuilders.sb;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * {@link GeneratorClassExtends} for interface extends clause like <pre>extends Generator, Serializable</pre>

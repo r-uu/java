@@ -7,8 +7,8 @@ import java.nio.file.Path;
 
 import de.ruu.lib.util.Files;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface CompilationUnitFileWriter
 {
@@ -25,7 +25,7 @@ public interface CompilationUnitFileWriter
 
 	abstract class CompilationUnitFileWriterAbstract implements CompilationUnitFileWriter
 	{
-		static final Logger log = LoggerFactory.getLogger(CompilationUnitFileWriterAbstract.class);
+		static final Logger log = LogManager.getLogger(CompilationUnitFileWriterAbstract.class);
 
 		private Path root = DEFAULT_ROOT_DIRECTORY;
 

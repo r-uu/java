@@ -1,13 +1,18 @@
 package de.ruu.app.pragma.fx.task.view;
 
 import de.ruu.app.pragma.bean.TaskBean;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
+import de.ruu.app.pragma.fx.task.edit.TaskEditorService;
 import de.ruu.lib.fx.FXUtil;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -33,7 +38,8 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
   @FXML private DatePicker dtPckrStart;
   @FXML private DatePicker dtPckrEnd;
   @FXML private TextArea taDescription;
-  @FXML private CheckBox chkBxClosed;
+  @FXML private ComboBox<TaskStatus> cbxStatus;
+  @FXML private ComboBox<TaskPriority> cbxPriority;
 
   @FXML private TextField tfWorkEstimateInitial;
   @FXML private TextField tfWorkEstimateCurrent;
@@ -41,9 +47,9 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
   @FXML private TextField tfWorkRemaining;
   @FXML private TextField tfWorkProgress;
 
-  private final BooleanProperty dirty = new SimpleBooleanProperty(false);
-  private boolean updating = false;
   private TaskBean task;
+
+  @Inject private Instance<TaskEditorService> taskEditorService;
 
   @Override
   @FXML
@@ -59,22 +65,27 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
     FXUtil.wrapInTitledBorder("estimates", grdPnEstimates);
     FXUtil.wrapInTitledBorder("work", grdPnWork);
 
-    tfName.textProperty().addListener((obs, o, n) -> { if (!updating) dirty.set(true); });
-    dtPckrStart.valueProperty().addListener((obs, o, n) -> { if (!updating) dirty.set(true); });
-    dtPckrEnd.valueProperty().addListener((obs, o, n) -> { if (!updating) dirty.set(true); });
-    taDescription.textProperty().addListener((obs, o, n) -> { if (!updating) dirty.set(true); });
-    chkBxClosed.selectedProperty().addListener((obs, o, n) -> { if (!updating) dirty.set(true); });
+    tfName.textProperty().addListener((obs, o, n) -> markDirty());
+    dtPckrStart.valueProperty().addListener((obs, o, n) -> markDirty());
+    dtPckrEnd.valueProperty().addListener((obs, o, n) -> markDirty());
+    taDescription.textProperty().addListener((obs, o, n) -> markDirty());
+    cbxStatus.valueProperty().addListener((obs, o, n) -> markDirty());
+    cbxPriority.valueProperty().addListener((obs, o, n) -> markDirty());
+    // The combo box shows TaskStatus.toString(), so the user sees the same labels as the API wire format.
+    cbxStatus.setItems(FXCollections.observableArrayList(TaskStatus.values()));
+    // Same pattern for priority: enum values are shown with the same wire labels as persisted/sent by the API.
+    cbxPriority.setItems(FXCollections.observableArrayList(TaskPriority.values()));
 
     tfWorkEstimateInitial.textProperty().addListener((obs, o, n) -> {
-      if (!updating) dirty.set(true);
+      markDirty();
       refreshDerivedWorkFields();
     });
     tfWorkEstimateCurrent.textProperty().addListener((obs, o, n) -> {
-      if (!updating) dirty.set(true);
+      markDirty();
       refreshDerivedWorkFields();
     });
     tfWorkActual.textProperty().addListener((obs, o, n) -> {
-      if (!updating) dirty.set(true);
+      markDirty();
       refreshDerivedWorkFields();
     });
   }
@@ -89,7 +100,7 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
   public void task(TaskBean task)
   {
     this.task = task;
-    updating = true;
+    taskEditorService.get().beginUpdating();
     try
     {
       tfId.setText(task.id() == null ? "" : task.id().toString());
@@ -102,12 +113,13 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
       tfWorkActual.setText(formatDouble(task.workActual().orElse(null)));
       tfWorkRemaining.setText(formatDouble(task.workRemaining().orElse(null)));
       tfWorkProgress.setText(formatDouble(task.workProgress().orElse(null)));
-      chkBxClosed.setSelected(task.closed());
+      cbxStatus.setValue(task.status());
+      cbxPriority.setValue(task.priority());
     }
     finally
     {
-      updating = false;
-      dirty.set(false);
+      taskEditorService.get().endUpdating();
+      taskEditorService.get().clearDirty();
     }
   }
 
@@ -115,7 +127,7 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
   public void clear()
   {
     task = null;
-    updating = true;
+    taskEditorService.get().beginUpdating();
     try
     {
       tfId.clear();
@@ -128,12 +140,13 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
       tfWorkActual.clear();
       tfWorkRemaining.clear();
       tfWorkProgress.clear();
-      chkBxClosed.setSelected(false);
+      cbxStatus.setValue(null);
+      cbxPriority.setValue(null);
     }
     finally
     {
-      updating = false;
-      dirty.set(false);
+      taskEditorService.get().endUpdating();
+      taskEditorService.get().clearDirty();
     }
   }
 
@@ -148,7 +161,8 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
     task.workEstimateInitial(parseStrictHours(tfWorkEstimateInitial.getText(), "work estimate initial"));
     task.workEstimateCurrent(parseStrictHours(tfWorkEstimateCurrent.getText(), "work estimate current"));
     task.workActual(parseStrictHours(tfWorkActual.getText(), "work actual"));
-    task.closed(chkBxClosed.isSelected());
+    task.status(cbxStatus.getValue() == null ? TaskStatus.NEW : cbxStatus.getValue());
+    task.priority(cbxPriority.getValue() == null ? TaskPriority.NORMAL : cbxPriority.getValue());
   }
 
   @Override
@@ -161,11 +175,12 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
     tfWorkEstimateInitial.setEditable(editable);
     tfWorkEstimateCurrent.setEditable(editable);
     tfWorkActual.setEditable(editable);
-    chkBxClosed.setDisable(!editable);
+    cbxStatus.setDisable(!editable);
+    cbxPriority.setDisable(!editable);
   }
 
-  @Override public BooleanProperty dirtyProperty() { return dirty; }
-  @Override public void clearDirty() { dirty.set(false); }
+  @Override public BooleanProperty dirtyProperty() { return editor().dirtyProperty(); }
+  @Override public void clearDirty() { editor().clearDirty(); }
 
   private void refreshDerivedWorkFields()
   {
@@ -181,6 +196,16 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
 
     tfWorkRemaining.setText(formatDouble(workRemaining.orElse(null)));
     tfWorkProgress.setText(formatDouble(workProgress.orElse(null)));
+  }
+
+  private void markDirty()
+  {
+    if (!editor().isUpdating()) editor().dirtyProperty().set(true);
+  }
+
+  private TaskEditorService editor()
+  {
+    return taskEditorService.get();
   }
 
   private static Optional<Double> parseLenientHours(String raw)
@@ -207,7 +232,7 @@ class TaskViewController extends DefaultFXCController<TaskView, TaskViewService>
     }
     catch (NumberFormatException e)
     {
-      throw new IllegalArgumentException("Ungültiger Wert für " + label + ": " + value, e);
+      throw new IllegalArgumentException("Invalid value for " + label + ": " + value, e);
     }
   }
 

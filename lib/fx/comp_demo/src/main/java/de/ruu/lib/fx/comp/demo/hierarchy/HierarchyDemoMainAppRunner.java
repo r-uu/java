@@ -2,8 +2,8 @@ package de.ruu.lib.fx.comp.demo.hierarchy;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
 import de.ruu.lib.fx.comp.FXCAppStartedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component Application Runner {@link HierarchyDemoMainAppRunner}
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HierarchyDemoMainAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(HierarchyDemoMainAppRunner.class);
+	private static final Logger log = LogManager.getLogger(HierarchyDemoMainAppRunner.class);
 
 	public static void main(String[] args) throws ClassNotFoundException
 	{

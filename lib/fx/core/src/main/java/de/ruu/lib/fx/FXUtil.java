@@ -33,8 +33,8 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ import static java.util.Objects.isNull;
 
 public abstract class FXUtil
 {
-	private static final Logger log = LoggerFactory.getLogger(FXUtil.class);
+	private static final Logger log = LogManager.getLogger(FXUtil.class);
 
 	public static Optional<Stage> stage(final Node node)
 	{

@@ -48,12 +48,12 @@ import static de.ruu.lib.gen.java.fx.bean.FXMapper.mapFXPropertyToPrimitiveWrapp
 import static de.ruu.lib.gen.java.fx.bean.FXPropertyUtil.isNumericFXPropertyType;
 import static de.ruu.lib.util.Constants.LS;
 import static de.ruu.lib.util.Strings.firstLetterToUpperCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class GeneratorFXTableViewConfigurator
 {
-	private static final Logger log = LoggerFactory.getLogger(GeneratorFXTableViewConfigurator.class);
+	private static final Logger log = LogManager.getLogger(GeneratorFXTableViewConfigurator.class);
 	@NonNull private final String packageName;    // package name for target
 	@NonNull private final String simpleFileName; // simple file name for target
 

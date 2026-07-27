@@ -15,8 +15,8 @@ import de.ruu.lib.gen.java.element.GeneratorAnnotations;
 import de.ruu.lib.gen.java.element.GeneratorElement;
 import de.ruu.lib.gen.java.element.GeneratorModifiers;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** generates field declaration consisting of javadoc, annotations, modifiers, type, name and assignment */
 public interface GeneratorField extends GeneratorElement

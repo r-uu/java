@@ -9,5 +9,5 @@ module de.ruu.lib.util.config.mp
 	requires transitive jakarta.cdi;
 	requires transitive microprofile.config.api;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 }

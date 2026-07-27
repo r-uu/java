@@ -12,7 +12,7 @@ module de.ruu.lib.fx.demo
 	requires com.tngtech.archunit;
 	requires javafx.controls;
 	requires javafx.fxml;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires transitive javafx.base;
 

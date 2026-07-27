@@ -6,8 +6,8 @@ import de.ruu.lib.junit.DisabledOnServerNotListening;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assumptions;
 
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EntityManagerFactoryProducerTest
 {
-	private static final Logger log = LoggerFactory.getLogger(EntityManagerFactoryProducerTest.class);
+	private static final Logger log = LogManager.getLogger(EntityManagerFactoryProducerTest.class);
 
 	@DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
 	@Test void entityManagerFactoryProducer() throws SQLException

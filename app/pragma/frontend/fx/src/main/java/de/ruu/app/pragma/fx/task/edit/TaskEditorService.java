@@ -16,4 +16,7 @@ public interface TaskEditorService extends FXCService
   void setEditable(boolean editable);
   BooleanProperty dirtyProperty();
   void clearDirty();
+  boolean isUpdating();
+  void beginUpdating();
+  void endUpdating();
 }

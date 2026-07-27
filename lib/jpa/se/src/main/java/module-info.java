@@ -6,7 +6,7 @@ module de.ruu.lib.jpa.se
 	requires jakarta.inject;
 	requires jakarta.interceptor;
 	requires jakarta.persistence;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	
 	// Open for Hibernate persistence provider reflection
 	// Note: org.hibernate.orm.core is a runtime dependency, not compile-time

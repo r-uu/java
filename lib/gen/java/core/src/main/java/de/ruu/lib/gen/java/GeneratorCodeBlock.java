@@ -9,8 +9,8 @@ import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import de.ruu.lib.gen.java.element.field.GeneratorField;
 import de.ruu.lib.gen.java.element.method.GeneratorMethod;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** code block will be indented and wrapped in curly braces */
 public interface GeneratorCodeBlock extends Generator

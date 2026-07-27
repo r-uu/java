@@ -13,8 +13,8 @@ import javax.lang.model.element.ElementKind;
 import static de.ruu.lib.util.BooleanFunctions.not;
 import static de.ruu.lib.util.Constants.LS;
 import static javax.lang.model.element.ElementKind.CLASS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface GeneratorClass extends GeneratorType
 {

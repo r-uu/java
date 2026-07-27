@@ -3,6 +3,8 @@ package de.ruu.app.pragma.rest;
 import de.ruu.app.pragma.dto.TaskDto;
 import de.ruu.app.pragma.jpa.TaskGroupJPA;
 import de.ruu.app.pragma.jpa.TaskJPA;
+import de.ruu.app.pragma.core.TaskStatus;
+import de.ruu.app.pragma.core.TaskPriority;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -49,6 +51,7 @@ public class TaskResource
             @QueryParam("page")    Integer page,
             @QueryParam("size")    Integer size)
     {
+        ensureTaskSchema();
         int offset = page != null && page > 0 ? page * effectiveSize(size) : 0;
         if (groupId != null) {
             return em.createQuery("SELECT t FROM TaskJPA t WHERE t.taskGroup.id = :gid", TaskJPA.class)
@@ -75,6 +78,7 @@ public class TaskResource
     @Path("/{id}")
     public TaskDto findById(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         return Mappings.toDto(requireTask(id));
     }
 
@@ -82,6 +86,7 @@ public class TaskResource
     @Path("/{id}/with-related")
     public TaskDto findByIdWithRelated(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         EntityGraph<TaskJPA> graph = em.createEntityGraph(TaskJPA.class);
         graph.addAttributeNodes("subTasks", "predecessors", "successors");
         TaskJPA entity = em.find(TaskJPA.class, id, Map.of("jakarta.persistence.fetchgraph", graph));
@@ -93,6 +98,7 @@ public class TaskResource
     @Path("/group/{groupId}/with-related")
     public List<TaskDto> findGroupTasksWithRelated(@PathParam("groupId") Long groupId)
     {
+        ensureTaskSchema();
         EntityGraph<TaskJPA> graph = em.createEntityGraph(TaskJPA.class);
         graph.addAttributeNodes("subTasks", "predecessors", "successors");
         List<TaskJPA> tasks = em.createQuery(
@@ -106,6 +112,9 @@ public class TaskResource
     @POST
     public Response create(@Valid TaskCreateRequest request)
     {
+        ensureTaskSchema();
+        // Keep the REST contract backward tolerant: missing status/priority from older clients
+        // falls back to the defaults used by the domain model.
         if (request.groupId() == null) throw new BadRequestException("groupId is required");
         TaskGroupJPA group = em.find(TaskGroupJPA.class, request.groupId());
         if (group == null) throw new NotFoundException("TaskGroup not found: " + request.groupId());
@@ -113,7 +122,8 @@ public class TaskResource
         entity.description (request.description());
         entity.scheduledStart(request.plannedStart());
         entity.scheduledFinish(request.plannedEnd());
-        entity.closed      (request.closed());
+        entity.status      (request.status() == null ? TaskStatus.NEW : request.status());
+        entity.priority    (request.priority() == null ? TaskPriority.NORMAL : request.priority());
         if (request.parentTaskId() != null) {
             TaskJPA parentTask = em.find(TaskJPA.class, request.parentTaskId());
             if (parentTask == null) throw new NotFoundException("Parent task not found: " + request.parentTaskId());
@@ -127,6 +137,8 @@ public class TaskResource
     @Path("/{id}")
     public TaskDto update(@PathParam("id") Long id, @Valid TaskDto dto)
     {
+        ensureTaskSchema();
+        // Update is a full roundtrip of the task state that the client edits in the form.
         TaskJPA entity = requireTask(id);
         if (!Objects.equals(entity.version(), dto.version()))
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -134,7 +146,8 @@ public class TaskResource
         entity.description(dto.description().orElse(null));
         entity.scheduledStart(dto.scheduledStart().orElse(null));
         entity.scheduledFinish(dto.scheduledFinish()  .orElse(null));
-        entity.closed      (dto.closed());
+        entity.status      (dto.status());
+        entity.priority    (dto.priority());
         return Mappings.toDto(entity);
     }
 
@@ -142,6 +155,7 @@ public class TaskResource
     @Path("/{id}/group/{groupId}")
     public TaskDto moveToGroup(@PathParam("id") Long id, @PathParam("groupId") Long groupId)
     {
+        ensureTaskSchema();
         TaskJPA entity = requireTask(id);
         TaskGroupJPA group = em.find(TaskGroupJPA.class, groupId);
         if (group == null) throw new NotFoundException("TaskGroup not found: " + groupId);
@@ -153,6 +167,7 @@ public class TaskResource
     @Path("/{id}/parent/{parentId}")
     public TaskDto setParentTask(@PathParam("id") Long id, @PathParam("parentId") Long parentId)
     {
+        ensureTaskSchema();
         TaskJPA task   = requireTask(id);
         TaskJPA parent = requireTask(parentId);
         task.parentTask().ifPresent(old -> old.removeSubTask(task));
@@ -164,6 +179,7 @@ public class TaskResource
     @Path("/{id}/parent")
     public Response clearParentTask(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         TaskJPA task = requireTask(id);
         task.parentTask().ifPresent(parent -> parent.removeSubTask(task));
         return Response.noContent().build();
@@ -173,6 +189,7 @@ public class TaskResource
     @Path("/{id}/predecessor/{predId}")
     public TaskDto addPredecessor(@PathParam("id") Long id, @PathParam("predId") Long predId)
     {
+        ensureTaskSchema();
         TaskJPA task = requireTask(id);
         TaskJPA pred = requireTask(predId);
         task.addPredecessor(pred);
@@ -183,6 +200,7 @@ public class TaskResource
     @Path("/{id}/predecessor/{predId}")
     public Response removePredecessor(@PathParam("id") Long id, @PathParam("predId") Long predId)
     {
+        ensureTaskSchema();
         TaskJPA task = requireTask(id);
         TaskJPA pred = requireTask(predId);
         task.removePredecessor(pred);
@@ -193,6 +211,7 @@ public class TaskResource
     @Path("/{id}/predecessors")
     public List<TaskDto> findPredecessors(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         TaskJPA task = requireTask(id);
         return task.predecessors()
                    .map(set -> set.stream().map(Mappings::toDto).toList())
@@ -203,6 +222,7 @@ public class TaskResource
     @Path("/{id}/successors")
     public List<TaskDto> findSuccessors(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         TaskJPA task = requireTask(id);
         return task.successors()
                    .map(set -> set.stream().map(Mappings::toDto).toList())
@@ -213,6 +233,7 @@ public class TaskResource
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id)
     {
+        ensureTaskSchema();
         TaskJPA entity = requireTask(id);
         entity.taskGroup().removeTask(entity);
         em.remove(entity);
@@ -226,13 +247,26 @@ public class TaskResource
         return entity;
     }
 
+    private static void ensureTaskSchema()
+    {
+        try
+        {
+            TaskSchemaBootstrap.ensureTaskColumns();
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Failed to prepare task schema", e);
+        }
+    }
+
     public record TaskCreateRequest(
         @NotBlank String name,
         @NotNull  Long groupId,
         @Nullable String description,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
-        boolean closed,
+        @Nullable TaskStatus status,
+        @Nullable TaskPriority priority,
         @Nullable Long parentTaskId
     ) {}
 }

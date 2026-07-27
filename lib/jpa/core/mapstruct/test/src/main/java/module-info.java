@@ -4,7 +4,7 @@ module de.ruu.lib.jpa.core.mapstruct.test
 
 	requires static java.compiler;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires java.desktop; // for java.beans used by AbstractMappedDTO/Entity
 
 	requires de.ruu.lib.jpa.core;

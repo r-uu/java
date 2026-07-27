@@ -2,8 +2,8 @@ package de.ruu.lib.gen.java.fx.bean.editor.demo;
 
 import de.ruu.lib.fx.comp.FXCController;
 import javafx.fxml.FXML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component View Controller
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FXBeanEditorDemoController extends FXCController.DefaultFXCController
 {
-	private static final Logger log = LoggerFactory.getLogger(FXBeanEditorDemoController.class);
+	private static final Logger log = LogManager.getLogger(FXBeanEditorDemoController.class);
 	@Override @FXML protected void initialize()
 	{
 		log.debug("initialising controller");

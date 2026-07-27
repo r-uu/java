@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -12,7 +12,7 @@ import java.net.URL;
  */
 public class KeycloakServerHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakServerHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(KeycloakServerHealthCheck.class);
 
 	private final String host;
 	private final int port;
@@ -39,7 +39,7 @@ public class KeycloakServerHealthCheck implements HealthCheck
 		// Check if container is running
 		if (!isContainerRunning("keycloak"))
 		{
-			log.error("  ❌ Keycloak container is not running");
+			log.error("  [FAIL] Keycloak container is not running");
 			return HealthCheckResult.failure(
 				"Keycloak Container",
 				"Container is not running",
@@ -51,7 +51,7 @@ public class KeycloakServerHealthCheck implements HealthCheck
 		// Check if server is accessible
 		if (!isPortListening(host, port))
 		{
-			log.error("  ❌ Keycloak server is not responding on port {}", port);
+			log.error("  [FAIL] Keycloak server is not responding on port {}", port);
 			return HealthCheckResult.failure(
 				"Keycloak Server",
 				"Keycloak server is not responding on port " + port,
@@ -60,7 +60,7 @@ public class KeycloakServerHealthCheck implements HealthCheck
 			);
 		}
 
-		log.info("  ✅ Keycloak server is running");
+		log.info("  [OK] Keycloak server is running");
 		return HealthCheckResult.success("Keycloak Server");
 	}
 

@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +12,7 @@ import java.sql.DriverManager;
  */
 public class PostgresDatabaseHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresDatabaseHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(PostgresDatabaseHealthCheck.class);
 
 	private final String containerName;
 	private final String databaseName;
@@ -70,7 +70,7 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 		// First check if container is running
 		if (!isContainerRunning(containerName))
 		{
-			log.error("  ❌ Container '{}' is not running", containerName);
+			log.error("  [FAIL] Container '{}' is not running", containerName);
 			return HealthCheckResult.failure(
 				"PostgreSQL Container: " + containerName,
 				"Container is not running",
@@ -85,13 +85,13 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 			String jdbcUrl = "jdbc:postgresql://localhost:" + port + "/" + databaseName;
 			try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password))
 			{
-				log.info("  ✅ Database '{}' is accessible", databaseName);
+				log.info("  [OK] Database '{}' is accessible", databaseName);
 				return HealthCheckResult.success("Database: " + databaseName);
 			}
 		}
 		catch (Exception e)
 		{
-			log.error("  ❌ Cannot connect to database '{}': {}", databaseName, e.getMessage());
+			log.error("  [FAIL] Cannot connect to database '{}': {}", databaseName, e.getMessage());
 
 			// All databases are in the same container now (postgres)
 			String fixCommand = "cd ~/develop/github/main/config/shared/docker && docker compose restart postgres";

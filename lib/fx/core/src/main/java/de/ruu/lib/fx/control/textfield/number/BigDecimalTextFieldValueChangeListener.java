@@ -5,8 +5,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.BigDecimalStringConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -24,7 +24,7 @@ import static java.util.Objects.isNull;
  */
 public class BigDecimalTextFieldValueChangeListener implements ChangeListener<String>
 {
-	private static final Logger log = LoggerFactory.getLogger(BigDecimalTextFieldValueChangeListener.class);
+	private static final Logger log = LogManager.getLogger(BigDecimalTextFieldValueChangeListener.class);
 
 	private final BigDecimalStringConverter converter = new BigDecimalStringConverter();
 	private final TextFormatter<BigDecimal> formatter = new TextFormatter<>(converter);

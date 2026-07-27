@@ -30,8 +30,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Popup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Provides a {@link #textField} that suggests {@link #items} for auto completion in a {@link #popup}. {@link #items}
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AutoCompleteTextField<T> extends HBox
 {
-	private static final Logger log = LoggerFactory.getLogger(AutoCompleteTextField.class);
+	private static final Logger log = LogManager.getLogger(AutoCompleteTextField.class);
 
 	public enum Position {
 		ABOVE, BELOW

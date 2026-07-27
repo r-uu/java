@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ import static java.util.Objects.isNull;
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="jsonId", scope = Task.class)
 public class Task
 {
-	private static final Logger log = LoggerFactory.getLogger(Task.class);
+	private static final Logger log = LogManager.getLogger(Task.class);
 
 	private final long jsonId = ThreadLocalRandom.current().nextLong();
 	/** may be <pre>null</pre> if corresponding jpa instance was not (yet) persisted. */

@@ -2,8 +2,8 @@ package de.ruu.lib.fx.comp;
 
 import javafx.fxml.FXML;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static de.ruu.lib.util.BooleanFunctions.not;
 import static java.util.Objects.isNull;

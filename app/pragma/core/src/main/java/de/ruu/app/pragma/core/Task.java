@@ -33,13 +33,15 @@ public interface Task<G extends TaskGroup<? extends Task<G, ?>>, T extends Task<
     }
     Optional<LocalDate> scheduledStart     ();
     Optional<LocalDate> scheduledFinish    ();
-    Boolean             closed             ();
+    TaskStatus          status             ();
+    TaskPriority        priority           ();
 
-    T description        (@Nullable String    description        );
-    T workEstimateInitial(@Nullable Double    workEstimateInitial);
-    T workEstimateCurrent(@Nullable Double    workEstimateCurrent);
-    T workActual         (@Nullable Double    workActual         );
-    T scheduledStart     (@Nullable LocalDate scheduledStart     );
-    T scheduledFinish    (@Nullable LocalDate scheduledFinish    );
-    T closed             (          Boolean   closed             );
+    T description        (@Nullable String     description        );
+    T workEstimateInitial(@Nullable Double     workEstimateInitial);
+    T workEstimateCurrent(@Nullable Double     workEstimateCurrent);
+    T workActual         (@Nullable Double     workActual         );
+    T scheduledStart     (@Nullable LocalDate  scheduledStart     );
+    T scheduledFinish    (@Nullable LocalDate  scheduledFinish    );
+    T status             (          TaskStatus status             );
+    T priority           (          TaskPriority priority         );
 }

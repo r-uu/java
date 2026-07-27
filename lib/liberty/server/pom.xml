@@ -41,8 +41,8 @@
 
 		<!-- Logging -->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -63,11 +63,6 @@
 			<groupId>r-uu</groupId>
 			<artifactId>r-uu.lib.ws.rs</artifactId>
 		</dependency>
-		<dependency>
-		<groupId>org.apache.logging.log4j</groupId>
-		<artifactId>log4j-slf4j2-impl</artifactId>
-		<scope>test</scope>
-	</dependency>
 	</dependencies>
 
 	<build>

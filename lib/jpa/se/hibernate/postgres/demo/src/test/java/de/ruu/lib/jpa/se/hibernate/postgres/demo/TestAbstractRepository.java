@@ -7,8 +7,8 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TransactionRequiredException;
 import org.junit.jupiter.api.BeforeAll;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
 class TestAbstractRepository
 {
-	private static final Logger log = LoggerFactory.getLogger(TestAbstractRepository.class);
+	private static final Logger log = LogManager.getLogger(TestAbstractRepository.class);
 
 	/** bootstrap CDI in Java SE with {@code TransactionalInterceptorCDI} */
 	@BeforeAll static void beforeAll()

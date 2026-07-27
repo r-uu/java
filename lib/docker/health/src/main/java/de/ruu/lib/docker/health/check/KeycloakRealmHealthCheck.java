@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -25,7 +25,7 @@ import java.net.URL;
  */
 public class KeycloakRealmHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmHealthCheck.class);
 
 	private final String host;
 	private final int port;
@@ -66,18 +66,18 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 
 			if (responseCode == 200)
 			{
-				log.info("  ✅ Keycloak realm '{}' exists", realmName);
+				log.info("  [OK] Keycloak realm '{}' exists", realmName);
 
 				// Always verify full configuration (client, roles, users)
 				if (verifyRealmConfiguration())
 				{
-					log.info("  ✅ Keycloak realm '{}' is fully configured", realmName);
+					log.info("  [OK] Keycloak realm '{}' is fully configured", realmName);
 					return HealthCheckResult.success("Keycloak Realm: " + realmName);
 				}
 				else
 				{
 					// Configuration incomplete - will be fixed by AutoFixRunner
-					log.warn("  ⚠️ Realm exists but configuration incomplete");
+					log.warn("  [WARN] Realm exists but configuration incomplete");
 					log.info("     (Missing client/roles/users - will be fixed automatically)");
 
 					return HealthCheckResult.failure(
@@ -91,7 +91,7 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 			else
 			{
 				// Realm does not exist - will be fixed by AutoFixRunner
-				log.error("  ❌ Keycloak realm '{}' does not exist (HTTP {})", realmName, responseCode);
+				log.error("  [FAIL] Keycloak realm '{}' does not exist (HTTP {})", realmName, responseCode);
 				return HealthCheckResult.failure(
 					"Keycloak Realm",
 					"Realm '" + realmName + "' does not exist",
@@ -102,7 +102,7 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 		}
 		catch (Exception e)
 		{
-			log.error("  ❌ Cannot check Keycloak realm: {}", e.getMessage());
+			log.error("  [FAIL] Cannot check Keycloak realm: {}", e.getMessage());
 			return HealthCheckResult.failure(
 				"Keycloak Realm",
 				"Cannot check realm: " + e.getMessage(),
@@ -134,40 +134,40 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 
 			if (responseCode != 200)
 			{
-				log.warn("    ✗ OpenID configuration check failed: HTTP {}", responseCode);
+				log.warn("    [FAIL] OpenID configuration check failed: HTTP {}", responseCode);
 				return false;
 			}
-		log.info("    ✓ OpenID configuration available");
+		log.info("    [OK] OpenID configuration available");
 
 		// 2. Verify client configuration
 		if (!verifyClientConfiguration())
 		{
-			log.warn("    ✗ Client configuration verification failed");
+			log.warn("    [FAIL] Client configuration verification failed");
 			return false;
 		}
-		log.info("    ✓ Client configuration verified");
+		log.info("    [OK] Client configuration verified");
 
 		// 3. Verify roles configuration
 		if (!verifyRolesConfiguration())
 		{
-			log.warn("    ✗ Roles configuration verification failed");
+			log.warn("    [FAIL] Roles configuration verification failed");
 			return false;
 		}
-		log.info("    ✓ Roles configuration verified");
+		log.info("    [OK] Roles configuration verified");
 
 		// 4. Verify user configuration
 		if (!verifyUserConfiguration())
 		{
-			log.warn("    ✗ User configuration verification failed");
+			log.warn("    [FAIL] User configuration verification failed");
 			return false;
 		}
-		log.info("    ✓ User configuration verified");
+		log.info("    [OK] User configuration verified");
 
 			return true;
 		}
 		catch (Exception e)
 		{
-			log.warn("    ✗ Configuration verification failed: {}", e.getMessage());
+			log.warn("    [FAIL] Configuration verification failed: {}", e.getMessage());
 			return false;
 		}
 	}
@@ -214,4 +214,3 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 		return "Keycloak Realm: " + realmName;
 	}
 }
-

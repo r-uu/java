@@ -5,8 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.URL;
 
@@ -37,7 +37,7 @@ public abstract class DefaultFXCView<
 		S extends FXCService,
 		C extends FXCController<V, S>> implements FXCView<S>
 {
-	private static final Logger log = LoggerFactory.getLogger(DefaultFXCView.class);
+	private static final Logger log = LogManager.getLogger(DefaultFXCView.class);
 
 	private C controller;
 

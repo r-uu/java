@@ -1,12 +1,10 @@
 # Backlog — Schwachstellen und offene Punkte
 
-Zuletzt aktualisiert: 2026-06-28. Bezieht sich auf den aktuellen Stand der `main`-Branch.
+Zuletzt aktualisiert: 2026-07-26. Bezieht sich auf den aktuellen Stand der `main`-Branch.
 
 Priorität orientiert sich daran, was einen produktiven Einsatz **blockiert** (P1),
 **stark einschränkt** (P2) oder **mittelfristig wichtig** ist (P3).
 Fehlende Domänenfunktionen und strategische Themen sind P4.
-
----
 
 ## P1 — Produktionsblocker (vor erstem echten Einsatz beheben)
 
@@ -17,8 +15,8 @@ Fehlende Domänenfunktionen und strategische Themen sind P4.
 `update` erkennt keine Spalten-Drops, Umbenennungen oder komplexe Schemaänderungen und
 kann bei ungünstigen Migrationen Daten zerstören.
 
-**Lösung:** Flyway oder Liquibase einführen; `hbm2ddl.auto` auf `validate` setzen.
-Migrationsscripte versioniert in `backend/rest/src/main/resources/db/migration/` ablegen.
+**Lösung:** Später auf ein versioniertes Migrationsverfahren umstellen; bis dahin
+`hbm2ddl.auto` im Dev-Modus nutzen und auf `validate` setzen, sobald die DB stabil ist.
 
 **Vorgehen:** Bewusst zurückgestellt, solange das Daten-/Objektmodell noch nicht final ist
 und DB-Verluste tolerierbar sind. Wird relevant, sobald DB-Backup/Restore in die UI
@@ -116,7 +114,7 @@ ohne vollständigen Liberty-Server.
 | P4-5 | Predecessor-Typ (FS / SS / FF / SF)                                       | Alle Abhängigkeiten sind implizit Finish-to-Start                                      |
 | P4-6 | Audit-Log (wer änderte was wann)                                          | Spurlosigkeit bei Datenproblemen                                                       |
 | P4-7 | Gantt-Export (PDF / Excel)                                                | Für Reporting und externe Kommunikation                                                |
-| P4-8 | Containerisierung (Dockerfile / Compose-Ausbau)                           | Reproduzierbare Deployments; Voraussetzung für sinnvollen P1-1-Einsatz                 |
+| P4-8 | Containerisierung (Dockerfile / Compose-Ausbau)                           | Reproduzierbare Deployments; Voraussetzung für P1-1-Einsatz                            |
 | P4-9 | mapstruct-Evaluierung                                                     | context.md sieht Evaluierung vor; aktuell manuelle Mappings-Klassen in allen Schichten |
 
 ---
@@ -130,7 +128,7 @@ P3-8  (REST Unit-Tests)             ← parallel möglich
 P2-7  (Logging Produktion)          ← trivial, wenn Produktiveinsatz näher rückt
 P2-6  (Layout-Datei robuster)       ← klein, wenn DBClear häufig genutzt wird
 P4-8  (Containerisierung)           ← Voraussetzung für P1-1
-P1-1  (hbm2ddl → Flyway)            ← aufwändig, nach P4-8
+P1-1  (hbm2ddl → Migration)         ← aufwändig, nach P4-8
 P4-1  (Status-Enum)                 ← klare Domänenverbesserung
 P4-2  (actualStart/actualEnd)       ← sinnvoll nach P4-1
 P4-*  (restliche Domänenfunktionen) ← nach obigem Sprint

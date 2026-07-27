@@ -10,8 +10,8 @@ import org.keycloak.representations.idm.RoleRepresentation;
 
 import java.util.Objects;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility class for managing Keycloak realm roles programmatically.
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KeycloakRealmManager implements AutoCloseable
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmManager.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmManager.class);
 
 	private final Keycloak keycloak;
 	private final String realmName;

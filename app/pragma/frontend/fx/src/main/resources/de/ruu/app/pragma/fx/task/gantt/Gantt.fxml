@@ -27,13 +27,13 @@
             <Button fx:id="btnManageGroups" mnemonicParsing="false"
                     prefHeight="20" prefWidth="20">
                 <graphic><FontIcon iconLiteral="far-folder" iconSize="11"/></graphic>
-                <tooltip><Tooltip text="task groups verwalten"/></tooltip>
+                <tooltip><Tooltip text="manage task groups"/></tooltip>
                 <HBox.margin><Insets right="5"/></HBox.margin>
             </Button>
             <Button fx:id="btnReload" mnemonicParsing="false"
                     prefHeight="20" prefWidth="20">
                 <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
-                <tooltip><Tooltip text="neu laden"/></tooltip>
+                <tooltip><Tooltip text="reload"/></tooltip>
                 <HBox.margin><Insets right="5"/></HBox.margin>
             </Button>
             <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: #cc3333;"/>

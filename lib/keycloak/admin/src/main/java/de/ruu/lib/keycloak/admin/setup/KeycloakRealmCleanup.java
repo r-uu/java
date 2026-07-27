@@ -1,7 +1,7 @@
 package de.ruu.lib.keycloak.admin.setup;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class KeycloakRealmCleanup
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmCleanup.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmCleanup.class);
 
 	private static final String KEYCLOAK_URL = System.getProperty("keycloak.url", "http://localhost:8080");
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user", "admin");
@@ -48,15 +48,15 @@ public class KeycloakRealmCleanup
 			{
 				log.info("Deleting realm 'realm_default'...");
 				keycloak.realm("realm_default").remove();
-				log.info("✅ Realm 'realm_default' deleted");
+				log.info("[OK] Realm 'realm_default' deleted");
 			}
 			else
 			{
-				log.info("✓ Realm 'realm_default' does not exist - nothing to delete");
+				log.info("[OK] Realm 'realm_default' does not exist - nothing to delete");
 			}
 
 			log.info("");
-			log.info("=== Cleanup abgeschlossen ===");
+			log.info("=== Cleanup completed ===");
 		}
 		catch (Exception e)
 		{
@@ -67,7 +67,7 @@ public class KeycloakRealmCleanup
 
 	private static Keycloak createKeycloakClient()
 	{
-		log.info("Verbinde mit Keycloak Server...");
+		log.info("Connecting to Keycloak server...");
 		return KeycloakBuilder.builder()
 				.serverUrl(KEYCLOAK_URL)
 				.realm("master")

@@ -10,8 +10,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public class ReportService {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+    private static final Logger log = LogManager.getLogger(ReportService.class);
 
 
     private static final String TEMPLATES_DIR = "/app/templates";

@@ -2,8 +2,8 @@ package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
 import de.ruu.lib.util.config.mp.ConfigHealthCheck;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Health check for MicroProfile Config properties.
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfigurationHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(ConfigurationHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(ConfigurationHealthCheck.class);
 
 	@Override
 	public String getName()
@@ -39,12 +39,12 @@ public class ConfigurationHealthCheck implements HealthCheck
 
 			if (result.healthy())
 			{
-				log.info("  ✅ All required configuration properties are present");
+				log.info("  [OK] All required configuration properties are present");
 				return HealthCheckResult.success("Configuration");
 			}
 			else
 			{
-				log.error("  ❌ Configuration validation failed:");
+				log.error("  [FAIL] Configuration validation failed:");
 				result.errors().forEach(error -> log.error("    {}", error));
 
 				return HealthCheckResult.failure(
@@ -57,7 +57,7 @@ public class ConfigurationHealthCheck implements HealthCheck
 		}
 		catch (Exception e)
 		{
-			log.error("  ❌ Configuration check failed with exception", e);
+			log.error("  [FAIL] Configuration check failed with exception", e);
 			return HealthCheckResult.failure(
 					"Configuration",
 					"Failed to validate configuration: " + e.getMessage(),

@@ -7,8 +7,8 @@ import de.ruu.lib.util.classpath.ClasspathResource;
 import jakarta.enterprise.inject.se.SeContainer;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import javafx.application.Application;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Abstract base class for classes that launch JavaFX {@link Application}s with CDI support ({@link FXCApp}s).
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(FXCAppRunner.class);
+	private static final Logger log = LogManager.getLogger(FXCAppRunner.class);
 
 	public static void run(Class<? extends FXCApp> appClass, String[] args, Runnable runBeforeAppLaunch)
 	{

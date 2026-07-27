@@ -16,8 +16,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component View Controller
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 // EventDispatcher used instead of @Observes(IF_EXISTS) which requires @ApplicationScoped.
 public class HierarchyDemoMainController extends DefaultFXCController<HierarchyDemoMain, HierarchyDemoMainService>
 {
-	private static final Logger log = LoggerFactory.getLogger(HierarchyDemoMainController.class);
+	private static final Logger log = LogManager.getLogger(HierarchyDemoMainController.class);
 
 	@Inject
 	private EventDispatcher<FXCAppStartedEvent> appStartedEventDispatcher;

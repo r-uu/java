@@ -1,5 +1,7 @@
 package de.ruu.app.pragma.bean;
 
+import de.ruu.app.pragma.core.TaskStatus;
+import de.ruu.app.pragma.core.TaskPriority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -189,7 +191,8 @@ class TaskBeanTest
         assertThat(a.description("d"))    .isSameAs(a);
         assertThat(a.scheduledStart(date))  .isSameAs(a);
         assertThat(a.scheduledFinish(date))    .isSameAs(a);
-        assertThat(a.closed(true))        .isSameAs(a);
+        assertThat(a.status(TaskStatus.IN_PROGRESS)).isSameAs(a);
+        assertThat(a.priority(TaskPriority.HIGH)).isSameAs(a);
     }
 
     @Test void name_requiresNonNull()

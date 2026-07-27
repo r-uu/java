@@ -1,6 +1,8 @@
 package de.ruu.app.pragma.bean;
 
 import de.ruu.app.pragma.core.PersistentTask;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
 import de.ruu.app.pragma.core.Task;
 import jakarta.validation.constraints.NotBlank;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +31,8 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
     private @Nullable Double        workActual;
     private @Nullable LocalDate     scheduledStart;
     private @Nullable LocalDate     scheduledFinish;
-    private           Boolean       closed = false;
+    private           TaskStatus    status = TaskStatus.NEW;
+    private           TaskPriority  priority = TaskPriority.NORMAL;
 
     public TaskBean(TaskGroupBean taskGroup, String name)
     {
@@ -50,7 +53,8 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
         this.workEstimateInitial = in.workEstimateInitial().orElse(null);
         this.workEstimateCurrent = in.workEstimateCurrent().orElse(null);
         this.workActual          = in.workActual().orElse(null);
-        this.closed              = in.closed();
+        this.status              = in.status();
+        this.priority            = in.priority();
         requireNonNull(group, "group");
         group.addTask(this);
     }
@@ -72,7 +76,8 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
     @Override public Optional<Double>        workEstimateInitial() { return ofNullable(workEstimateInitial); }
     @Override public Optional<Double>        workEstimateCurrent() { return ofNullable(workEstimateCurrent); }
     @Override public Optional<Double>        workActual         () { return ofNullable(workActual         ); }
-    @Override public          Boolean        closed             () { return closed                         ; }
+    @Override public          TaskStatus     status             () { return status                         ; }
+    @Override public          TaskPriority   priority           () { return priority                       ; }
 
     @Override public TaskBean name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
     @Override public TaskBean parentTask         (@Nullable TaskBean  p) { parentTask          =                p         ; return this; }
@@ -82,7 +87,8 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
     @Override public TaskBean workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
     @Override public TaskBean scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
     @Override public TaskBean scheduledFinish    (@Nullable LocalDate f) { scheduledFinish     =                f         ; return this; }
-    @Override public TaskBean closed             (          Boolean   c) { closed              =                c         ; return this; }
+    @Override public TaskBean status             (          TaskStatus s) { status              =                s         ; return this; }
+    @Override public TaskBean priority           (          TaskPriority p) { priority            =                p         ; return this; }
 
     @Override
     public TaskGroupBean taskGroup() { return taskGroup; }

@@ -3,7 +3,9 @@ package de.ruu.app.pragma.dto;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.ruu.app.pragma.core.PersistentTask;
+import de.ruu.app.pragma.core.TaskPriority;
 import de.ruu.app.pragma.core.Task;
+import de.ruu.app.pragma.core.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import org.jspecify.annotations.Nullable;
 
@@ -34,7 +36,8 @@ public class TaskDto implements PersistentTask<TaskGroupDto, TaskDto>
     private @Nullable Double       workActual;
     private @Nullable LocalDate    scheduledStart;
     private @Nullable LocalDate    scheduledFinish;
-    private           Boolean      closed = false;
+    private           TaskStatus   status = TaskStatus.NEW;
+    private           TaskPriority priority = TaskPriority.NORMAL;
 
     /** For JSON deserialization only. */
     protected TaskDto() { name = ""; }
@@ -52,6 +55,8 @@ public class TaskDto implements PersistentTask<TaskGroupDto, TaskDto>
         this.id      = in.id();
         this.version = in.version();
         this.name    = in.name();
+        this.status  = in.status();
+        this.priority = in.priority();
         // direct field set instead of group.addTask(this) — avoids circular ref
         // (group.tasks → task → taskGroup → group.tasks) during JSON serialization
         this.taskGroup = requireNonNull(group, "group");
@@ -74,7 +79,8 @@ public class TaskDto implements PersistentTask<TaskGroupDto, TaskDto>
     @Override public Optional<Double>       workActual         () { return ofNullable(workActual         ); }
     @Override public Optional<LocalDate>    scheduledStart     () { return ofNullable(scheduledStart     ); }
     @Override public Optional<LocalDate>    scheduledFinish    () { return ofNullable(scheduledFinish    ); }
-    @Override public          Boolean       closed             () { return            closed              ; }
+    @Override public          TaskStatus    status             () { return            status              ; }
+    @Override public          TaskPriority  priority           () { return            priority            ; }
 
     @Override public TaskDto name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
     @Override public TaskDto parentTask         (@Nullable TaskDto   p) { parentTask          =                p         ; return this; }
@@ -84,7 +90,8 @@ public class TaskDto implements PersistentTask<TaskGroupDto, TaskDto>
     @Override public TaskDto workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
     @Override public TaskDto scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
     @Override public TaskDto scheduledFinish    (@Nullable LocalDate f) { scheduledFinish     =                f         ; return this; }
-    @Override public TaskDto closed             (          Boolean   c) { closed              =                c         ; return this; }
+    @Override public TaskDto status             (          TaskStatus s) { status              =                s         ; return this; }
+    @Override public TaskDto priority           (          TaskPriority p) { priority            =                p         ; return this; }
 
     @Override
     public TaskGroupDto taskGroup() { return taskGroup; }

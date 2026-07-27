@@ -102,12 +102,12 @@
 
     <!-- Logging -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jspecify</groupId>
@@ -135,11 +135,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -220,24 +215,8 @@
         und pragma.bat per Doppelklick starten.
         Voraussetzung: Java (mind. 25) ist auf dem Ziel-Windows-Rechner im PATH
         oder JAVA_HOME zeigt auf das JDK.
-      -->
-      <dependencies>
-        <!-- Windows fat-jar runtime logging: SLF4J provider + Log4j-API bridge -->
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-          <scope>runtime</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-to-slf4j</artifactId>
-          <scope>runtime</scope>
-        </dependency>
-        <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
+  -->
+  <dependencies>
   </dependencies>
 
       <build>
@@ -259,10 +238,6 @@
                     <excludes>
                       <!-- JavaFX liegt separat in lib/ auf dem module-path -->
                       <exclude>org.openjfx:*</exclude>
-                      <!-- log4j-core hat viele optionale Deps (disruptor, kafka, …) die Weld-Scanning kaputt machen;
-                           Logging im win-exe läuft über slf4j-simple + log4j-to-slf4j -->
-                      <exclude>org.apache.logging.log4j:log4j-core</exclude>
-                      <exclude>org.apache.logging.log4j:log4j-slf4j2-impl</exclude>
                     </excludes>
                   </artifactSet>
                   <transformers>

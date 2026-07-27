@@ -26,6 +26,7 @@ class TaskGroupEditorController extends DefaultFXCController<TaskGroupEditor, Ta
   @FXML
   protected void initialize()
   {
+    // Same composition pattern as TaskEditor: reuse the view and expose it as an editable form.
     vBxContainerEditor.getChildren().add(taskGroupView.localRoot());
     taskGroupView.service().setEditable(true);
   }

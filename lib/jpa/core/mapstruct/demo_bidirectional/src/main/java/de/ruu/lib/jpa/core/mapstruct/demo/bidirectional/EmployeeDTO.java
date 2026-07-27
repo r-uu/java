@@ -2,14 +2,14 @@ package de.ruu.lib.jpa.core.mapstruct.demo.bidirectional;
 
 import de.ruu.lib.jpa.core.mapstruct.AbstractMappedDTO;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Objects;
 
 public class EmployeeDTO extends AbstractMappedDTO<EmployeeEntity>
 {
-	private static final Logger log = LoggerFactory.getLogger(EmployeeDTO.class);
+	private static final Logger log = LogManager.getLogger(EmployeeDTO.class);
 
 	/** mutable non-null */
 	@NonNull private String name;

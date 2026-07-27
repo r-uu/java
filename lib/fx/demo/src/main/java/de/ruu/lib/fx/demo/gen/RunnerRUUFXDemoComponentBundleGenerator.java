@@ -5,12 +5,12 @@ import java.io.IOException;
 import de.ruu.lib.fx.demo.gen.input.FXBeanModel;
 import de.ruu.lib.gen.GeneratorException;
 import de.ruu.lib.gen.java.fx.comp.GeneratorFXCompBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 class RunnerRUUFXDemoComponentBundleGenerator
 {
-	private static final Logger log = LoggerFactory.getLogger(RunnerRUUFXDemoComponentBundleGenerator.class);
+	private static final Logger log = LogManager.getLogger(RunnerRUUFXDemoComponentBundleGenerator.class);
 
 	public static void main(String[] args) throws IOException, GeneratorException
 	{

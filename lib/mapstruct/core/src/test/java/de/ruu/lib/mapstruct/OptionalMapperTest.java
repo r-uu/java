@@ -1,7 +1,6 @@
 package de.ruu.lib.mapstruct;
 
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -10,7 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OptionalMapperTest
 {
-  private final OptionalMapper mapper = Mappers.getMapper(OptionalMapper.class);
+  private final OptionalMapper mapper = new OptionalMapper()
+  {
+  };
 
   @Test
   void unwrapStringWithValue()

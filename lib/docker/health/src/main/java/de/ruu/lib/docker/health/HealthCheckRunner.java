@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health;
 
 import de.ruu.lib.docker.health.check.HealthCheck;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class HealthCheckRunner
 {
-  private static final Logger log = LoggerFactory.getLogger(HealthCheckRunner.class);
+  private static final Logger log = LogManager.getLogger(HealthCheckRunner.class);
 
   private final List<HealthCheck> checks;
 

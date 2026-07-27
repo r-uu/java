@@ -12,8 +12,8 @@ import de.ruu.lib.gen.java.doc.GeneratorJavaDoc;
 import de.ruu.lib.gen.java.element.GeneratorAnnotations;
 import de.ruu.lib.gen.java.element.GeneratorModifiers;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface GeneratorInterface extends GeneratorType
 {

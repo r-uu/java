@@ -6,8 +6,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.function.Predicate;
 
@@ -15,7 +15,7 @@ import static java.util.Objects.isNull;
 
 public class IntegerTextFieldConfiguratorDemo extends Application
 {
-	private static final Logger log = LoggerFactory.getLogger(IntegerTextFieldConfiguratorDemo.class);
+	private static final Logger log = LogManager.getLogger(IntegerTextFieldConfiguratorDemo.class);
 
 	@Override	public void start(Stage stage)
 	{

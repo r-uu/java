@@ -75,11 +75,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Slf4j
 public class HierarchyDemoMainController extends DefaultFXCViewController
 {
+	private static final Logger log = LogManager.getLogger(HierarchyDemoMainController.class);
+
 	@FXML private AnchorPane root;
 	@FXML private AnchorPane main;
 	@FXML private Button btnShow1;

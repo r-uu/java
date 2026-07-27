@@ -1,8 +1,8 @@
 package de.ruu.lib.util.config.mp;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +41,7 @@ import static java.util.Objects.isNull;
  */
 public class WritableFileConfigSource implements ConfigSource
 {
-	private static final Logger log = LoggerFactory.getLogger(WritableFileConfigSource.class);
+	private static final Logger log = LogManager.getLogger(WritableFileConfigSource.class);
 
 	public static final String CONFIG_FILE_NAME_KEY           = "config.file.name";
 	public static final String CONFIG_FILE_NAME_VALUE_DEFAULT = "config/application.properties";

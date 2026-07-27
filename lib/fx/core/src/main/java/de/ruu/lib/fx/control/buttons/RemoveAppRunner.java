@@ -8,8 +8,8 @@ import de.ruu.lib.fx.comp.FXCAppStartedEvent;
 import de.ruu.lib.fx.control.buttons.RemoveService.RemoveComponentReadyEvent;
 import de.ruu.lib.fx.control.buttons.RemoveService.RemoveComponentReadyEvent.RemoveComponentReadyEventDispatcher;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 class RemoveAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(RemoveAppRunner.class);
+	private static final Logger log = LogManager.getLogger(RemoveAppRunner.class);
 
 	public static void main(String[] args)
 	{

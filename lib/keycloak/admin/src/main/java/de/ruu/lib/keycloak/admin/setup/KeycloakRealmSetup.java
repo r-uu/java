@@ -4,8 +4,8 @@ import de.ruu.lib.keycloak.admin.KeycloakAdminException;
 import de.ruu.lib.keycloak.admin.KeycloakClientManager;
 import de.ruu.lib.keycloak.admin.KeycloakRealmManager;
 import de.ruu.lib.keycloak.admin.KeycloakUserManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class KeycloakRealmSetup
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmSetup.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmSetup.class);
 
 	private static final String KEYCLOAK_URL = System.getProperty("keycloak.url", "http://localhost:8080");
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user",
@@ -84,12 +84,12 @@ public class KeycloakRealmSetup
 			createTestUser(keycloak);
 
 			log.info("");
-			log.info("=== Setup abgeschlossen ===");
-			log.info("✅ Realm: {}", REALM_NAME);
-			log.info("✅ Client: {} (Public Client, Direct Access Grants aktiviert)", CLIENT_ID);
-			log.info("✅ Test User: {} / {} (mit allen Rollen)", TEST_USER, TEST_PASSWORD);
+			log.info("=== Setup completed ===");
+			log.info("[OK] Realm: {}", REALM_NAME);
+			log.info("[OK] Client: {} (Public client, Direct Access Grants enabled)", CLIENT_ID);
+			log.info("[OK] Test user: {} / {} (with all roles)", TEST_USER, TEST_PASSWORD);
 			log.info("");
-			log.info("Test-Login-Command:");
+			log.info("Test login command:");
 			log.info("curl -X POST '{}/realms/{}/protocol/openid-connect/token' \\", KEYCLOAK_URL, REALM_NAME);
 			log.info("  -H 'Content-Type: application/x-www-form-urlencoded' \\");
 			log.info("  -d 'username={}' \\", TEST_USER);
@@ -99,14 +99,14 @@ public class KeycloakRealmSetup
 		}
 		catch (Exception e)
 		{
-			log.error("❌ Setup fehlgeschlagen: {}", e.getMessage(), e);
+			log.error("[FAIL] Setup failed: {}", e.getMessage(), e);
 			System.exit(1);
 		}
 	}
 
 	private static Keycloak createKeycloakClient()
 	{
-		log.info("Verbinde mit Keycloak Server...");
+		log.info("Connecting to Keycloak server...");
 		return KeycloakBuilder.builder()
 				.serverUrl(KEYCLOAK_URL)
 				.realm("master")
@@ -118,17 +118,17 @@ public class KeycloakRealmSetup
 
 	private static void createRealm(Keycloak keycloak)
 	{
-		log.info("Prüfe Realm '{}'...", REALM_NAME);
+		log.info("Checking realm '{}'...", REALM_NAME);
 
 		try
 		{
-			// Prüfe ob Realm bereits existiert
+			// Check whether the realm already exists
 			keycloak.realm(REALM_NAME).toRepresentation();
-			log.info("✓ Realm '{}' existiert bereits", REALM_NAME);
+			log.info("[OK] Realm '{}' already exists", REALM_NAME);
 		}
 		catch (Exception e)
 		{
-			log.info("Erstelle Realm '{}'...", REALM_NAME);
+			log.info("Creating realm '{}'...", REALM_NAME);
 
 			RealmRepresentation realm = new RealmRepresentation();
 			realm.setRealm(REALM_NAME);
@@ -149,19 +149,19 @@ public class KeycloakRealmSetup
 			realm.setAccessTokenLifespanForImplicitFlow(900); // 15 minutes
 			// Note: Refresh token lifespan is controlled by SSO Session Idle Timeout
 
-			log.info("Token Lifespans konfiguriert:");
-			log.info("  Access Token: {} minutes", 1800 / 60);
-			log.info("  SSO Session Idle: {} minutes", 1800 / 60);
-			log.info("  SSO Session Max: {} hours", 36000 / 3600);
+			log.info("Configured token lifespans:");
+			log.info("  Access token: {} minutes", 1800 / 60);
+			log.info("  SSO session idle: {} minutes", 1800 / 60);
+			log.info("  SSO session max: {} hours", 36000 / 3600);
 
 			try
 			{
 				keycloak.realms().create(realm);
-				log.info("✅ Realm '{}' erfolgreich erstellt", REALM_NAME);
+				log.info("[OK] Realm '{}' created successfully", REALM_NAME);
 			}
 			catch (Exception ex)
 			{
-				log.error("Fehler beim Erstellen des Realms '{}'", REALM_NAME, ex);
+				log.error("Error creating realm '{}'", REALM_NAME, ex);
 				throw new RuntimeException("Failed to create realm: " + REALM_NAME, ex);
 			}
 		}
@@ -185,7 +185,7 @@ public class KeycloakRealmSetup
 			if (existingClient != null)
 			{
 				String clientUuid = existingClient.getId();
-				log.info("✓ Client '{}' already exists (UUID: {})", CLIENT_ID, clientUuid);
+				log.info("[OK] Client '{}' already exists (UUID: {})", CLIENT_ID, clientUuid);
 
 				// Ensure Direct Access Grants is enabled
 				try
@@ -199,16 +199,16 @@ public class KeycloakRealmSetup
 						client.setDirectAccessGrantsEnabled(true);
 						client.setPublicClient(true);
 						keycloak.realm(REALM_NAME).clients().get(clientUuid).update(client);
-						log.info("✅ Direct Access Grants enabled");
+						log.info("[OK] Direct Access Grants enabled");
 					}
 					else
 					{
-						log.info("✓ Direct Access Grants already enabled");
+						log.info("[OK] Direct Access Grants already enabled");
 					}
 				}
 				catch (Exception ex)
 				{
-					log.warn("Could not check/set Direct Access Grants: {}", ex.getMessage());
+					log.warn("Could not check or set Direct Access Grants: {}", ex.getMessage());
 				}
 
 				// Check and create Audience Mapper if needed
@@ -225,7 +225,7 @@ public class KeycloakRealmSetup
 						Arrays.asList("*")   // webOrigins
 				);
 
-				log.info("✅ Client '{}' erstellt (UUID: {})", CLIENT_ID, clientUuid);
+				log.info("[OK] Client '{}' created (UUID: {})", CLIENT_ID, clientUuid);
 
 				// Direct Access Grants explizit aktivieren
 				try
@@ -235,12 +235,12 @@ public class KeycloakRealmSetup
 					client.setDirectAccessGrantsEnabled(true);
 					client.setPublicClient(true);
 					keycloak.realm(REALM_NAME).clients().get(clientUuid).update(client);
-					log.info("✅ Direct Access Grants aktiviert für Client '{}'", CLIENT_ID);
+					log.info("[OK] Direct Access Grants enabled for client '{}'", CLIENT_ID);
 				}
 				catch (Exception ex)
 				{
-					log.error("FEHLER: Konnte Direct Access Grants nicht aktivieren: {}", ex.getMessage());
-					throw new KeycloakAdminException("Direct Access Grants konnte nicht aktiviert werden", ex);
+					log.error("ERROR: Could not enable Direct Access Grants: {}", ex.getMessage());
+					throw new KeycloakAdminException("Could not enable Direct Access Grants", ex);
 				}
 
 				// Audience Mapper erstellen
@@ -255,7 +255,7 @@ public class KeycloakRealmSetup
 	 */
 	private static void ensureAudienceMapper(Keycloak keycloak, String clientUuid)
 	{
-		log.info("Prüfe Audience Mapper...");
+		log.info("Checking audience mapper...");
 
 		try
 		{
@@ -266,7 +266,7 @@ public class KeycloakRealmSetup
 				.getProtocolMappers()
 				.getMappers();
 
-			// Prüfe ob Audience Mapper existiert
+			// Check whether the audience mapper exists
 			boolean hasCorrectAudienceMapper = mappers.stream()
 				.filter(mapper -> "oidc-audience-mapper".equals(mapper.getProtocolMapper()))
 				.anyMatch(mapper -> {
@@ -277,17 +277,17 @@ public class KeycloakRealmSetup
 
 			if (hasCorrectAudienceMapper)
 			{
-				log.info("✓ Audience Mapper existiert bereits");
+				log.info("[OK] Audience mapper already exists");
 				return;
 			}
 
-			// Mapper existiert nicht oder hat falsche Audience → erstelle ihn
-			log.info("Erstelle Audience Mapper...");
+			// Mapper does not exist or has the wrong audience → create it
+			log.info("Creating audience mapper...");
 			createAudienceMapper(keycloak, clientUuid);
 		}
 		catch (Exception ex)
 		{
-			log.error("Fehler beim Prüfen/Erstellen des Audience Mappers: {}", ex.getMessage());
+			log.error("Error checking or creating audience mapper: {}", ex.getMessage());
 		}
 	}
 
@@ -297,7 +297,7 @@ public class KeycloakRealmSetup
 	 */
 	private static void createAudienceMapper(Keycloak keycloak, String clientUuid)
 	{
-		log.info("Erstelle Audience Mapper für Client...");
+		log.info("Creating audience mapper for client...");
 
 		try
 		{
@@ -319,15 +319,15 @@ public class KeycloakRealmSetup
 				.getProtocolMappers()
 				.createMapper(audienceMapper);
 
-			log.info("✅ Audience Mapper erstellt");
+			log.info("[OK] Audience mapper created");
 			log.info("   Audience: pragma-backend");
-			log.info("   Added to: Access Token");
+			log.info("   Added to: access token");
 		}
 		catch (Exception ex)
 		{
-			log.error("FEHLER: Konnte Audience Mapper nicht erstellen: {}", ex.getMessage());
-			log.error("   JWT-Tokens haben evtl. falsche Audience!");
-			log.error("   Bitte manuell konfigurieren oder KeycloakAudienceMapper ausführen");
+			log.error("ERROR: Could not create audience mapper: {}", ex.getMessage());
+			log.error("   JWT tokens may have the wrong audience!");
+			log.error("   Please configure it manually or run KeycloakAudienceMapper");
 		}
 	}
 
@@ -362,7 +362,7 @@ public class KeycloakRealmSetup
 				{
 					keycloak.realm(REALM_NAME).roles().get(roleName).toRepresentation();
 					existing++;
-					log.info("  ✓ Role '{}' already exists", roleName);
+					log.info("  [OK] Role '{}' already exists", roleName);
 				}
 				catch (jakarta.ws.rs.NotFoundException e)
 				{
@@ -374,16 +374,16 @@ public class KeycloakRealmSetup
 
 					keycloak.realm(REALM_NAME).roles().create(role);
 					created++;
-					log.info("  ✅ Role '{}' created", roleName);
+					log.info("  [OK] Role '{}' created", roleName);
 				}
 			}
 			catch (Exception ex)
 			{
-				log.error("  ❌ Error creating role '{}': {}", roleName, ex.getMessage());
+				log.error("  [FAIL] Error creating role '{}': {}", roleName, ex.getMessage());
 			}
 		}
 
-		log.info("✅ Rollen-Erstellung abgeschlossen: {} erstellt, {} bereits vorhanden", created, existing);
+		log.info("[OK] Role creation completed: {} created, {} already existed", created, existing);
 	}
 
 	/**
@@ -392,18 +392,18 @@ public class KeycloakRealmSetup
 	 */
 	private static void createGroupsClaimMapper(Keycloak keycloak)
 	{
-		log.info("Erstelle 'groups' Claim Mapper für Client '{}'...", CLIENT_ID);
+		log.info("Creating 'groups' claim mapper for client '{}'...", CLIENT_ID);
 
 		try
 		{
 			// Get client representation
-			log.debug("  → Suche Client UUID für '{}'...", CLIENT_ID);
+			log.debug("  Looking up client UUID for '{}'...", CLIENT_ID);
 			String clientUuid = keycloak.realm(REALM_NAME).clients()
 					.findByClientId(CLIENT_ID).get(0).getId();
-			log.debug("  → Client UUID: {}", clientUuid);
+			log.debug("  Client UUID: {}", clientUuid);
 
 			// Check if mapper already exists
-			log.debug("  → Prüfe existierende Mapper...");
+			log.debug("  Checking existing mappers...");
 			java.util.List<org.keycloak.representations.idm.ProtocolMapperRepresentation> existingMappers =
 					keycloak.realm(REALM_NAME).clients().get(clientUuid)
 							.getProtocolMappers().getMappers();
@@ -412,13 +412,13 @@ public class KeycloakRealmSetup
 			{
 				if ("groups-claim-mapper".equals(existingMapper.getName()))
 				{
-					log.info("  ✓ 'groups' Claim Mapper existiert bereits");
+					log.info("  [OK] 'groups' claim mapper already exists");
 					return;
 				}
 			}
 
 			// Create mapper representation
-			log.debug("  → Erstelle Mapper Representation...");
+			log.debug("  Creating mapper representation...");
 			org.keycloak.representations.idm.ProtocolMapperRepresentation mapper =
 					new org.keycloak.representations.idm.ProtocolMapperRepresentation();
 
@@ -428,9 +428,9 @@ public class KeycloakRealmSetup
 
 			// Configuration
 			java.util.Map<String, String> config = new java.util.HashMap<>();
-			config.put("claim.name", "groups");  // Liberty expects "groups" claim
+			config.put("claim.name", "groups");  // Liberty expects a top-level "groups" claim
 			config.put("jsonType.label", "String");
-			config.put("multivalued", "true");  // Roles are array
+			config.put("multivalued", "true");  // Roles are an array
 			config.put("id.token.claim", "true");
 			config.put("access.token.claim", "true");
 			config.put("userinfo.token.claim", "true");
@@ -438,26 +438,26 @@ public class KeycloakRealmSetup
 			mapper.setConfig(config);
 
 			// Add mapper to client
-			log.debug("  → Füge Mapper zu Client hinzu...");
+			log.debug("  Adding mapper to client...");
 			keycloak.realm(REALM_NAME).clients().get(clientUuid)
 					.getProtocolMappers().createMapper(mapper);
 
-			log.info("  ✅ 'groups' Claim Mapper erfolgreich erstellt");
-			log.info("     → Rollen werden nun als Top-Level 'groups' Claim ins Token geschrieben");
-			log.info("     → Liberty Server kann Rollen jetzt lesen!");
+			log.info("  [OK] 'groups' claim mapper created successfully");
+			log.info("     Roles are now written into the token as a top-level 'groups' claim");
+			log.info("     Liberty Server can read roles now!");
 		}
 		catch (Exception ex)
 		{
-			log.error("FEHLER: Konnte groups Claim Mapper nicht erstellen: {}", ex.getMessage(), ex);
-			log.error("   Liberty Server kann Rollen evtl. nicht lesen!");
-			log.error("   Bitte manuell konfigurieren");
+			log.error("ERROR: Could not create groups claim mapper: {}", ex.getMessage(), ex);
+			log.error("   Liberty Server may not be able to read roles!");
+			log.error("   Please configure it manually");
 			throw new RuntimeException("Failed to create groups claim mapper", ex);
 		}
 	}
 
 	private static void createTestUser(Keycloak keycloak) throws KeycloakAdminException
 	{
-		log.info("Prüfe Testuser '{}'...", TEST_USER);
+		log.info("Checking test user '{}'...", TEST_USER);
 
 		try (KeycloakUserManager userManager = KeycloakUserManager.builder()
 				.serverUrl(KEYCLOAK_URL)
@@ -472,7 +472,7 @@ public class KeycloakRealmSetup
 			{
 				// User already exists
 				String userId = existingUser.getId();
-				log.info("✓ User '{}' already exists (ID: {})", TEST_USER, userId);
+				log.info("[OK] User '{}' already exists (ID: {})", TEST_USER, userId);
 
 				// Update password and delete Required Actions
 				log.info("Updating user configuration...");
@@ -484,7 +484,7 @@ public class KeycloakRealmSetup
 				credential.setValue(TEST_PASSWORD);
 				credential.setTemporary(false);
 				keycloak.realm(REALM_NAME).users().get(userId).resetPassword(credential);
-				log.info("✅ Password set for user '{}'", TEST_USER);
+				log.info("[OK] Password set for user '{}'", TEST_USER);
 
 				// Explicitly delete Required Actions via Keycloak API
 				try
@@ -496,7 +496,7 @@ public class KeycloakRealmSetup
 					user.setFirstName("Test");  // firstName is required for Keycloak User Profile
 					user.setLastName("User");   // lastName is required for Keycloak User Profile
 					keycloak.realm(REALM_NAME).users().get(userId).update(user);
-					log.info("✅ User '{}' updated (Required Actions deleted)", TEST_USER);
+					log.info("[OK] User '{}' updated (Required Actions deleted)", TEST_USER);
 				}
 				catch (Exception ex)
 				{
@@ -518,35 +518,35 @@ public class KeycloakRealmSetup
 						// Keine Rollen
 				);
 
-				log.info("✅ User '{}' erstellt (ID: {})", TEST_USER, userId);
+				log.info("[OK] User '{}' created (ID: {})", TEST_USER, userId);
 
-				// Passwort nochmal explizit setzen (zur Sicherheit)
+				// Set the password again explicitly for safety
 				org.keycloak.representations.idm.CredentialRepresentation credential =
 					new org.keycloak.representations.idm.CredentialRepresentation();
 				credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
 				credential.setValue(TEST_PASSWORD);
 				credential.setTemporary(false);
 				keycloak.realm(REALM_NAME).users().get(userId).resetPassword(credential);
-				log.info("✅ Passwort für User '{}' gesetzt", TEST_USER);
+				log.info("[OK] Password set for user '{}'", TEST_USER);
 
-				// Required Actions explizit löschen
+				// Explicitly clear required actions
 				try
 				{
 					UserRepresentation user = keycloak.realm(REALM_NAME).users().get(userId).toRepresentation();
-					user.setRequiredActions(new java.util.ArrayList<>());  // Leere Liste
+					user.setRequiredActions(new java.util.ArrayList<>());  // Empty list
 					user.setEmailVerified(true);
 					user.setEnabled(true);
-					user.setFirstName("Test");  // firstName ist erforderlich für Keycloak User Profile
-					user.setLastName("User");   // lastName ist erforderlich für Keycloak User Profile
+					user.setFirstName("Test");  // firstName is required for the Keycloak user profile
+					user.setLastName("User");   // lastName is required for the Keycloak user profile
 					keycloak.realm(REALM_NAME).users().get(userId).update(user);
-					log.info("✅ Required Actions für User '{}' gelöscht", TEST_USER);
+					log.info("[OK] Required actions cleared for user '{}'", TEST_USER);
 				}
 				catch (Exception ex)
 				{
-					log.warn("Warnung beim Löschen der Required Actions: {}", ex.getMessage());
+					log.warn("Warning while clearing required actions: {}", ex.getMessage());
 				}
 
-				// Rollen zuweisen (für neuen User)
+				// Assign roles for the new user
 				assignRolesToUser(keycloak, userId);
 			}
 		}
@@ -557,7 +557,7 @@ public class KeycloakRealmSetup
 	 */
 	private static void assignRolesToUser(Keycloak keycloak, String userId)
 	{
-		log.info("Weise Rollen zu User zu...");
+		log.info("Assigning roles to user...");
 
 		String[] requiredRoles = {
 			"taskgroup-read",
@@ -576,23 +576,23 @@ public class KeycloakRealmSetup
 		{
 			try
 			{
-				// Hole Rollen-Representation
+				// Get role representation
 				org.keycloak.representations.idm.RoleRepresentation role =
 					keycloak.realm(REALM_NAME).roles().get(roleName).toRepresentation();
 
-				// Weise Rolle dem User zu
+				// Assign the role to the user
 				keycloak.realm(REALM_NAME).users().get(userId).roles().realmLevel()
 					.add(Arrays.asList(role));
 
 				assigned++;
-				log.info("  ✅ Rolle '{}' zugewiesen", roleName);
+				log.info("  [OK] Role '{}' assigned", roleName);
 			}
 			catch (Exception ex)
 			{
-				log.warn("  ⚠ Konnte Rolle '{}' nicht zuweisen: {}", roleName, ex.getMessage());
+				log.warn("  [WARN] Could not assign role '{}': {}", roleName, ex.getMessage());
 			}
 		}
 
-		log.info("✅ Rollen-Zuweisung abgeschlossen: {} Rollen zugewiesen", assigned);
+		log.info("[OK] Role assignment completed: {} roles assigned", assigned);
 	}
 }

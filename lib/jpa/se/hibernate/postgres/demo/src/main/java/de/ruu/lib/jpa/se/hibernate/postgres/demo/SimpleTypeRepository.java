@@ -6,13 +6,13 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Singleton
 class SimpleTypeRepository extends AbstractRepository<SimpleTypeEntity, Long>
 {
-	private static final Logger log = LoggerFactory.getLogger(SimpleTypeRepository.class);
+	private static final Logger log = LogManager.getLogger(SimpleTypeRepository.class);
 
 	@HibernatePostgresDemoQualifier
 	@Inject private EntityManager entityManager;

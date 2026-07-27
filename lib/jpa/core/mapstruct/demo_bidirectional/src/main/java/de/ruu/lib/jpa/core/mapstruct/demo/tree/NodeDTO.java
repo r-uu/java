@@ -7,8 +7,8 @@ import de.ruu.lib.jpa.core.mapstruct.AbstractMappedDTO;
 import de.ruu.lib.util.Strings;
 import jakarta.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class NodeDTO extends AbstractMappedDTO<NodeEntity> implements Node<NodeDTO>
 {
-	private static final Logger log = LoggerFactory.getLogger(NodeDTO.class);
+	private static final Logger log = LogManager.getLogger(NodeDTO.class);
 
 	@NonNull  private String        name;
 	@Nullable private NodeDTO       parent;

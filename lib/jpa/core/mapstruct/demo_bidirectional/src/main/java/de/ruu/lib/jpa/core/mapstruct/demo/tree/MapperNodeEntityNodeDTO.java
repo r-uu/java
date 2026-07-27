@@ -1,8 +1,8 @@
 package de.ruu.lib.jpa.core.mapstruct.demo.tree;
 
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +12,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 abstract class MapperNodeEntityNodeDTO
 {
-	private static final Logger log = LoggerFactory.getLogger(MapperNodeEntityNodeDTO.class);
+	private static final Logger log = LogManager.getLogger(MapperNodeEntityNodeDTO.class);
 
 	static MapperNodeEntityNodeDTO INSTANCE = Mappers.getMapper(MapperNodeEntityNodeDTO.class);
 

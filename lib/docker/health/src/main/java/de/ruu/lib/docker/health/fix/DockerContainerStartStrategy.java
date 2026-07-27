@@ -1,7 +1,7 @@
 package de.ruu.lib.docker.health.fix;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
  */
 public class DockerContainerStartStrategy implements AutoFixStrategy
 {
-	private static final Logger log = LoggerFactory.getLogger(DockerContainerStartStrategy.class);
+	private static final Logger log = LogManager.getLogger(DockerContainerStartStrategy.class);
 
 	private final String dockerComposeDir;
 	private final int healthWaitSeconds;
@@ -80,7 +80,7 @@ public class DockerContainerStartStrategy implements AutoFixStrategy
 
 			if (exitCode == 0)
 			{
-				log.info("✅ Container {} started successfully", containerName);
+				log.info("[OK] Container {} started successfully", containerName);
 
 				// Wait for container to become healthy
 				log.info("Waiting {}s for container to become healthy...", healthWaitSeconds);
@@ -90,7 +90,7 @@ public class DockerContainerStartStrategy implements AutoFixStrategy
 			}
 			else
 			{
-				log.error("❌ Failed to start container {} (exit code: {})", containerName, exitCode);
+				log.error("[FAIL] Failed to start container {} (exit code: {})", containerName, exitCode);
 				return false;
 			}
 		}

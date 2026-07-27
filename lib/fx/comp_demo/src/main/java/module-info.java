@@ -18,7 +18,6 @@ module de.ruu.lib.fx.comp.demo.hierarchy
 	requires javafx.fxml;
 
 	requires org.apache.logging.log4j;
-	requires org.slf4j;
 
 	requires de.ruu.lib.cdi.se;
 	requires de.ruu.lib.fx.comp;

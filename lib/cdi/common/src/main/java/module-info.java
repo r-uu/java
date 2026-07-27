@@ -4,5 +4,5 @@ module de.ruu.lib.cdi.common
 	opens   de.ruu.lib.cdi.common;
 
 	requires jakarta.cdi;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 }

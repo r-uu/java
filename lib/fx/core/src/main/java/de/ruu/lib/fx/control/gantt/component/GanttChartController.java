@@ -14,8 +14,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Dependent
 public class GanttChartController extends DefaultFXCController<GanttChartComponent, GanttChartService>
 {
-	private static final Logger log = LoggerFactory.getLogger(GanttChartController.class);
+	private static final Logger log = LogManager.getLogger(GanttChartController.class);
 
 	@FXML
 	private AnchorPane root;

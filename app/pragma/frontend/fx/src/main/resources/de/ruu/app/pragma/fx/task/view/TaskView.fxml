@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -34,10 +34,12 @@
       <DatePicker fx:id="dtPckrStart" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
       <Label text="planned end" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
       <DatePicker fx:id="dtPckrEnd" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-      <Label text="closed" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-      <CheckBox fx:id="chkBxClosed" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+      <Label text="status" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+      <ComboBox fx:id="cbxStatus" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+      <Label text="priority" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+      <ComboBox fx:id="cbxPriority" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
       <Label text="description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-      <TextArea fx:id="taDescription" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="4" />
+      <TextArea fx:id="taDescription" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2" />
     </children>
   </GridPane>
 

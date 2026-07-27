@@ -2,12 +2,12 @@ package de.ruu.lib.cdi.se.demo;
 
 import de.ruu.lib.cdi.se.CDIContainer;
 import jakarta.enterprise.inject.spi.CDI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 class DemoCDIContainer
 {
-	private static final Logger log = LoggerFactory.getLogger(DemoCDIContainer.class);
+	private static final Logger log = LogManager.getLogger(DemoCDIContainer.class);
 
 //	@Test void test()
 //	{

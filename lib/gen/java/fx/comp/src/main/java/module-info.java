@@ -11,7 +11,7 @@ module de.ruu.lib.gen.java.fx.comp
 	requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.graphics;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires de.ruu.lib.fx.comp;
 	requires de.ruu.lib.gen.core;

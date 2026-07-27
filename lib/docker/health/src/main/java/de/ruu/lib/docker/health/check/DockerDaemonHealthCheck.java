@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
  */
 public class DockerDaemonHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(DockerDaemonHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(DockerDaemonHealthCheck.class);
 
 	@Override
 	public HealthCheckResult check()
@@ -25,12 +25,12 @@ public class DockerDaemonHealthCheck implements HealthCheck
 
 			if (exitCode == 0)
 			{
-				log.info("  ✅ Docker daemon is running");
+				log.info("  [OK] Docker daemon is running");
 				return HealthCheckResult.success("Docker Daemon");
 			}
 			else
 			{
-				log.error("  ❌ Docker daemon is not running");
+				log.error("  [FAIL] Docker daemon is not running");
 				return HealthCheckResult.failure(
 					"Docker Daemon",
 					"Docker daemon is not running",
@@ -41,7 +41,7 @@ public class DockerDaemonHealthCheck implements HealthCheck
 		}
 		catch (Exception e)
 		{
-			log.error("  ❌ Cannot check Docker daemon: {}", e.getMessage());
+			log.error("  [FAIL] Cannot check Docker daemon: {}", e.getMessage());
 			return HealthCheckResult.failure(
 				"Docker Daemon",
 				"Cannot execute docker commands: " + e.getMessage(),

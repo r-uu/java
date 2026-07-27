@@ -25,11 +25,11 @@ import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import de.ruu.lib.gen.java.element.type.GeneratorClass;
 import de.ruu.lib.util.Time;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class GeneratorFXCAppRunner {
-	private static final Logger log = LoggerFactory.getLogger(GeneratorFXCAppRunner.class);
+	private static final Logger log = LogManager.getLogger(GeneratorFXCAppRunner.class);
 	private String packageName;
 	private String simpleFileName;
 	private String appName;
@@ -44,8 +44,8 @@ public class GeneratorFXCAppRunner {
 	public void run() throws GeneratorException, IOException {
 		CompilationUnitContext context = context(packageName, simpleFileName);
 
-		String loggerType       = context.importManager().useType("org.slf4j.Logger");
-		String loggerFactoryType = context.importManager().useType("org.slf4j.LoggerFactory");
+		String loggerType       = context.importManager().useType("org.apache.logging.log4j.Logger");
+		String loggerFactoryType = context.importManager().useType("org.apache.logging.log4j.LogManager");
 
 		GeneratorCodeBlock classCodeBlock = codeBlokk(context).childNodesSeparator(LS);
 		classCodeBlock.add(

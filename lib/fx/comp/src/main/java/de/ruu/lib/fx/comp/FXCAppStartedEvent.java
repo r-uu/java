@@ -3,13 +3,13 @@ package de.ruu.lib.fx.comp;
 import de.ruu.lib.cdi.se.EventDispatcher;
 import de.ruu.lib.util.AbstractEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** Event that can be thrown to indicate that a {@link FXCApp} has started successfully. */
 public class FXCAppStartedEvent extends AbstractEvent<FXCApp, FXCView<? extends FXCService>>
 {
-	private static final Logger log = LoggerFactory.getLogger(FXCAppStartedEvent.class);
+	private static final Logger log = LogManager.getLogger(FXCAppStartedEvent.class);
 
 	@ApplicationScoped
 	public static class FXCAppStartedEventDispatcher extends EventDispatcher<FXCAppStartedEvent>

@@ -1,8 +1,8 @@
 package de.ruu.lib.fx.control.gantt.rendering;
 
 import de.ruu.lib.fx.control.gantt.config.GanttChartConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
  * <p>Example: if showing 2 weeks with 800px width, each day is ~57px.
  */
 public class TimeScaleCalculator {
-	private static final Logger log = LoggerFactory.getLogger(TimeScaleCalculator.class);
+	private static final Logger log = LogManager.getLogger(TimeScaleCalculator.class);
 
 	private final GanttChartConfig config;
 	private final LocalDateTime startDate;

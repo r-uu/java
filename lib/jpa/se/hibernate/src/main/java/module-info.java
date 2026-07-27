@@ -8,5 +8,5 @@ module de.ruu.lib.jpa.se.hibernate
 	requires jakarta.persistence;
 	requires org.hibernate.orm.core;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 }

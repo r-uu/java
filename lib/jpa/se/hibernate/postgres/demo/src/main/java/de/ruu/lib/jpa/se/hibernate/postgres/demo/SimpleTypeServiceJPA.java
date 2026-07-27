@@ -5,14 +5,14 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Singleton
 @Transactional
 class SimpleTypeServiceJPA implements SimpleTypeService
 {
-	private static final Logger log = LoggerFactory.getLogger(SimpleTypeServiceJPA.class);
+	private static final Logger log = LogManager.getLogger(SimpleTypeServiceJPA.class);
 
 	@Inject private SimpleTypeRepository repository;
 

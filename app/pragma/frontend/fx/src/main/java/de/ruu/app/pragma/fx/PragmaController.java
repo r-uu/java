@@ -14,13 +14,13 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Dependent
 class PragmaController extends DefaultFXCController<Pragma, PragmaService> implements PragmaService
 {
-    private static final Logger log = LoggerFactory.getLogger(PragmaController.class);
+    private static final Logger log = LogManager.getLogger(PragmaController.class);
 
     @FXML private AnchorPane paneHierarchies;
     @FXML private AnchorPane paneGantt;

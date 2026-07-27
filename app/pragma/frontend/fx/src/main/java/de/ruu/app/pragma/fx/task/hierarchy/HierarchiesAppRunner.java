@@ -1,12 +1,12 @@
 package de.ruu.app.pragma.fx.task.hierarchy;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class HierarchiesAppRunner extends FXCAppRunner
 {
-    private static final Logger log = LoggerFactory.getLogger(HierarchiesAppRunner.class);
+    private static final Logger log = LogManager.getLogger(HierarchiesAppRunner.class);
 
     public static void main(String[] args)
     {

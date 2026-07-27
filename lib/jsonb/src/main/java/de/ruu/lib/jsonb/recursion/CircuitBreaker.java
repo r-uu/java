@@ -7,15 +7,15 @@ import jakarta.json.JsonValue;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.adapter.JsonbAdapter;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Objects;
 import java.util.Optional;
 
 public class CircuitBreaker<ORIGINAL> implements JsonbAdapter<ORIGINAL, JsonValue>
 {
-	private static final Logger log  = LoggerFactory.getLogger(CircuitBreaker.class);
+	private static final Logger log  = LogManager.getLogger(CircuitBreaker.class);
 	private static final Jsonb  JSONB = JsonbConfigurator.context();
 
 	private BiMap                biMap = new BiMap();

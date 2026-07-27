@@ -40,8 +40,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static de.ruu.lib.archunit.Util.firstActualTypeArgument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface FXMapper
 {

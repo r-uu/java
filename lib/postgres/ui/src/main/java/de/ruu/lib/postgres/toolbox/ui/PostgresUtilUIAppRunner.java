@@ -2,8 +2,8 @@ package de.ruu.lib.postgres.toolbox.ui;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
 import de.ruu.lib.postgres.PostgresToolBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component Application Runner {@link PostgresUtilUIAppRunner}
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostgresUtilUIAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresUtilUIAppRunner.class);
+	private static final Logger log = LogManager.getLogger(PostgresUtilUIAppRunner.class);
 
 	public static void main(String[] args)
 	{

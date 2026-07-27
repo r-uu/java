@@ -13,7 +13,7 @@ module de.ruu.lib.jpa.core.mapstruct.demo.bidirectional
 	requires de.ruu.lib.util;
 
 	requires org.jspecify;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	opens de.ruu.lib.jpa.core.mapstruct.demo.bidirectional to org.mapstruct;
 }

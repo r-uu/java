@@ -8,7 +8,7 @@ module de.ruu.lib.ws.rs
 	requires transitive jakarta.ws.rs;
 	requires de.ruu.lib.util;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires org.jspecify;
 	requires com.fasterxml.jackson.annotation;
 	requires static com.fasterxml.jackson.databind;

@@ -37,8 +37,8 @@ import static de.ruu.lib.gen.java.element.method.GeneratorParameters.parameters;
 import static de.ruu.lib.gen.java.fx.bean.FXMapper.importManagement;
 import static de.ruu.lib.gen.java.fx.bean.FXMapper.mapToFXProperty;
 import static de.ruu.lib.util.Constants.LS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Analyses a provided {@link JavaClass} that represents an existing java type ({@link FXBeanGenerator#source}).
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FXBeanGenerator
 {
-	private static final Logger log = LoggerFactory.getLogger(FXBeanGenerator.class);
+	private static final Logger log = LogManager.getLogger(FXBeanGenerator.class);
 	@NonNull private final String packageName;    // package name for target
 	@NonNull private final String simpleFileName; // simple file name for target
 

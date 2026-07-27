@@ -3,8 +3,8 @@ package de.ruu.lib.gen.java.element;
 import de.ruu.lib.gen.java.Generator;
 import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * {@link GeneratorAnnotations} for annotations like <pre>@Entity(name="Person")</pre>

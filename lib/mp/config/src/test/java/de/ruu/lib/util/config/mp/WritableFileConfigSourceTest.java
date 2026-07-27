@@ -15,8 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Unit tests for {@link WritableFileConfigSource}.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 class WritableFileConfigSourceTest
 {
-	private static final Logger log = LoggerFactory.getLogger(WritableFileConfigSourceTest.class);
+	private static final Logger log = LogManager.getLogger(WritableFileConfigSourceTest.class);
 
 	@TempDir
 	Path tempDir;

@@ -1,7 +1,7 @@
 package de.ruu.lib.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -24,7 +24,7 @@ import java.util.Properties;
  */
 public class Wsl2IpResolver
 {
-	private static final Logger log = LoggerFactory.getLogger(Wsl2IpResolver.class);
+	private static final Logger log = LogManager.getLogger(Wsl2IpResolver.class);
 
 	/** Private constructor - utility class should not be instantiated */
 	private Wsl2IpResolver()

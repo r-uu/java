@@ -7,8 +7,8 @@ import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.se.SeContainer;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import org.junit.jupiter.api.AfterAll;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
 class TestSimpleTypeService
 {
-	private static final Logger log = LoggerFactory.getLogger(TestSimpleTypeService.class);
+	private static final Logger log = LogManager.getLogger(TestSimpleTypeService.class);
 
 	private static SeContainer seContainer; // initialisation and closure handled in before/after all methods
 

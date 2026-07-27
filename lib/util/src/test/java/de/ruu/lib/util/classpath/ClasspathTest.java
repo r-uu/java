@@ -1,7 +1,7 @@
 package de.ruu.lib.util.classpath;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 //@Disabled // log level for this class is set to info in log4j2.xml
 class ClasspathTest
 {
-	private static final Logger log = LoggerFactory.getLogger(ClasspathTest.class);
+	private static final Logger log = LogManager.getLogger(ClasspathTest.class);
 
 	@Test void testGetClasspathResourcesByName() throws IOException
 	{

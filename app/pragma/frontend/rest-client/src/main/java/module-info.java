@@ -4,8 +4,10 @@ module de.ruu.app.pragma.client
     requires de.ruu.app.pragma.bean;
 
     requires jakarta.annotation;
+    requires jakarta.activation;
     requires jakarta.inject;
     requires jakarta.ws.rs;
+    requires org.apache.logging.log4j;
 
     requires jersey.client;
 
@@ -18,8 +20,9 @@ module de.ruu.app.pragma.client
 
     requires microprofile.config.api;
     requires org.jspecify;
+	requires de.ruu.app.pragma.core;
 
-    exports de.ruu.app.pragma.client;
+	exports de.ruu.app.pragma.client;
     exports de.ruu.app.pragma.client.dbcommand;
 
     // open for CDI (Weld) bean discovery and proxy generation

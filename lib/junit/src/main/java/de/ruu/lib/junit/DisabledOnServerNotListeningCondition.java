@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.AnnotatedElement;
 import java.net.UnknownHostException;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class DisabledOnServerNotListeningCondition implements ExecutionCondition
 {
-	private static final Logger log = LoggerFactory.getLogger(DisabledOnServerNotListeningCondition.class);
+	private static final Logger log = LogManager.getLogger(DisabledOnServerNotListeningCondition.class);
 
 	public DisabledOnServerNotListeningCondition() { }
 

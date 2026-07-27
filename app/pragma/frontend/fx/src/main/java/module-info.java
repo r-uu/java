@@ -21,7 +21,7 @@ module de.ruu.app.pragma.fx
 	requires jakarta.cdi;
 
 	requires org.jspecify;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 	requires org.kordamp.ikonli.javafx;
 
 	exports de.ruu.app.pragma.fx;

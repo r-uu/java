@@ -15,8 +15,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import static java.util.Objects.nonNull;
 // public class TextFieldAutoCompleteClearable<T> extends ClearableTextField
 public class TextFieldAutoCompleteClearable<T> extends HBox
 {
-	private static final Logger log = LoggerFactory.getLogger(TextFieldAutoCompleteClearable.class);
+	private static final Logger log = LogManager.getLogger(TextFieldAutoCompleteClearable.class);
 
 	private final ClearableTextField clearableTextField = new ClearableTextField();
 	protected final ListView<T> listView = new ListView<>();

@@ -341,7 +341,9 @@ Alle drei FXC-Views sowie die Haupt-App sind implementiert in `frontend/fx`:
 | `GanttAppRunner`    | `main()` entry point                                                     |
 
 Voraussetzung: `TaskDto`/`TaskJPA` haben `plannedStart`/`plannedEnd` (LocalDate, nullable).
-REST-PUT `/tasks/{id}` persistiert diese Felder. `hbm2ddl.auto=update` fügt Spalten automatisch hinzu.
+REST-PUT `/tasks/{id}` persistiert diese Felder. Die REST-Schicht zieht die Task-Spalten im
+Dev-Modus bei Bedarf per Schema-Patch nach, damit neue Felder ohne extra Migrationsframework
+nicht an alten lokalen Datenbanken scheitern.
 
 #### Graph View (`de.ruu.app.pragma.fx.task.graph`)
 | Klasse              | Rolle                                                                              |

@@ -16,8 +16,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import static de.ruu.lib.util.StringBuilders.sb;
 
 public class FXBeanViewFXMLGenerator
 {
-	private static final Logger log = LoggerFactory.getLogger(FXBeanViewFXMLGenerator.class);
+	private static final Logger log = LogManager.getLogger(FXBeanViewFXMLGenerator.class);
 	@NonNull private final String packageName;    // package name for target
 	@NonNull private final String simpleFileName; // simple file name for target
 

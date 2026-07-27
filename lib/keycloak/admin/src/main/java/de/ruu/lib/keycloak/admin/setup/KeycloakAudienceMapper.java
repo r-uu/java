@@ -1,7 +1,7 @@
 package de.ruu.lib.keycloak.admin.setup;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class KeycloakAudienceMapper
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakAudienceMapper.class);
+	private static final Logger log = LogManager.getLogger(KeycloakAudienceMapper.class);
 
 	private static final String KEYCLOAK_URL = System.getProperty("keycloak.url", "http://localhost:8080");
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user", "admin");
@@ -89,7 +89,7 @@ public class KeycloakAudienceMapper
 
 						if (AUDIENCE.equals(includedCustomAudience) || AUDIENCE.equals(includedClientAudience))
 						{
-							log.info("✅ Audience mapper is already correctly configured with audience '{}'", AUDIENCE);
+							log.info("[OK] Audience mapper is already correctly configured with audience '{}'", AUDIENCE);
 							return;
 						}
 					}
@@ -117,13 +117,13 @@ public class KeycloakAudienceMapper
 					.getProtocolMappers()
 					.createMapper(audienceMapper);
 
-			log.info("✅ Audience mapper created successfully");
+			log.info("[OK] Audience mapper created successfully");
 			log.info("   Mapper Name: audience-mapper");
 			log.info("   Audience: {}", AUDIENCE);
 			log.info("   Added to: Access Token");
 			log.info("");
-			log.info("=== Setup abgeschlossen ===");
-			log.info("Der Client '{}' generiert jetzt JWT-Tokens mit Audience '{}'", CLIENT_ID, AUDIENCE);
+			log.info("=== Setup completed ===");
+			log.info("The client '{}' now generates JWT tokens with audience '{}'", CLIENT_ID, AUDIENCE);
 		}
 		catch (Exception e)
 		{
@@ -134,7 +134,7 @@ public class KeycloakAudienceMapper
 
 	private static Keycloak createKeycloakClient()
 	{
-		log.info("Verbinde mit Keycloak Server...");
+		log.info("Connecting to Keycloak server...");
 		return KeycloakBuilder.builder()
 				.serverUrl(KEYCLOAK_URL)
 				.realm("master")

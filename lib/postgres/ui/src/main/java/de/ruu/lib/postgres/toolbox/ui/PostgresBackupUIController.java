@@ -29,8 +29,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component View Controller
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 class PostgresBackupUIController extends DefaultFXCController<PostgresBackupUI, PostgresBackupUIService>
 		implements PostgresBackupUIService
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresBackupUIController.class);
+	private static final Logger log = LogManager.getLogger(PostgresBackupUIController.class);
 
 	public static final String POSTGRES_BACKUP_EXECUTABLE_KEY   = "postgres.backup.executable";
 	public static final String POSTGRES_BACKUP_EXECUTABLE_VALUE = ".";

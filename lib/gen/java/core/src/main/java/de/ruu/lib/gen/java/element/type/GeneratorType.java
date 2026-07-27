@@ -11,8 +11,8 @@ import de.ruu.lib.gen.java.element.GeneratorElement;
 import de.ruu.lib.gen.java.element.GeneratorModifiers;
 import de.ruu.lib.gen.java.element.pckg.GeneratorPackageStatement;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface GeneratorType extends GeneratorElement
 {

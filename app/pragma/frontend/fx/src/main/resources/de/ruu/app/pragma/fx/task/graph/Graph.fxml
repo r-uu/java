@@ -23,12 +23,12 @@
             <Button fx:id="btnManageGroups" mnemonicParsing="false"
                     prefHeight="20" prefWidth="20">
                 <graphic><FontIcon iconLiteral="far-folder" iconSize="11"/></graphic>
-                <tooltip><Tooltip text="task groups verwalten"/></tooltip>
+                <tooltip><Tooltip text="manage task groups"/></tooltip>
             </Button>
             <Button fx:id="btnReload" mnemonicParsing="false"
                     prefHeight="20" prefWidth="20">
                 <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
-                <tooltip><Tooltip text="neu laden"/></tooltip>
+                <tooltip><Tooltip text="reload"/></tooltip>
             </Button>
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="btnSaveLayout" text="Layout speichern" onAction="#saveLayout"/>

@@ -10,12 +10,12 @@ import java.util.Set;
 import de.ruu.lib.jpa.core.mapstruct.AbstractMappedDTO;
 import de.ruu.lib.util.Strings;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class DepartmentDTO extends AbstractMappedDTO<DepartmentEntity>
 {
-	private static final Logger log = LoggerFactory.getLogger(DepartmentDTO.class);
+	private static final Logger log = LogManager.getLogger(DepartmentDTO.class);
 
 	/** mutable non-null */
 	@NonNull private String name;

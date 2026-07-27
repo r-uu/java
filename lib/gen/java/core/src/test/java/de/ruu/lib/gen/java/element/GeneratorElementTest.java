@@ -13,12 +13,12 @@ import de.ruu.lib.gen.GeneratorException;
 import de.ruu.lib.gen.java.context.CompilationUnitContext;
 import de.ruu.lib.gen.java.element.GeneratorElement.GeneratorElementAbstract;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 class GeneratorElementTest
 {
-	private static final Logger log = LoggerFactory.getLogger(GeneratorElementTest.class);
+	private static final Logger log = LogManager.getLogger(GeneratorElementTest.class);
 	private class GeneratorElementSimple extends GeneratorElementAbstract
 	{
 		public GeneratorElementSimple(

@@ -17,8 +17,8 @@ import de.ruu.lib.jpa.se.hibernate.PersistenceUnitProperties;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * {@link #produce()} returns an instance of a hibernate {@link EntityManager}.
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractEntityManagerProducer
 {
-	private static final Logger log = LoggerFactory.getLogger(AbstractEntityManagerProducer.class);
+	private static final Logger log = LogManager.getLogger(AbstractEntityManagerProducer.class);
 
 	private EntityManager        entityManager;
 	private EntityManagerFactory entityManagerFactory;

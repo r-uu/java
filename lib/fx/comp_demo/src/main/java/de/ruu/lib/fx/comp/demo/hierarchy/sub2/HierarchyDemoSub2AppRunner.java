@@ -1,8 +1,8 @@
 package de.ruu.lib.fx.comp.demo.hierarchy.sub2;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component Application Runner {@link HierarchyDemoSub2AppRunner}
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HierarchyDemoSub2AppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(HierarchyDemoSub2AppRunner.class);
+	private static final Logger log = LogManager.getLogger(HierarchyDemoSub2AppRunner.class);
 
 	public static void main(String[] args)
 	{

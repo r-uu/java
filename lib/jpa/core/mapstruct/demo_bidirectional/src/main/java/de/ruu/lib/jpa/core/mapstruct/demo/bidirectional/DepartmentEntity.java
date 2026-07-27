@@ -3,8 +3,8 @@ package de.ruu.lib.jpa.core.mapstruct.demo.bidirectional;
 import de.ruu.lib.jpa.core.mapstruct.AbstractMappedEntity;
 import de.ruu.lib.util.Strings;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -15,7 +15,7 @@ import static java.util.Objects.isNull;
 
 public class DepartmentEntity extends AbstractMappedEntity<DepartmentDTO>
 {
-	private static final Logger log = LoggerFactory.getLogger(DepartmentEntity.class);
+	private static final Logger log = LogManager.getLogger(DepartmentEntity.class);
 
 	/** mutable non-null */
 	@NonNull private String name;

@@ -4,6 +4,8 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.core.PersistentTask;
 import de.ruu.app.pragma.core.PersistentTaskGroup;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -263,7 +265,8 @@ class GraphLayoutTest
         @Override public Optional<Double> workActual() { return Optional.empty(); }
         @Override public Optional<LocalDate> scheduledStart() { return Optional.empty(); }
         @Override public Optional<LocalDate> scheduledFinish() { return Optional.empty(); }
-        @Override public Boolean closed() { return false; }
+        @Override public TaskStatus status() { return TaskStatus.NEW; }
+        @Override public TaskPriority priority() { return TaskPriority.NORMAL; }
         @Override public TestPersistentTask name(String name) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask parentTask(TestPersistentTask parentTask) { throw new UnsupportedOperationException(); }
         @Override public void addSubTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
@@ -280,6 +283,7 @@ class GraphLayoutTest
         @Override public TestPersistentTask workActual(Double workActual) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask scheduledStart(LocalDate scheduledStart) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask scheduledFinish(LocalDate scheduledFinish) { throw new UnsupportedOperationException(); }
-        @Override public TestPersistentTask closed(Boolean closed) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask status(TaskStatus status) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask priority(TaskPriority priority) { throw new UnsupportedOperationException(); }
     }
 }

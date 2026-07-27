@@ -16,8 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import static de.ruu.lib.util.BooleanFunctions.not;
 class PostgresRestoreUIController extends DefaultFXCController<PostgresRestoreUI, PostgresRestoreUIService>
 		implements PostgresRestoreUIService
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresRestoreUIController.class);
+	private static final Logger log = LogManager.getLogger(PostgresRestoreUIController.class);
 
 	public static final String POSTGRES_RESTORE_EXECUTABLE_KEY   = "postgres.restore.executable";
 	public static final String POSTGRES_RESTORE_EXECUTABLE_VALUE = ".";

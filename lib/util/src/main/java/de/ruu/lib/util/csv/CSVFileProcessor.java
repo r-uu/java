@@ -3,8 +3,8 @@ package de.ruu.lib.util.csv;
 import java.nio.file.Path;
 
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public interface CSVFileProcessor
 {
@@ -14,7 +14,7 @@ public interface CSVFileProcessor
 
 	class CSVFileProcessorSimple implements CSVFileProcessor
 	{
-		static final Logger log = LoggerFactory.getLogger(CSVFileProcessorSimple.class);
+		static final Logger log = LogManager.getLogger(CSVFileProcessorSimple.class);
 
 		private @NonNull CSVRowProcessor processor = CSVRowProcessor.create();
 

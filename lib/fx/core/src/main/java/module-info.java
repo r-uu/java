@@ -11,10 +11,12 @@ module de.ruu.lib.fx.core
 	exports de.ruu.lib.fx.control.treeview;
 	exports de.ruu.lib.fx.css;
 	exports de.ruu.lib.fx.control.autocomplete.textfield;
-	exports de.ruu.lib.fx.control.gantt.demo to javafx.graphics;
+	exports de.ruu.lib.fx.control.gantt.demo;
+	exports de.ruu.lib.fx.control.gantt.config;
+	opens de.ruu.lib.fx.control.gantt.demo;
 
 	opens de.ruu.lib.fx.control.buttons;
-	opens de.ruu.lib.fx.control.gantt.component to javafx.fxml;
+	opens de.ruu.lib.fx.control.gantt.component;
 
 	requires de.ruu.lib.util;
 	requires de.ruu.lib.fx.comp;
@@ -26,8 +28,6 @@ module de.ruu.lib.fx.core
 	// requires javafx.graphics;
 
 	requires org.apache.logging.log4j;
-
-	requires org.slf4j;
 	requires de.ruu.lib.cdi.common;
 	requires javafx.graphics;
 	requires org.kordamp.ikonli.javafx;

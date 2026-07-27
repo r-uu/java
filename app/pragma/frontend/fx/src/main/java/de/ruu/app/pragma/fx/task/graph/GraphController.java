@@ -35,8 +35,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.FileReader;
@@ -57,7 +57,7 @@ import java.util.Set;
 @Dependent
 class GraphController extends DefaultFXCController<Graph, GraphService> implements GraphService
 {
-    private static final Logger log = LoggerFactory.getLogger(GraphController.class);
+    private static final Logger log = LogManager.getLogger(GraphController.class);
 
     private static final double NODE_WIDTH  = 160;
     private static final double NODE_HEIGHT =  60;
@@ -160,7 +160,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
 
     private void loadGroups()
     {
-        if (lblStatus != null) lblStatus.setText("Verbinde …");
+        if (lblStatus != null) lblStatus.setText("Connecting ...");
         Thread.ofVirtual().start(() ->
         {
             try
@@ -176,7 +176,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
             catch (Exception e)
             {
                 log.error("failed to load groups", e);
-                Platform.runLater(() -> { if (lblStatus != null) lblStatus.setText("⚠ Verbindungsfehler — Server erreichbar?"); });
+                Platform.runLater(() -> { if (lblStatus != null) lblStatus.setText("[WARN] Connection error - is the server reachable?"); });
             }
         });
     }
@@ -192,8 +192,8 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         catch (Exception e)
         {
             log.error("failed to load group {}", group.name(), e);
-            if (lblStatus != null) lblStatus.setText("Fehler: " + e.getMessage());
-            showError("Gruppe laden", e);
+            if (lblStatus != null) lblStatus.setText("Error: " + e.getMessage());
+            showError("Load group", e);
         }
     }
 
@@ -318,8 +318,8 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         lName.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         lName.setMaxWidth(NODE_WIDTH - 10);
 
-        String startText = task.scheduledStart().map(d -> "von: " + d.format(DATE_FMT)).orElse("");
-        String endText   = task.scheduledFinish()  .map(d -> "bis: " + d.format(DATE_FMT)).orElse("");
+        String startText = task.scheduledStart().map(d -> "from: " + d.format(DATE_FMT)).orElse("");
+        String endText   = task.scheduledFinish()  .map(d -> "to: " + d.format(DATE_FMT)).orElse("");
         String dateText  = startText.isEmpty() && endText.isEmpty() ? ""
                          : startText + (startText.isEmpty() || endText.isEmpty() ? "" : "  ") + endText;
 

@@ -10,12 +10,12 @@ import java.util.Map;
 
 import de.ruu.lib.util.config.mp.ConfigFileInitializer;
 import de.ruu.lib.util.config.mp.WritableFileConfigSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class PostgresToolBox
 {
-	private static final Logger log = LoggerFactory.getLogger(PostgresToolBox.class);
+	private static final Logger log = LogManager.getLogger(PostgresToolBox.class);
 
 	private PostgresToolBox() { throw new UnsupportedOperationException("utility class, not meant to be instantiated"); }
 

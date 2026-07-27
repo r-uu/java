@@ -2,6 +2,8 @@ package de.ruu.app.pragma.bean;
 
 import de.ruu.app.pragma.core.PersistentTask;
 import de.ruu.app.pragma.core.PersistentTaskGroup;
+import de.ruu.app.pragma.core.TaskPriority;
+import de.ruu.app.pragma.core.TaskStatus;
 import de.ruu.app.pragma.dto.TaskDto;
 import de.ruu.app.pragma.dto.TaskGroupDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +78,8 @@ class MappingsTest
     {
         LocalDate start = LocalDate.of(2026, 1, 1);
         LocalDate end   = LocalDate.of(2026, 1, 31);
-        taskA.description("desc").scheduledStart(start).scheduledFinish(end).closed(true);
+        taskA.description("desc").scheduledStart(start).scheduledFinish(end).status(TaskStatus.CLOSED);
+        taskA.priority(TaskPriority.HIGH);
 
         TaskDto dto = Mappings.toDto(taskA);
 
@@ -84,7 +87,8 @@ class MappingsTest
         assertThat(dto.description()) .hasValue("desc");
         assertThat(dto.scheduledStart()).hasValue(start);
         assertThat(dto.scheduledFinish())  .hasValue(end);
-        assertThat(dto.closed())      .isTrue();
+        assertThat(dto.status())      .isEqualTo(TaskStatus.CLOSED);
+        assertThat(dto.priority())    .isEqualTo(TaskPriority.HIGH);
     }
 
     @Test void taskBean_toDto_idAndVersionPropagated()
@@ -150,7 +154,8 @@ class MappingsTest
         TaskDto      tDto = persistedTaskDto(3L, (short) 1, "T", gDto)
             .description("hello")
             .scheduledStart(start)
-            .closed(true);
+            .status(TaskStatus.ON_HOLD)
+            .priority(TaskPriority.IMMEDIATE);
 
         TaskBean bean = Mappings.toBean(tDto);
 
@@ -159,7 +164,8 @@ class MappingsTest
         assertThat(bean.version())     .isEqualTo((short) 1);
         assertThat(bean.description()) .hasValue("hello");
         assertThat(bean.scheduledStart()).hasValue(start);
-        assertThat(bean.closed())      .isTrue();
+        assertThat(bean.status())      .isEqualTo(TaskStatus.ON_HOLD);
+        assertThat(bean.priority())    .isEqualTo(TaskPriority.IMMEDIATE);
     }
 
     @Test void taskDto_toBean_groupPreserved()
@@ -232,7 +238,8 @@ class MappingsTest
         @Override public Optional<Double> workActual() { return Optional.empty(); }
         @Override public Optional<LocalDate> scheduledStart() { return Optional.empty(); }
         @Override public Optional<LocalDate> scheduledFinish() { return Optional.empty(); }
-        @Override public Boolean closed() { return false; }
+        @Override public TaskStatus status() { return TaskStatus.NEW; }
+        @Override public TaskPriority priority() { return TaskPriority.NORMAL; }
         @Override public TestPersistentTask name(String name) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask parentTask(TestPersistentTask parentTask) { throw new UnsupportedOperationException(); }
         @Override public void addSubTask(TestPersistentTask task) { throw new UnsupportedOperationException(); }
@@ -249,6 +256,7 @@ class MappingsTest
         @Override public TestPersistentTask workActual(Double workActual) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask scheduledStart(LocalDate scheduledStart) { throw new UnsupportedOperationException(); }
         @Override public TestPersistentTask scheduledFinish(LocalDate scheduledFinish) { throw new UnsupportedOperationException(); }
-        @Override public TestPersistentTask closed(Boolean closed) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask status(TaskStatus status) { throw new UnsupportedOperationException(); }
+        @Override public TestPersistentTask priority(TaskPriority priority) { throw new UnsupportedOperationException(); }
     }
 }

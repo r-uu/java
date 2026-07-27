@@ -3,8 +3,8 @@ package de.ruu.lib.jdbc.postgres;
 import de.ruu.lib.junit.DisabledOnServerNotListening;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestDataSourceFactory
 {
-	private static final Logger log = LoggerFactory.getLogger(TestDataSourceFactory.class);
+	private static final Logger log = LogManager.getLogger(TestDataSourceFactory.class);
 
 	@DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
 	@Test void testDataSourceFactory()

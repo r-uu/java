@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Processes all csv files in a directory. Processing is configured by processors that can be provided by {@link
@@ -21,7 +21,7 @@ public interface CSVDirectoryProcessor
 
 	class CSVDirectoryProcessorSimple implements CSVDirectoryProcessor
 	{
-		static final Logger log = LoggerFactory.getLogger(CSVDirectoryProcessorSimple.class);
+		static final Logger log = LogManager.getLogger(CSVDirectoryProcessorSimple.class);
 
 		@NonNull private CSVFileProcessor csvFileProcessor = CSVFileProcessor.create();
 

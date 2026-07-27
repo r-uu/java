@@ -1,15 +1,15 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Checks if JasperReports service is running and accessible.
  */
 public class JasperReportsHealthCheck implements HealthCheck
 {
-	private static final Logger log = LoggerFactory.getLogger(JasperReportsHealthCheck.class);
+	private static final Logger log = LogManager.getLogger(JasperReportsHealthCheck.class);
 
 	private final String host;
 	private final int port;
@@ -36,7 +36,7 @@ public class JasperReportsHealthCheck implements HealthCheck
 		// Check if container is running
 		if (!isContainerRunning("jasperreports"))
 		{
-			log.error("  ❌ JasperReports container is not running");
+			log.error("  [FAIL] JasperReports container is not running");
 			return HealthCheckResult.failure(
 				"JasperReports Container",
 				"Container is not running",
@@ -48,7 +48,7 @@ public class JasperReportsHealthCheck implements HealthCheck
 		// Check if service is accessible
 		if (!isPortListening(host, port))
 		{
-			log.error("  ❌ JasperReports service is not responding on port {}", port);
+			log.error("  [FAIL] JasperReports service is not responding on port {}", port);
 			return HealthCheckResult.failure(
 				"JasperReports Service",
 				"Service is not responding on port " + port,
@@ -57,7 +57,7 @@ public class JasperReportsHealthCheck implements HealthCheck
 			);
 		}
 
-		log.info("  ✅ JasperReports service is running");
+		log.info("  [OK] JasperReports service is running");
 		return HealthCheckResult.success("JasperReports Service");
 	}
 

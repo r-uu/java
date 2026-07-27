@@ -8,8 +8,8 @@ import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 class TestExploreArchUnit
 {
-	private static final Logger log = LoggerFactory.getLogger(TestExploreArchUnit.class);
+	private static final Logger log = LogManager.getLogger(TestExploreArchUnit.class);
 
 	private abstract static class AbstractClass
 	{

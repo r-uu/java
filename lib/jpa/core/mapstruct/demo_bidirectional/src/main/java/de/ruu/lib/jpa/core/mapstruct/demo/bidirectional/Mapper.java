@@ -2,8 +2,8 @@ package de.ruu.lib.jpa.core.mapstruct.demo.bidirectional;
 
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 @org.mapstruct.Mapper
 abstract class Mapper
 {
-	private static final Logger log = LoggerFactory.getLogger(Mapper.class);
+	private static final Logger log = LogManager.getLogger(Mapper.class);
 
 	static Mapper INSTANCE = Mappers.getMapper(Mapper.class);
 

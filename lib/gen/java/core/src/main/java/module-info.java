@@ -14,7 +14,7 @@ module de.ruu.lib.gen.java
 
 	requires com.tngtech.archunit;
 	requires java.compiler;
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires de.ruu.lib.gen.core;
 	requires de.ruu.lib.util;

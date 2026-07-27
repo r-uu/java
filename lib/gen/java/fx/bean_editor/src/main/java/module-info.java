@@ -8,7 +8,7 @@ module de.ruu.lib.gen.java.fx.bean.editor
 	requires javafx.controls;
 	requires javafx.graphics;
 
-	requires org.slf4j;
+	requires org.apache.logging.log4j;
 
 	requires transitive de.ruu.lib.gen.java;
 

@@ -1,8 +1,8 @@
 package de.ruu.lib.docker.health.fix;
 
 import de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Auto-fix strategy for setting up missing Keycloak realm.
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KeycloakRealmSetupStrategy implements AutoFixStrategy
 {
-	private static final Logger log = LoggerFactory.getLogger(KeycloakRealmSetupStrategy.class);
+	private static final Logger log = LogManager.getLogger(KeycloakRealmSetupStrategy.class);
 
 	@Override
 	public boolean canHandle(String serviceName)
@@ -31,7 +31,7 @@ public class KeycloakRealmSetupStrategy implements AutoFixStrategy
 			// This avoids "mvn: command not found" issues and is faster
 			KeycloakRealmSetup.main(new String[0]);
 
-			log.info("✅ Keycloak realm setup completed successfully");
+			log.info("[OK] Keycloak realm setup completed successfully");
 
 			// Wait a bit for Keycloak to process changes
 			Thread.sleep(2000);

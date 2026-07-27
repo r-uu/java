@@ -4,12 +4,12 @@ import de.ruu.lib.jsonb.JsonbConfigurator;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbConfig;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 class CircuitBreakerTest
 {
-	private static final Logger log = LoggerFactory.getLogger(CircuitBreakerTest.class);
+	private static final Logger log = LogManager.getLogger(CircuitBreakerTest.class);
 
 	@Test
 	void toJson()

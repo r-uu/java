@@ -1,8 +1,8 @@
 package de.ruu.lib.fx.comp.demo.empty;
 
 import de.ruu.lib.fx.comp.FXCAppRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Java FX Component Application Runner {@link EmptyAppRunner}
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 class EmptyAppRunner extends FXCAppRunner
 {
-	private static final Logger log = LoggerFactory.getLogger(EmptyAppRunner.class);
+	private static final Logger log = LogManager.getLogger(EmptyAppRunner.class);
 
 	public static void main(String[] args)
 	{

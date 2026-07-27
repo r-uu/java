@@ -2,9 +2,13 @@ package de.ruu.app.pragma.client.dbcommand;
 
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DBClear
 {
+    private static final Logger log = LogManager.getLogger(DBClear.class);
+
     public static void main(String[] args)
     {
         TaskGroupClient groupClient = new TaskGroupClient();
@@ -24,7 +28,7 @@ public class DBClear
 
     public static void run(TaskGroupClient groupClient, TaskClient taskClient)
     {
-        System.out.println("clearing database ...");
+        log.info("Clearing database ...");
         // Remove all predecessor/successor relationships first to avoid FK constraint violations
         // when deleting tasks (task_predecessors_successors references tasks by FK).
         taskClient.findAll().forEach(task ->
@@ -32,6 +36,6 @@ public class DBClear
                 taskClient.removePredecessor(task, pred)));
         // Delete all groups — cascades to their tasks (and sub-task hierarchies).
         groupClient.findAll().forEach(groupClient::delete);
-        System.out.println("done");
+        log.info("Done.");
     }
 }

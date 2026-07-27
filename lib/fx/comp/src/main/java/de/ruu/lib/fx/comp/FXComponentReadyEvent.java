@@ -1,12 +1,12 @@
 package de.ruu.lib.fx.comp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** Event that can be thrown to indicate that a {@link FXCApp} has started successfully. */
 public class FXComponentReadyEvent extends FXComponentReadyEventAbstract<FXCView<FXCService>, FXCService>
 {
-	private static final Logger log = LoggerFactory.getLogger(FXComponentReadyEvent.class);
+	private static final Logger log = LogManager.getLogger(FXComponentReadyEvent.class);
 
 	public FXComponentReadyEvent(final FXCView<FXCService> view, final FXCService service) {
 		super(view, service);
