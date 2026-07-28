@@ -4,7 +4,9 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.task.TaskUiSupport;
 import de.ruu.app.pragma.fx.task.edit.TaskEditor;
+import de.ruu.app.pragma.fx.task.inspector.TaskInspectorSupport;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
@@ -19,14 +21,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -45,8 +45,6 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         implements HierarchiesService
 {
     private static final Logger log = LogManager.getLogger(HierarchiesController.class);
-    private static final String INSPECTOR_HIDE_ICON = "fas-angle-right";
-    private static final String INSPECTOR_SHOW_ICON = "fas-angle-left";
 
     // ── top bar ──────────────────────────────────────────────────────────────
 
@@ -83,9 +81,9 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     /** All tasks of the current group, keyed by ID; populated by loadGroup(). */
     private Map<Long, TaskBean> taskByIdCache = new HashMap<>();
+    private TaskInspectorSupport inspector;
 
     private boolean handlingNav = false;
-    private boolean inspectorVisible = true;
 
     // ── initialization ───────────────────────────────────────────────────────
 
@@ -118,7 +116,6 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
         btnManageGroups.setOnAction(e -> onManageGroups());
         btnReload.setOnAction(e -> loadGroups());
-        btnInspectorToggle.setOnAction(e -> toggleInspector());
 
         // build panels
         predPanel   = new TaskHierarchyPanel("predecessor tasks",  true,
@@ -131,10 +128,28 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         embedPanel(panePred,   predPanel);
         embedPanel(paneCenter, centerPanel);
         embedPanel(paneSucc,   succPanel);
-        vBxInspectorContainer.getChildren().add(taskEditor.localRoot());
-        taskEditor.service().setEditable(true);
-        btnInspectorSave.setOnAction(e -> saveInspectorTask());
-        updateInspectorVisibility();
+        inspector = new TaskInspectorSupport(
+            brdPaneMain,
+            vBxInspectorContainer,
+            btnInspectorToggle,
+            btnInspectorSave,
+            taskEditor.localRoot(),
+            taskEditor.service(),
+            taskClient::update,
+            updated -> {
+                TreeItem<TaskBean> sel = centerPanel.selectedItem();
+                if (sel != null && sel.getValue() != null && updated.id() != null
+                    && updated.id().equals(sel.getValue().id()))
+                    sel.setValue(updated);
+                if (updated.id() != null) taskByIdCache.put(updated.id(), updated);
+                reloadSidePanels(updated);
+                updateButtonStates();
+            },
+            e -> {
+                log.error("failed to save task data", e);
+                showError("Save", e);
+            });
+        inspector.initialize();
 
         // center selection drives the other two panels
         centerPanel.treeView.getSelectionModel().selectedItemProperty()
@@ -174,7 +189,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void loadGroups()
     {
-        lblStatus.setText("Connecting ...");
+        TaskUiSupport.showConnecting(lblStatus);
         Thread.ofVirtual().start(() ->
         {
             try
@@ -183,14 +198,31 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
                 Platform.runLater(() ->
                 {
                     cbGroups.items(groups);
-                    if (!groups.isEmpty()) cbGroups.value(groups.get(0));
-                    lblStatus.setText("");
+                    if (!groups.isEmpty())
+                    {
+                        cbGroups.value(groups.get(0));
+                        TaskUiSupport.clearStatus(lblStatus);
+                    }
+                    else
+                    {
+                        handlingNav = true;
+                        centerPanel.treeView.setRoot(new TreeItem<>());
+                        predPanel.treeView.setRoot(new TreeItem<>());
+                        succPanel.treeView.setRoot(new TreeItem<>());
+                        handlingNav = false;
+                        taskByIdCache.clear();
+                        clearSidePanels();
+                        clearInspector();
+                        disableAll(true);
+                        if (lblStatus != null)
+                            lblStatus.setText("[INFO] No task groups available. Create one via folder button.");
+                    }
                 });
             }
             catch (Exception e)
             {
                 log.error("failed to load groups", e);
-                Platform.runLater(() -> lblStatus.setText("[WARN] Connection error - is the server reachable?"));
+                Platform.runLater(() -> TaskUiSupport.showConnectionError(lblStatus));
             }
         });
     }
@@ -212,6 +244,11 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
                 clearInspector();
                 disableAll(false);
                 updateButtonStates();
+                if (lblStatus != null)
+                {
+                    if (tasks.isEmpty()) lblStatus.setText("[INFO] Group has no tasks.");
+                    else lblStatus.setText(tasks.size() + " tasks");
+                }
             });
         }
         catch (Exception e) { log.error("failed to load group {}", group.name(), e); }
@@ -229,8 +266,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         }
 
         TaskBean task = item.getValue();
-        taskEditor.service().task(task);
-        btnInspectorSave.setDisable(task.id() == null);
+        inspector.showTask(task);
 
         if (task.id() == null) { updateButtonStates(); return; }
 
@@ -245,6 +281,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
             Set<Long> visitedPred = new HashSet<>();
             visitedPred.add(task.id());
             preds.forEach(p -> predRoot.getChildren().add(buildPredecessorNode(p, visitedPred)));
+            sortTreeItems(predRoot);
             predPanel.treeView.setRoot(predRoot);
 
             List<TaskBean> succs = cached.successors()
@@ -254,6 +291,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
             Set<Long> visitedSucc = new HashSet<>();
             visitedSucc.add(task.id());
             succs.forEach(s -> succRoot.getChildren().add(buildSuccessorNode(s, visitedSucc)));
+            sortTreeItems(succRoot);
             succPanel.treeView.setRoot(succRoot);
         }
         catch (Exception e) { log.error("failed to load neighbours for {}", task.name(), e); }
@@ -309,7 +347,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         TreeItem<TaskBean> item = centerPanel.selectedItem();
         if (item == null) return;
         editTaskName(item, () -> {
-            taskEditor.service().task(item.getValue());
+            inspector.showTask(item.getValue());
             updateButtonStates();
         });
     }
@@ -416,32 +454,6 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         catch (Exception e) { log.error("failed to remove successor", e); showError("Remove successor", e); }
     }
 
-    // ── save ──────────────────────────────────────────────────────────────────
-
-    private void saveInspectorTask()
-    {
-        TreeItem<TaskBean> sel = centerPanel.selectedItem();
-        if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
-
-        TaskBean selectedTask = sel.getValue();
-        try
-        {
-            // Always start from the latest persisted state to avoid false optimistic-lock conflicts
-            // after relation edits (predecessor/successor changes) that can bump the task version.
-            TaskBean task = taskClient.findByIdWithRelated(selectedTask.id())
-                .orElseThrow(() -> new IllegalStateException("Task not found: " + selectedTask.id()));
-            taskEditor.service().applyTo(task);
-            TaskBean updated = taskClient.update(task);
-            sel.setValue(updated);
-            taskByIdCache.put(updated.id(), updated);
-            taskEditor.service().task(updated);
-            taskEditor.service().clearDirty();
-            reloadSidePanels(updated);
-            updateButtonStates();
-        }
-        catch (Exception e) { log.error("failed to save task data for {}", selectedTask.name(), e); showError("Save", e); }
-    }
-
     // ── manage groups ────────────────────────────────────────────────────────
 
     @FXML
@@ -477,41 +489,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void clearInspector()
     {
-        taskEditor.service().clear();
-        btnInspectorSave.setDisable(true);
-    }
-
-    private void toggleInspector()
-    {
-        inspectorVisible = !inspectorVisible;
-        updateInspectorVisibility();
-    }
-
-    private void updateInspectorVisibility()
-    {
-        if (inspectorVisible)
-        {
-            if (brdPaneMain.getRight() == null)
-                brdPaneMain.setRight(vBxInspectorContainer);
-            btnInspectorToggle.setText(null);
-            btnInspectorToggle.setGraphic(inspectorToggleIcon(INSPECTOR_HIDE_ICON));
-            btnInspectorToggle.setTooltip(new Tooltip("Hide inspector"));
-        }
-        else
-        {
-            if (brdPaneMain.getRight() != null)
-                brdPaneMain.setRight(null);
-            btnInspectorToggle.setText(null);
-            btnInspectorToggle.setGraphic(inspectorToggleIcon(INSPECTOR_SHOW_ICON));
-            btnInspectorToggle.setTooltip(new Tooltip("Show inspector"));
-        }
-    }
-
-    private FontIcon inspectorToggleIcon(String iconLiteral)
-    {
-        FontIcon icon = new FontIcon(iconLiteral);
-        icon.setIconSize(11);
-        return icon;
+        inspector.clearTask();
     }
 
     private void disableAll(boolean disabled)
@@ -540,28 +518,21 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
         succPanel.btnAdd .setDisable(noCenterTask);
         succPanel.btnEdit.setDisable(noSuccSelected);
         succPanel.btnDel .setDisable(noCenterTask || noSuccSelected);
-        btnInspectorSave.setDisable(noCenterSel || noCenterTask || center.id() == null);
     }
 
     private void clearDirty()
     {
-        taskEditor.service().clearDirty();
+        inspector.clearDirty();
     }
 
     private boolean dirty()
     {
-        return taskEditor.service().dirtyProperty().get();
+        return inspector.dirty();
     }
 
     private boolean confirmDiscardChanges()
     {
-        if (!dirty()) return true;
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "There are unsaved changes. Discard them?",
-                ButtonType.OK, ButtonType.CANCEL);
-        confirm.setTitle("Unsaved changes");
-        confirm.setHeaderText(null);
-        return confirm.showAndWait().filter(bt -> bt == ButtonType.OK).isPresent();
+        return TaskUiSupport.confirmDiscardChanges(dirty());
     }
 
     private void editTaskName(TreeItem<TaskBean> item, Runnable onSuccess)
@@ -651,28 +622,15 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void sortTreeItems(TreeItem<TaskBean> parent)
     {
-        parent.getChildren().sort((item1, item2) ->
-        {
-            TaskBean t1 = item1.getValue();
-            TaskBean t2 = item2.getValue();
-            if (t1 == null || t2 == null) return 0;
-
-            boolean t1HasPreds = t1.predecessors().map(s -> !s.isEmpty()).orElse(false);
-            boolean t1HasSuccs = t1.successors().map(s -> !s.isEmpty()).orElse(false);
-            boolean t2HasPreds = t2.predecessors().map(s -> !s.isEmpty()).orElse(false);
-            boolean t2HasSuccs = t2.successors().map(s -> !s.isEmpty()).orElse(false);
-
-            // Tasks with predecessors come first
-            if (t1HasPreds && !t2HasPreds) return -1;
-            if (!t1HasPreds && t2HasPreds) return 1;
-
-            // Tasks with successors come last
-            if (t1HasSuccs && !t2HasSuccs) return 1;
-            if (!t1HasSuccs && t2HasSuccs) return -1;
-
-            // Alphabetical for tasks without pre/successors or if both have same types
-            return t1.name().toLowerCase().compareTo(t2.name().toLowerCase());
-        });
+        Comparator<TreeItem<TaskBean>> byScheduledStart = Comparator.comparing(
+                item -> item.getValue() == null ? null : item.getValue().scheduledStart().orElse(null),
+                Comparator.nullsLast(Comparator.naturalOrder()));
+        Comparator<TreeItem<TaskBean>> byName = Comparator.comparing(
+                item -> item.getValue() == null ? "" : item.getValue().name().toLowerCase());
+        Comparator<TreeItem<TaskBean>> byId = Comparator.comparing(
+                item -> item.getValue() == null ? null : item.getValue().id(),
+                Comparator.nullsLast(Comparator.naturalOrder()));
+        parent.getChildren().sort(byScheduledStart.thenComparing(byName).thenComparing(byId));
         parent.getChildren().forEach(this::sortTreeItems);
     }
 
@@ -739,10 +697,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void showError(String title, Exception e)
     {
-        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.showAndWait();
+        TaskUiSupport.showError(title, e);
     }
 
     private void showInfo(String title, String message)

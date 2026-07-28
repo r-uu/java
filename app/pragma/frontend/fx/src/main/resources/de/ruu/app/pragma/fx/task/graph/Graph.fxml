@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
@@ -30,16 +32,55 @@
                 <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
                 <tooltip><Tooltip text="reload"/></tooltip>
             </Button>
+            <Label text="timeline"/>
+            <ComboBox fx:id="cbTimelineGranularity" prefWidth="120"/>
+            <Button fx:id="btnCenterToday" text="Center today"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnSaveLayout" text="Layout speichern" onAction="#saveLayout"/>
-            <Button fx:id="btnLoadLayout" text="Layout laden"     onAction="#loadLayout"/>
             <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: gray;"/>
+            <Button fx:id="btnSaveLayout" text="Save layout" onAction="#saveLayout"/>
+            <Button fx:id="btnLoadLayout" text="Load layout" onAction="#loadLayout"/>
+            <Button fx:id="btnInspectorToggle" mnemonicParsing="false"
+                    prefHeight="20" prefWidth="20">
+                <graphic><FontIcon iconLiteral="fas-angle-right" iconSize="11"/></graphic>
+                <tooltip><Tooltip text="hide inspector"/></tooltip>
+            </Button>
         </HBox>
 
-        <!-- Graph canvas inside a scrollable/zoomable pane -->
-        <ScrollPane fx:id="graphContainer" VBox.vgrow="ALWAYS" fitToWidth="false" fitToHeight="false"
-                    pannable="true"
-                    style="-fx-background-color: #1e1e2e; -fx-background: #1e1e2e;"/>
+        <BorderPane fx:id="brdPaneMain" VBox.vgrow="ALWAYS"
+                    maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+            <center>
+                <VBox>
+                    <ScrollPane fx:id="timelineScroll" fitToWidth="false" fitToHeight="true"
+                                hbarPolicy="NEVER" vbarPolicy="NEVER"
+                                pannable="false"
+                                style="-fx-background-color: #1e1e2e; -fx-background: #1e1e2e;"
+                                prefHeight="42" minHeight="42" maxHeight="42"/>
+                    <!-- Graph canvas inside a scrollable/zoomable pane -->
+                    <ScrollPane fx:id="graphContainer" fitToWidth="false" fitToHeight="false"
+                                pannable="true" VBox.vgrow="ALWAYS"
+                                style="-fx-background-color: #1e1e2e; -fx-background: #1e1e2e;"/>
+                </VBox>
+            </center>
+            <right>
+                <VBox fx:id="vBxInspectorContainer" spacing="5"
+                      prefWidth="360" minWidth="280" maxWidth="520"
+                      BorderPane.alignment="CENTER"
+                      maxHeight="1.7976931348623157E308">
+                    <padding>
+                        <Insets top="5" right="5" bottom="5" left="5"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="task inspector"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnInspectorSave" mnemonicParsing="false"
+                                prefHeight="20" prefWidth="20">
+                            <graphic><FontIcon iconLiteral="far-save" iconSize="11"/></graphic>
+                            <tooltip><Tooltip text="save task"/></tooltip>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </right>
+        </BorderPane>
 
     </VBox>
 </AnchorPane>

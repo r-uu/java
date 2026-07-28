@@ -5,6 +5,9 @@ import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
 import de.ruu.app.pragma.fx.TaskGroupManagementDialog;
+import de.ruu.app.pragma.fx.task.TaskUiSupport;
+import de.ruu.app.pragma.fx.task.edit.TaskEditor;
+import de.ruu.app.pragma.fx.task.inspector.TaskInspectorSupport;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.FXUtil;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
@@ -17,6 +20,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -37,6 +41,10 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     private static final DateTimeFormatter DE_FORMAT    = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DAY_FORMAT   = DateTimeFormatter.ofPattern("dd");
     private static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("MMM yyyy");
+    private static final String DAY_FILL_STYLE =
+        "-fx-background-color: #4a90e2; -fx-background-insets: 0;";
+    private static final String DAY_FILL_SELECTED_STYLE =
+        "-fx-background-color: #ff9f43; -fx-background-insets: 0; -fx-border-color: #8a4f00; -fx-border-width: 0.5;";
 
     // ── top bar ──────────────────────────────────────────────────────────────
 
@@ -49,6 +57,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     @FXML private DatePicker dtPckrStart;
     @FXML private DatePicker dtPckrEnd;
     @FXML private Button     btnApply;
+    @FXML private Button     btnInspectorToggle;
 
     private TaskGroupManagementDialog                                    groupManagementDialog;
 		private TextFieldAutoCompleteClearableWithArrowButton<TaskGroupBean> tfaccTaskGroupSelection;
@@ -57,32 +66,27 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
     // ── main table ───────────────────────────────────────────────────────────
 
     @FXML private TreeTableView<TaskBean> ttv;
-
-    // ── detail / edit area ───────────────────────────────────────────────────
-
-    @FXML private DatePicker dtPckrTaskStart;
-    @FXML private DatePicker dtPckrTaskEnd;
-    @FXML private Button     btnSaveDates;
+    @FXML private BorderPane brdPaneMain;
+    @FXML private VBox       vBxInspectorContainer;
+    @FXML private Button     btnInspectorSave;
 
     // ── injections ───────────────────────────────────────────────────────────
 
     @Inject private TaskGroupClient taskGroupClient;
     @Inject private TaskClient      taskClient;
     @Inject private TaskGroupEditor taskGroupEditor;
+    @Inject private TaskEditor      taskEditor;
 
     // ── state ────────────────────────────────────────────────────────────────
 
     private List<TaskBean> currentTasks = List.of();
+    private TaskBean       selectedTask;
     private TaskBean       hoveredTask;
     private Set<Long>      overlappingPredecessorIds = Set.of();
     private Set<Long>      overlappingSuccessorIds   = Set.of();
-
-    /** True when a user-initiated field change has not yet been saved. */
-    private boolean dirty       = false;
-    /** True while we are programmatically filling form fields — suppresses dirty tracking. */
-    private boolean updating    = false;
     /** True while we are programmatically reverting a selection — prevents listener re-entry. */
     private boolean handlingNav = false;
+    private TaskInspectorSupport inspector;
 
     // ── initialization ───────────────────────────────────────────────────────
 
@@ -106,7 +110,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                         handlingNav = false;
                         return;
                     }
-                    dirty = false;
+                    inspector.clearDirty();
                     loadGroup(sel);
                 });
 
@@ -144,15 +148,32 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                    handlingNav = false;
                    return;
                }
-               dirty = false;
+               inspector.clearDirty();
                onTaskSelected(sel);
            });
-
-        btnSaveDates.setDisable(true);
-        btnSaveDates.setOnAction(e -> saveDates());
-
-        dtPckrTaskStart.valueProperty().addListener((obs, o, n) -> { if (!updating) dirty = true; });
-        dtPckrTaskEnd  .valueProperty().addListener((obs, o, n) -> { if (!updating) dirty = true; });
+        inspector = new TaskInspectorSupport(
+           brdPaneMain,
+           vBxInspectorContainer,
+           btnInspectorToggle,
+           btnInspectorSave,
+           taskEditor.localRoot(),
+           taskEditor.service(),
+           taskClient::update,
+           updated -> {
+               currentTasks = new ArrayList<>(currentTasks);
+               currentTasks.replaceAll(t -> t.id() != null && t.id().equals(updated.id()) ? updated : t);
+               TreeItem<TaskBean> selected = ttv.getSelectionModel().getSelectedItem();
+               if (selected != null && selected.getValue() != null && updated.id() != null
+                   && updated.id().equals(selected.getValue().id()))
+                   selected.setValue(updated);
+               selectedTask = updated;
+               reloadTable();
+           },
+           e -> {
+               log.error("failed to save task", e);
+               TaskUiSupport.showError("Save", e);
+           });
+        inspector.initialize();
 
         loadGroups();
     }
@@ -169,7 +190,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     private void loadGroups()
     {
-        lblStatus.setText("Connecting ...");
+        TaskUiSupport.showConnecting(lblStatus);
         Thread.ofVirtual().start(() ->
         {
             try
@@ -178,14 +199,27 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 Platform.runLater(() ->
                 {
                     tfaccTaskGroupSelection.items(groups);
-                    if (!groups.isEmpty()) tfaccTaskGroupSelection.value(groups.get(0));
-                    lblStatus.setText("");
+                    if (!groups.isEmpty())
+                    {
+                        tfaccTaskGroupSelection.value(groups.get(0));
+                        TaskUiSupport.clearStatus(lblStatus);
+                    }
+                    else
+                    {
+                        currentTasks = List.of();
+                        selectedTask = null;
+                        ttv.setRoot(new TreeItem<>());
+                        ttv.getColumns().clear();
+                        inspector.clearTask();
+                        if (lblStatus != null)
+                            lblStatus.setText("[INFO] No task groups available. Create one via folder button.");
+                    }
                 });
             }
             catch (Exception e)
             {
                 log.error("failed to load groups", e);
-                Platform.runLater(() -> lblStatus.setText("[WARN] Connection error - is the server reachable?"));
+                Platform.runLater(() -> TaskUiSupport.showConnectionError(lblStatus));
             }
         });
     }
@@ -196,6 +230,11 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         {
             currentTasks = taskClient.findGroupTasksWithRelated(group);
             Platform.runLater(this::reloadTable);
+            if (lblStatus != null)
+            {
+                if (currentTasks.isEmpty()) lblStatus.setText("[INFO] Group has no tasks.");
+                else lblStatus.setText(currentTasks.size() + " tasks");
+            }
         }
         catch (Exception e) { log.error("failed to load group {}", group.name(), e); }
     }
@@ -206,6 +245,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         LocalDate end   = dtPckrEnd  .getValue();
         if (start == null || end == null || !end.isAfter(start)) return;
         clearHoveredTask();
+        Long selectedId = selectedTask != null ? selectedTask.id() : null;
 
         ttv.getColumns().clear();
         ttv.getRoot().getChildren().clear();
@@ -294,8 +334,9 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                             setOnMouseExited(null);
                             String relationMarker = relationMarkerFor(
                                 getTreeTableRow() != null ? getTreeTableRow().getItem() : null, date);
+                            boolean rowSelected = getTreeTableRow() != null && getTreeTableRow().isSelected();
                             setGraphic(relationMarker == null ? null : createRelationMarker(relationMarker));
-                            setStyle("-fx-background-color: #4a90e2;");
+                            setStyle(rowSelected ? DAY_FILL_SELECTED_STYLE : DAY_FILL_STYLE);
                         }
                     }
                 });
@@ -307,77 +348,27 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
             ttv.getColumns().add(monthCol);
         }
 
-        // Build tree from flat list using parentTask references
-        Map<Long, TreeItem<TaskBean>> byId = new HashMap<>();
-        for (TaskBean t : currentTasks)
-        {
-            if (t.id() == null) continue;
-            TreeItem<TaskBean> item = new TreeItem<>(t);
-            item.setExpanded(true);
-            byId.put(t.id(), item);
-        }
-        for (TaskBean t : currentTasks)
-        {
-            if (t.id() == null) continue;
-            TreeItem<TaskBean> item     = byId.get(t.id());
-            Long               parentId = t.parentTask().map(TaskBean::id).orElse(null);
-            if (parentId != null && byId.containsKey(parentId))
-                byId.get(parentId).getChildren().add(item);
-            else
-                ttv.getRoot().getChildren().add(item);
-        }
+        TreeItem<TaskBean> root = buildSuperSubTree(currentTasks);
+        ttv.setRoot(root);
+        if (selectedId != null)
+            findById(root, selectedId).ifPresent(item -> ttv.getSelectionModel().select(item));
     }
 
     private void onTaskSelected(TreeItem<TaskBean> sel)
     {
-        updating = true;
-        try
+        if (sel == null || sel.getValue() == null)
         {
-            if (sel == null || sel.getValue() == null)
-            {
-                dtPckrTaskStart.setValue(null);
-                dtPckrTaskEnd  .setValue(null);
-                btnSaveDates.setDisable(true);
-                return;
-            }
-            TaskBean task = sel.getValue();
-            dtPckrTaskStart.setValue(task.scheduledStart().orElse(null));
-            dtPckrTaskEnd  .setValue(task.scheduledFinish()  .orElse(null));
-            btnSaveDates.setDisable(task.id() == null);
+            selectedTask = null;
+            refreshOverlapCache();
+            inspector.clearTask();
+            ttv.refresh();
+            return;
         }
-        finally
-        {
-            updating = false;
-            dirty    = false;
-        }
-    }
-
-    private void saveDates()
-    {
-        TreeItem<TaskBean> sel = ttv.getSelectionModel().getSelectedItem();
-        if (sel == null || sel.getValue() == null || sel.getValue().id() == null) return;
-
         TaskBean task = sel.getValue();
-        task.scheduledStart(dtPckrTaskStart.getValue());
-        task.scheduledFinish(dtPckrTaskEnd  .getValue());
-
-        try
-        {
-            TaskBean updated = taskClient.update(task);
-            dirty = false;
-            currentTasks = new ArrayList<>(currentTasks);
-            currentTasks.replaceAll(t -> t.id() != null && t.id().equals(updated.id()) ? updated : t);
-            sel.setValue(updated);
-            reloadTable();
-        }
-        catch (Exception e)
-        {
-            log.error("failed to save dates", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-            alert.setTitle("Save date fields");
-            alert.setHeaderText(null);
-            alert.showAndWait();
-        }
+        selectedTask = task;
+        refreshOverlapCache();
+        inspector.showTask(task);
+        ttv.refresh();
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -387,15 +378,26 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         // Cache only overlapping relations of the currently hovered base task.
         // During rendering we check each row against these ID sets and show p/s on matching bars.
         hoveredTask = task;
-        overlappingPredecessorIds = relatedOverlapIds(task, task.predecessors());
-        overlappingSuccessorIds   = relatedOverlapIds(task, task.successors());
+        refreshOverlapCache();
     }
 
     private void clearHoveredTask()
     {
         hoveredTask = null;
-        overlappingPredecessorIds = Set.of();
-        overlappingSuccessorIds   = Set.of();
+        refreshOverlapCache();
+    }
+
+    private void refreshOverlapCache()
+    {
+        TaskBean baseTask = hoveredTask != null ? hoveredTask : selectedTask;
+        if (baseTask == null)
+        {
+            overlappingPredecessorIds = Set.of();
+            overlappingSuccessorIds   = Set.of();
+            return;
+        }
+        overlappingPredecessorIds = relatedOverlapIds(baseTask, baseTask.predecessors());
+        overlappingSuccessorIds   = relatedOverlapIds(baseTask, baseTask.successors());
     }
 
     private Set<Long> relatedOverlapIds(TaskBean baseTask, Optional<Set<TaskBean>> relatedTasks)
@@ -419,7 +421,8 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
         if (rowTask == null) return null;
         Long rowTaskId = rowTask.id();
         if (rowTaskId == null) return null;
-        if (!dayInTaskRange(hoveredTask, day)) return null;
+        TaskBean baseTask = hoveredTask != null ? hoveredTask : selectedTask;
+        if (!dayInTaskRange(baseTask, day)) return null;
         if (overlappingPredecessorIds.contains(rowTaskId)) return "p";
         if (overlappingSuccessorIds  .contains(rowTaskId)) return "s";
         return null;
@@ -454,13 +457,7 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
 
     private boolean confirmDiscardChanges()
     {
-        if (!dirty) return true;
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "There are unsaved changes. Discard them?",
-                ButtonType.OK, ButtonType.CANCEL);
-        confirm.setTitle("Unsaved changes");
-        confirm.setHeaderText(null);
-        return confirm.showAndWait().filter(bt -> bt == ButtonType.OK).isPresent();
+        return TaskUiSupport.confirmDiscardChanges(inspector.dirty());
     }
 
     private void configureDatePicker(DatePicker dp)
@@ -474,6 +471,59 @@ class GanttController extends DefaultFXCController<Gantt, GanttService> implemen
                 catch (DateTimeParseException e) { return null; }
             }
         });
+    }
+
+    private TreeItem<TaskBean> buildSuperSubTree(List<TaskBean> tasks)
+    {
+        TreeItem<TaskBean>            root = new TreeItem<>();
+        Map<Long, TreeItem<TaskBean>> byId = new HashMap<>();
+
+        for (TaskBean task : tasks)
+        {
+            if (task.id() == null) continue;
+            TreeItem<TaskBean> item = new TreeItem<>(task);
+            item.setExpanded(true);
+            byId.put(task.id(), item);
+        }
+        for (TaskBean task : tasks)
+        {
+            if (task.id() == null) continue;
+            TreeItem<TaskBean> item     = byId.get(task.id());
+            Long               parentId = task.parentTask().map(TaskBean::id).orElse(null);
+            if (parentId != null && byId.containsKey(parentId))
+                byId.get(parentId).getChildren().add(item);
+            else
+                root.getChildren().add(item);
+        }
+        sortTreeItems(root);
+        return root;
+    }
+
+    private Optional<TreeItem<TaskBean>> findById(TreeItem<TaskBean> root, Long id)
+    {
+        if (root == null || id == null) return Optional.empty();
+        for (TreeItem<TaskBean> child : root.getChildren())
+        {
+            TaskBean value = child.getValue();
+            if (value != null && id.equals(value.id())) return Optional.of(child);
+            Optional<TreeItem<TaskBean>> nested = findById(child, id);
+            if (nested.isPresent()) return nested;
+        }
+        return Optional.empty();
+    }
+
+    private void sortTreeItems(TreeItem<TaskBean> parent)
+    {
+        Comparator<TreeItem<TaskBean>> byScheduledStart = Comparator.comparing(
+            item -> item.getValue() == null ? null : item.getValue().scheduledStart().orElse(null),
+            Comparator.nullsLast(Comparator.naturalOrder()));
+        Comparator<TreeItem<TaskBean>> byName = Comparator.comparing(
+            item -> item.getValue() == null ? "" : item.getValue().name().toLowerCase());
+        Comparator<TreeItem<TaskBean>> byId = Comparator.comparing(
+            item -> item.getValue() == null ? null : item.getValue().id(),
+            Comparator.nullsLast(Comparator.naturalOrder()));
+        parent.getChildren().sort(byScheduledStart.thenComparing(byName).thenComparing(byId));
+        parent.getChildren().forEach(this::sortTreeItems);
     }
 
 }

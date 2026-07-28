@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Dependent
 class TaskEditorController extends DefaultFXCController<TaskEditor, TaskEditorService> implements TaskEditorService
@@ -30,6 +31,7 @@ class TaskEditorController extends DefaultFXCController<TaskEditor, TaskEditorSe
   protected void initialize()
   {
     // The editor composes the reusable TaskView and turns it into an editable form.
+    taskView.service().bindEditorService(this);
     vBxContainerEditor.getChildren().add(taskView.localRoot());
     taskView.service().setEditable(true);
   }
@@ -39,6 +41,7 @@ class TaskEditorController extends DefaultFXCController<TaskEditor, TaskEditorSe
   @Override public void clear() { taskView.service().clear(); }
   @Override public void applyTo(TaskBean task) { taskView.service().applyTo(task); }
   @Override public void setEditable(boolean editable) { taskView.service().setEditable(editable); }
+  @Override public void onTaskUpdated(Consumer<TaskBean> listener) { taskView.service().onTaskUpdated(listener); }
   @Override public BooleanProperty dirtyProperty() { return dirty; }
   @Override public void clearDirty() { dirty.set(false); }
   @Override public boolean isUpdating() { return updating; }

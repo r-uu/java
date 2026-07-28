@@ -77,6 +77,29 @@ class TaskClientIT
     }
 
     @Test
+    void testUpdateWithStaleVersionBean()
+    {
+        TaskBean created = taskClient.create(new TaskBean(testGroup, "it-stale-orig-" + System.currentTimeMillis()));
+        assertThat(created.id()).isNotNull();
+
+        TaskBean firstEditor = taskClient.findByIdWithRelated(created.id()).orElseThrow();
+        TaskBean secondEditor = taskClient.findByIdWithRelated(created.id()).orElseThrow();
+
+        firstEditor.name("it-stale-first-" + System.currentTimeMillis());
+        TaskBean firstSaved = taskClient.update(firstEditor);
+        assertThat(firstSaved.name()).startsWith("it-stale-first-");
+
+        secondEditor.name("it-stale-second-" + System.currentTimeMillis());
+        TaskBean secondSaved = taskClient.update(secondEditor);
+        assertThat(secondSaved.name()).startsWith("it-stale-second-");
+
+        TaskBean latest = taskClient.findById(created.id()).orElseThrow();
+        assertThat(latest.name()).isEqualTo(secondSaved.name());
+
+        taskClient.delete(latest);
+    }
+
+    @Test
     void testCreateSubTask()
     {
         String parentName = "it-parent-task-" + System.currentTimeMillis();

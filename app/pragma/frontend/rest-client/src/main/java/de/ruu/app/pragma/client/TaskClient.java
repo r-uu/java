@@ -170,8 +170,12 @@ public class TaskClient
 
     public TaskBean update(TaskBean bean)
     {
-        TaskDto dto = Mappings.toDto(bean);
-        try (Response response = target("/tasks/" + id(bean))
+        long taskId = id(bean);
+        TaskBean base = findByIdWithRelated(taskId)
+            .orElseThrow(() -> new IllegalStateException("Task not found: " + taskId));
+        mergeEditableFields(base, bean);
+        TaskDto dto = Mappings.toDto(base);
+        try (Response response = target("/tasks/" + taskId)
                 .request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(dto)))
         {
@@ -179,6 +183,19 @@ public class TaskClient
             return Mappings.toBean(response.readEntity(TaskDto.class));
         }
         catch (ProcessingException e) { throw new RuntimeException("communication error", e); }
+    }
+
+    private static void mergeEditableFields(TaskBean target, TaskBean source)
+    {
+        target.name(source.name());
+        target.description(source.description().orElse(null));
+        target.scheduledStart(source.scheduledStart().orElse(null));
+        target.scheduledFinish(source.scheduledFinish().orElse(null));
+        target.workEstimateInitial(source.workEstimateInitial().orElse(null));
+        target.workEstimateCurrent(source.workEstimateCurrent().orElse(null));
+        target.workActual(source.workActual().orElse(null));
+        target.status(source.status());
+        target.priority(source.priority());
     }
 
     public void delete(TaskBean bean)

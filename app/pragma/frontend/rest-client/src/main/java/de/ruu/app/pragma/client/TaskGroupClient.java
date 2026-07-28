@@ -95,9 +95,13 @@ public class TaskGroupClient
 
     public TaskGroupBean update(TaskGroupBean bean)
     {
-        try (Response response = target("/task-groups/" + id(bean))
+        long groupId = id(bean);
+        TaskGroupBean base = findById(groupId)
+            .orElseThrow(() -> new IllegalStateException("TaskGroup not found: " + groupId));
+        base.name(bean.name());
+        try (Response response = target("/task-groups/" + groupId)
                 .request(MediaType.APPLICATION_JSON)
-                .put(Entity.json(Mappings.toDto(bean))))
+                .put(Entity.json(Mappings.toDto(base))))
         {
             requireSuccess(response);
             return Mappings.toBean(response.readEntity(TaskGroupDto.class));

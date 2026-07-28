@@ -89,6 +89,7 @@ public class DBPopulate
                 {
                     taskClient.addPredecessor(feature, mostRecentFeature.get());
                 }
+
                 mostRecentFeature = Optional.of(feature);
             }
 

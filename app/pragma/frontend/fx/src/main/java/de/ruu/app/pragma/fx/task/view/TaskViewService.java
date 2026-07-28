@@ -1,11 +1,13 @@
 package de.ruu.app.pragma.fx.task.view;
 
 import de.ruu.app.pragma.bean.TaskBean;
+import de.ruu.app.pragma.fx.task.edit.TaskEditorService;
 import de.ruu.lib.fx.comp.FXCService;
 import javafx.beans.property.BooleanProperty;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface TaskViewService extends FXCService
 {
@@ -14,6 +16,8 @@ public interface TaskViewService extends FXCService
   void clear();
   void applyTo(TaskBean task);
   void setEditable(boolean editable);
+  void bindEditorService(TaskEditorService editorService);
+  void onTaskUpdated(Consumer<TaskBean> listener);
   BooleanProperty dirtyProperty();
   void clearDirty();
 }

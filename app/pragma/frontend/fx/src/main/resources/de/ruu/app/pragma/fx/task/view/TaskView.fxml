@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -96,6 +97,37 @@
             <RowConstraints />
             <RowConstraints />
          </rowConstraints>
+    </GridPane>
+
+    <GridPane hgap="8" vgap="4">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="110" />
+        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="NEVER" />
+      </columnConstraints>
+      <children>
+        <Label text="predecessors" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="tfPredecessors" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <HBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
+          <children>
+            <Button fx:id="btnAddPredecessor" text="+" />
+            <Button fx:id="btnRemovePredecessor" text="-" />
+          </children>
+        </HBox>
+
+        <Label text="successors" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="tfSuccessors" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <HBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="1">
+          <children>
+            <Button fx:id="btnAddSuccessor" text="+" />
+            <Button fx:id="btnRemoveSuccessor" text="-" />
+          </children>
+        </HBox>
+      </children>
+      <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+      </rowConstraints>
     </GridPane>
   </children>
 </VBox>

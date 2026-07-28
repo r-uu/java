@@ -69,6 +69,29 @@ class TaskGroupClientIT
     }
 
     @Test
+    void testUpdateWithStaleVersionBean()
+    {
+        TaskGroupBean created = client.create(new TaskGroupBean("it-stale-group-orig-" + System.currentTimeMillis()));
+        assertThat(created.id()).isNotNull();
+
+        TaskGroupBean firstEditor = client.findById(created.id()).orElseThrow();
+        TaskGroupBean secondEditor = client.findById(created.id()).orElseThrow();
+
+        firstEditor.name("it-stale-group-first-" + System.currentTimeMillis());
+        TaskGroupBean firstSaved = client.update(firstEditor);
+        assertThat(firstSaved.name()).startsWith("it-stale-group-first-");
+
+        secondEditor.name("it-stale-group-second-" + System.currentTimeMillis());
+        TaskGroupBean secondSaved = client.update(secondEditor);
+        assertThat(secondSaved.name()).startsWith("it-stale-group-second-");
+
+        TaskGroupBean latest = client.findById(created.id()).orElseThrow();
+        assertThat(latest.name()).isEqualTo(secondSaved.name());
+
+        client.delete(latest);
+    }
+
+    @Test
     void testFindById()
     {
         String name = "it-findbyid-" + System.currentTimeMillis();

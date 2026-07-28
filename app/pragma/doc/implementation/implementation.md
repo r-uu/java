@@ -351,8 +351,9 @@ nicht an alten lokalen Datenbanken scheitern.
 | `GraphService`      | FXCService-Interface                                                               |
 | `Graph`             | FXCView — lädt `Graph.fxml`                                                        |
 | `GraphController`   | Reines JavaFX-Graph: TaskBean-Knoten als abgerundete Rechtecke (Rectangle + VBox), |
-|                     | Kanten als Line+Polygon, einmaliges topologisches Auto-Layout, dann nur Dragging.  |
-|                     | Ein REST-Call (`findGroupTasksWithRelated`) lädt alle Tasks mit Relationen.         |
+|                     | orthogonale Kanten (Line+Polygon), zeitbasierte X-Ausrichtung über `scheduledStart`,|
+|                     | Y-Layout mit Überlappungsauflösung; ein REST-Call (`findGroupTasksWithRelated`) lädt|
+|                     | alle Tasks mit Relationen.                                                          |
 | `GraphApp`          | FXCApp standalone                                                                  |
 | `GraphAppRunner`    | `main()` entry point                                                               |
 
@@ -377,5 +378,25 @@ SmartGraph-Dependency bleibt im Classpath, wird aber nicht mehr aktiv genutzt.
 #### Hinweise zur Implementierung
 
 - `HierarchiesController.pickTask()` lädt per `taskClient.findAll()` bei jedem Aufruf frische Daten — kein veralteter Cache-Stand im Vorgänger/Nachfolger-Dialog.
+- `TaskInspectorSupport` kapselt den wiederverwendbaren Inspector (Hierarchies, Gantt, Graph) inklusive Dirty-Status, Save-Enablement und Save-Callback.
+- Save-Button-Verhalten im Inspector: nur aktiv bei Dirty-State; im Dirty-State visuell rot hervorgehoben.
+- Sortierung in Hierarchies/Gantt erfolgt rekursiv nach `scheduledStart` (Root, Sub-Tasks, Predecessor-/Successor-Ebenen).
+- `GraphController` ordnet Tasks auf der X-Achse nach `scheduledStart` an und zeichnet oben eine Timeline.
+  Die Timeline-Granularität ist umschaltbar (`Day`, `Week`, `Month`), inklusive Aktion **Center today**.
+- Die Timeline ist im Graph-Tab als feste Kopfzeile umgesetzt (bleibt beim vertikalen Scrollen sichtbar).
+- Mausrad in der Graph-View nutzt bewusst das Standard-`ScrollPane`-Scrolling (kein Scroll-Zoom); Zoom ist nur per `Ctrl` + `+/-` aktiv.
+- Relationen im Task-Inspector (Predecessor/Successor) enthalten Frontend-Validierungen:
+  - keine Duplikate,
+  - keine Selbstreferenz,
+  - Zyklusprüfung vor dem Speichern der Relation.
+- UX-Polish: klare Info-Statusmeldungen für leere Task-Gruppen und leere Task-Listen in allen drei Tabs.
 - `GraphController` speichert/lädt Knotenpositionen als `.pgraph`-Datei (Properties-Format, Task-ID als Schlüssel). Wird nach `DBClear`+`DBPopulate` wertlos, da neue IDs vergeben werden (→ Backlog P2-6).
 - SmartGraph ist als Dependency deklariert, wird aber nicht für das Rendering verwendet (→ Backlog P3-6).
+
+#### Test-Harness / Regression-Tests (FX)
+
+- JavaFX-Test-Harness ist unter `frontend/fx/src/test` aktiv.
+- Relevante Regressionstests:
+  - `TaskInspectorSupportTest` (Dirty/Save-Workflow),
+  - `GraphTimelineTest` (Skalierung/Granularität der Zeitachse),
+  - `TaskRelationRulesTest` (Zyklusprüfung bei Relationserweiterung).

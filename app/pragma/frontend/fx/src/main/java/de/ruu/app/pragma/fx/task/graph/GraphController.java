@@ -4,6 +4,9 @@ import de.ruu.app.pragma.bean.TaskBean;
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.task.TaskUiSupport;
+import de.ruu.app.pragma.fx.task.edit.TaskEditor;
+import de.ruu.app.pragma.fx.task.inspector.TaskInspectorSupport;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
@@ -11,6 +14,7 @@ import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearab
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import javafx.application.Platform;
+import javafx.animation.PauseTransition;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -18,11 +22,12 @@ import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -35,6 +40,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.util.Duration;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -42,12 +48,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,34 +75,53 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
     private static final double ARROW_ANG   =   0.4; // radians half-angle of arrowhead
     private static final double GRID        =  20;   // snap-to-grid resolution in pixels
     private static final double STEP        = GraphLayout.STEP;
+    private static final double TIMELINE_Y  =  28;
+    private static final double TASKS_TOP_Y =  20;
 
     private static final Color COLOR_PRED_SUCC    = Color.web("#9999bb");
     private static final Color COLOR_PARENT_CHILD = Color.web("#4a9a4a");
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter MONTH_FMT = DateTimeFormatter.ofPattern("MMM yyyy");
+    private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.ofPattern("dd.MM.");
 
     @FXML private HBox   cbGroupsContainer;
     @FXML private Button btnManageGroups;
     @FXML private Button btnReload;
+    @FXML private ComboBox<String> cbTimelineGranularity;
+    @FXML private Button btnCenterToday;
     @FXML private Label  lblStatus;
     private TextFieldAutoCompleteClearableWithArrowButton<TaskGroupBean> cbGroups;
+    @FXML private ScrollPane timelineScroll;
     @FXML private ScrollPane graphContainer;
     @FXML private Button     btnSaveLayout;
     @FXML private Button     btnLoadLayout;
+    @FXML private BorderPane brdPaneMain;
+    @FXML private VBox       vBxInspectorContainer;
+    @FXML private Button     btnInspectorToggle;
+    @FXML private Button     btnInspectorSave;
 
     @Inject private TaskGroupClient taskGroupClient;
     @Inject private TaskClient      taskClient;
     @Inject private TaskGroupEditor taskGroupEditor;
+    @Inject private TaskEditor      taskEditor;
 
     /** Task-ID → node; populated after each group load, used for save/load layout. */
     private Map<Long, Group> currentNodeById = new HashMap<>();
+    /** Task-ID → task data of current group; kept in sync for incremental inspector saves. */
+    private Map<Long, TaskBean> currentTaskById = new HashMap<>();
 
     private de.ruu.app.pragma.fx.TaskGroupManagementDialog groupManagementDialog;
 
     private File                      lastLayoutFile;
     private Scale                     graphScale         = new Scale(1, 1, 0, 0);
     private EventHandler<KeyEvent>    keyZoomHandler;
-    private EventHandler<ScrollEvent> scrollZoomHandler;
+    private TaskInspectorSupport      inspector;
+    private TaskGroupBean             currentGroup;
+    private Long                      selectedTaskId;
+    private boolean                   handlingNav;
+    private GraphTimeline.Granularity timelineGranularity = GraphTimeline.Granularity.WEEK;
+    private GraphTimeline.Scale       currentScale;
 
     @Override
     @FXML
@@ -110,22 +136,73 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
                 .build();
         cbGroups.setMaxWidth(Double.MAX_VALUE);
         cbGroupsContainer.getChildren().add(cbGroups);
+        cbTimelineGranularity.getItems().setAll("Day", "Week", "Month");
+        cbTimelineGranularity.setValue("Week");
+        cbTimelineGranularity.valueProperty().addListener((obs, old, value) -> {
+            if (value == null) return;
+            timelineGranularity = switch (value)
+            {
+                case "Day" -> GraphTimeline.Granularity.DAY;
+                case "Month" -> GraphTimeline.Granularity.MONTH;
+                default -> GraphTimeline.Granularity.WEEK;
+            };
+            if (currentGroup != null) loadGroup(currentGroup);
+        });
         cbGroups.valueProperty()
-                .addListener((obs, old, sel) -> { if (sel != null) loadGroup(sel); });
+                .addListener((obs, old, sel) -> {
+                    if (handlingNav || sel == null) return;
+                    if (!confirmDiscardChanges()) {
+                        handlingNav = true;
+                        cbGroups.value(old);
+                        handlingNav = false;
+                        return;
+                    }
+                    inspector.clearDirty();
+                    loadGroup(sel);
+                });
         btnManageGroups.setOnAction(e -> onManageGroups());
         btnReload.setOnAction(e -> loadGroups());
+        btnCenterToday.setOnAction(e -> centerOnDate(LocalDate.now()));
         btnSaveLayout.setDisable(true);
         btnLoadLayout.setDisable(true);
+        btnCenterToday.setDisable(true);
+        timelineScroll.hvalueProperty().bindBidirectional(graphContainer.hvalueProperty());
+        inspector = new TaskInspectorSupport(
+            brdPaneMain,
+            vBxInspectorContainer,
+            btnInspectorToggle,
+            btnInspectorSave,
+            taskEditor.localRoot(),
+            taskEditor.service(),
+            taskClient::update,
+            updated -> {
+                TaskBean previous = updated.id() == null ? null : currentTaskById.get(updated.id());
+                selectedTaskId = updated.id();
+                if (updated.id() != null) currentTaskById.put(updated.id(), updated);
+                if (hasStructuralRelationChanges(previous, updated) && currentGroup != null)
+                {
+                    loadGroup(currentGroup);
+                    return;
+                }
+                updateNodeContent(updated);
+                if (updated.id() != null) updateSelectionStyles();
+            },
+            e -> {
+                log.error("failed to save task", e);
+                TaskUiSupport.showError("Save", e);
+            });
+        inspector.initialize();
 
         graphContainer.sceneProperty().addListener((obs, oldScene, newScene) ->
         {
             if (oldScene != null)
             {
                 if (keyZoomHandler    != null) oldScene.removeEventFilter(KeyEvent.KEY_PRESSED, keyZoomHandler);
-                if (scrollZoomHandler != null) oldScene.removeEventFilter(ScrollEvent.SCROLL,   scrollZoomHandler);
             }
             if (newScene != null)
             {
+                // Intentional UX: mouse wheel is reserved for ScrollPane navigation.
+                // Zoom stays available via Ctrl +/- to avoid accidental scale changes.
                 keyZoomHandler = event ->
                 {
                     if (!event.isControlDown()) return;
@@ -135,15 +212,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
                     else return;
                     event.consume();
                 };
-                scrollZoomHandler = event ->
-                {
-                    javafx.geometry.Bounds b = graphContainer.localToScene(graphContainer.getBoundsInLocal());
-                    if (!b.contains(event.getSceneX(), event.getSceneY())) return;
-                    applyZoom(event.getDeltaY() > 0 ? 1.1 : 1.0 / 1.1);
-                    event.consume();
-                };
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, keyZoomHandler);
-                newScene.addEventFilter(ScrollEvent.SCROLL,   scrollZoomHandler);
             }
         });
 
@@ -160,7 +229,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
 
     private void loadGroups()
     {
-        if (lblStatus != null) lblStatus.setText("Connecting ...");
+        TaskUiSupport.showConnecting(lblStatus);
         Thread.ofVirtual().start(() ->
         {
             try
@@ -169,32 +238,79 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
                 Platform.runLater(() ->
                 {
                     cbGroups.items(groups);
-                    if (!groups.isEmpty()) cbGroups.value(groups.get(0));
-                    if (lblStatus != null) lblStatus.setText("");
+                    if (!groups.isEmpty())
+                    {
+                        cbGroups.value(groups.get(0));
+                        TaskUiSupport.clearStatus(lblStatus);
+                    }
+                    else
+                    {
+                        graphContainer.setContent(new Pane());
+                        currentTaskById.clear();
+                        currentNodeById.clear();
+                        selectedTaskId = null;
+                        currentScale = null;
+                        btnSaveLayout.setDisable(true);
+                        btnLoadLayout.setDisable(true);
+                        btnCenterToday.setDisable(true);
+                        timelineScroll.setContent(new Pane());
+                        inspector.clearTask();
+                        if (lblStatus != null)
+                            lblStatus.setText("[INFO] No task groups available. Create one via folder button.");
+                    }
                 });
             }
             catch (Exception e)
             {
                 log.error("failed to load groups", e);
-                Platform.runLater(() -> { if (lblStatus != null) lblStatus.setText("[WARN] Connection error - is the server reachable?"); });
+                Platform.runLater(() -> TaskUiSupport.showConnectionError(lblStatus));
             }
         });
     }
 
     private void loadGroup(TaskGroupBean group)
     {
-        try
+        currentGroup = group;
+        if (lblStatus != null) lblStatus.setText("Loading tasks ...");
+        Thread.ofVirtual().start(() ->
         {
-            List<TaskBean> tasks = taskClient.findGroupTasksWithRelated(group);
-            buildGraph(tasks);
-            if (lblStatus != null) lblStatus.setText(tasks.size() + " tasks");
-        }
-        catch (Exception e)
-        {
-            log.error("failed to load group {}", group.name(), e);
-            if (lblStatus != null) lblStatus.setText("Error: " + e.getMessage());
-            showError("Load group", e);
-        }
+            try
+            {
+                List<TaskBean> tasks = taskClient.findGroupTasksWithRelated(group);
+                String status = tasks.isEmpty()
+                    ? "[INFO] Group has no tasks."
+                    : tasks.size() + " tasks  |  wheel = scroll, Ctrl +/- = zoom";
+                Platform.runLater(() ->
+                {
+                    if (!isCurrentGroup(group)) return;
+                    if (lblStatus != null) lblStatus.setText(status);
+                    PauseTransition deferBuild = new PauseTransition(Duration.millis(10));
+                    deferBuild.setOnFinished(e ->
+                    {
+                        if (!isCurrentGroup(group)) return;
+                        buildGraph(tasks);
+                    });
+                    deferBuild.play();
+                });
+            }
+            catch (Exception e)
+            {
+                log.error("failed to load group {}", group.name(), e);
+                Platform.runLater(() ->
+                {
+                    if (!isCurrentGroup(group)) return;
+                    if (lblStatus != null) lblStatus.setText("Error: " + e.getMessage());
+                    TaskUiSupport.showError("Load group", e);
+                });
+            }
+        });
+    }
+
+    private boolean isCurrentGroup(TaskGroupBean group)
+    {
+        if (group == null || currentGroup == null) return false;
+        if (group.id() != null && currentGroup.id() != null) return group.id().equals(currentGroup.id());
+        return group.name().equals(currentGroup.name());
     }
 
     private void buildGraph(List<TaskBean> tasks)
@@ -203,14 +319,15 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         canvas.setStyle("-fx-background-color: #1e1e2e;");
 
         Map<Long, TaskBean> byId     = new HashMap<>();
+        Map<Long, TaskBean> allById  = new HashMap<>();
         Map<Long, Group>    nodeById = new HashMap<>();
         List<EdgeSpec>      edges    = new ArrayList<>();
         Set<String>         addedEdgeKeys = new HashSet<>();
-        List<Long>          ghostPredIds  = new ArrayList<>();
-        List<Long>          ghostSuccIds  = new ArrayList<>();
 
         for (TaskBean task : tasks)
             if (task.id() != null) byId.put(task.id(), task);
+        allById.putAll(byId);
+        currentTaskById = new HashMap<>(byId);
 
         for (TaskBean task : tasks)
         {
@@ -236,7 +353,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
                         from = createNode(pred);
                         nodeById.put(pred.id(), from);
                         canvas.getChildren().add(from);
-                        ghostPredIds.add(pred.id());
+                        allById.putIfAbsent(pred.id(), pred);
                     }
                     if (to != null && addedEdgeKeys.add(pred.id() + "-" + task.id()))
                         edges.add(new EdgeSpec(from, to, EdgeType.PRED_SUCC));
@@ -277,7 +394,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
                         to = createNode(succ);
                         nodeById.put(succ.id(), to);
                         canvas.getChildren().add(to);
-                        ghostSuccIds.add(succ.id());
+                        allById.putIfAbsent(succ.id(), succ);
                     }
                     if (from != null && addedEdgeKeys.add(task.id() + "-" + succ.id()))
                         edges.add(new EdgeSpec(from, to, EdgeType.PRED_SUCC));
@@ -285,7 +402,16 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
             });
         }
 
-        applyLayout(nodeById, byId, ghostPredIds, ghostSuccIds);
+        TimeScale scale = applyLayout(nodeById, allById);
+        currentScale = scale.toTimelineScale();
+        Pane timelineCanvas = new Pane();
+        timelineCanvas.setStyle("-fx-background-color: #1e1e2e;");
+        drawTimeline(timelineCanvas, scale);
+        double timelineWidth = Math.max(scale.axisEndX() + PAD, dateX(scale.maxDate(), scale) + PAD);
+        timelineCanvas.setMinWidth(timelineWidth);
+        timelineCanvas.setPrefWidth(timelineWidth);
+        timelineCanvas.setMaxWidth(timelineWidth);
+        timelineScroll.setContent(new Group(timelineCanvas));
 
         // add edges behind nodes
         for (EdgeSpec spec : edges)
@@ -298,6 +424,15 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         addZoomSupport(canvas);
 
         currentNodeById = new HashMap<>(nodeById);
+        updateSelectionStyles();
+        btnCenterToday.setDisable(currentScale == null || currentNodeById.isEmpty());
+        if (selectedTaskId != null && allById.containsKey(selectedTaskId))
+            inspector.showTask(allById.get(selectedTaskId));
+        else
+        {
+            selectedTaskId = null;
+            inspector.clearTask();
+        }
         btnSaveLayout.setDisable(currentNodeById.isEmpty());
         btnLoadLayout.setDisable(currentNodeById.isEmpty());
     }
@@ -318,12 +453,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         lName.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         lName.setMaxWidth(NODE_WIDTH - 10);
 
-        String startText = task.scheduledStart().map(d -> "from: " + d.format(DATE_FMT)).orElse("");
-        String endText   = task.scheduledFinish()  .map(d -> "to: " + d.format(DATE_FMT)).orElse("");
-        String dateText  = startText.isEmpty() && endText.isEmpty() ? ""
-                         : startText + (startText.isEmpty() || endText.isEmpty() ? "" : "  ") + endText;
-
-        Label lDates = new Label(dateText);
+        Label lDates = new Label(dateText(task));
         lDates.setTextFill(Color.LIGHTGRAY);
         lDates.setStyle("-fx-font-size: 9px;");
         lDates.setMaxWidth(NODE_WIDTH - 10);
@@ -333,17 +463,22 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         box.setMaxWidth(NODE_WIDTH);
 
         Group node = new Group(rect, box);
-        enableDrag(node);
+        enableDrag(node, task);
         return node;
     }
 
     // ── Dragging with snap-to-grid ─────────────────────────────────────────────
 
-    private void enableDrag(Group node)
+    private void enableDrag(Group node, TaskBean task)
     {
         final double[] offset = {0, 0};
         node.setOnMousePressed(e ->
         {
+            if (task.id() != null && !selectTask(task))
+            {
+                e.consume();
+                return;
+            }
             offset[0] = e.getSceneX() - node.getTranslateX();
             offset[1] = e.getSceneY() - node.getTranslateY();
             node.toFront();
@@ -438,123 +573,190 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
 
     // ── Layout ────────────────────────────────────────────────────────────────
 
-    /**
-     * Recursive tree layout.
-     * Root tasks (no parent and no predecessor within the group) are sorted alphabetically
-     * and placed in column 0. Each node is placed at the same row as its first visual child.
-     * Visual children = sub-tasks ∪ successors (within group), sorted alphabetically.
-     * Ghost predecessors occupy the leftmost column; ghost successors the rightmost.
-     */
-    private void applyLayout(
-            Map<Long, Group>  nodeById,
-            Map<Long, TaskBean> byId,
-            List<Long> ghostPredIds,
-            List<Long> ghostSuccIds)
+    private TimeScale applyLayout(Map<Long, Group> nodeById, Map<Long, TaskBean> byId)
     {
-        // identify tasks that are NOT roots (have parent or predecessor within group)
-        Set<Long> nonRoots = new HashSet<>();
-        for (TaskBean t : byId.values())
-        {
-            if (t.id() == null) continue;
-            t.parentTask().ifPresent(p -> { if (p.id() != null && byId.containsKey(p.id())) nonRoots.add(t.id()); });
-            t.predecessors().ifPresent(preds -> preds.forEach(pred ->
-            {
-                if (pred.id() != null && byId.containsKey(pred.id())) nonRoots.add(t.id());
-            }));
-        }
+        GraphTimeline.Scale axis = GraphTimeline.createScale(byId.values(), timelineGranularity, PAD, TIMELINE_Y, TASKS_TOP_Y);
+        TimeScale baseScale = TimeScale.from(axis);
+        Map<Long, Double> yPos = new HashMap<>();
+        Comparator<TaskBean> taskOrder = taskOrderComparator();
 
-        List<TaskBean> roots = byId.values().stream()
-            .filter(t -> t.id() != null && !nonRoots.contains(t.id()))
-            .sorted(Comparator.comparing(t -> t.name().toLowerCase(Locale.ROOT)))
+        List<Long> ids = byId.values().stream()
+            .filter(task -> task.id() != null && nodeById.containsKey(task.id()))
+            .sorted(taskOrder)
+            .map(TaskBean::id)
             .toList();
 
-        int colOffset  = ghostPredIds.isEmpty() ? 0 : 1;
-        Set<Long> placed = new HashSet<>();
-        int[] row        = {0};
-        int[] maxCol     = {colOffset};
-
-        // ghost predecessors — leftmost column
-        if (!ghostPredIds.isEmpty())
+        List<Double> targets = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++)
         {
-            double ghostX = snap(PAD);
-            for (int i = 0; i < ghostPredIds.size(); i++)
-            {
-                Group node = nodeById.get(ghostPredIds.get(i));
-                if (node != null) { node.setTranslateX(ghostX); node.setTranslateY(snap(PAD + i * STEP)); }
-            }
+            Long id = ids.get(i);
+            // Primary row order follows scheduled start; predecessor anchors keep
+            // dependent tasks visually close while overlap resolution preserves readability.
+            double byScheduleRow = baseScale.tasksTopY() + i * STEP;
+            double byPred = GraphLayout.avgPredY(id, byId, yPos);
+            targets.add(Math.max(byScheduleRow, byPred));
+        }
+        List<Double> resolved = GraphLayout.resolveOverlaps(targets);
+
+        for (int i = 0; i < ids.size(); i++)
+        {
+            Long id = ids.get(i);
+            TaskBean task = byId.get(id);
+            Group node = nodeById.get(id);
+            if (task == null || node == null) continue;
+            double x = snap(dateX(task.scheduledStart().orElse(baseScale.minDate()), baseScale));
+            double y = snap(resolved.get(i));
+            node.setTranslateX(x);
+            node.setTranslateY(y);
+            yPos.put(id, y);
+        }
+        double maxX = ids.stream()
+            .map(byId::get)
+            .filter(java.util.Objects::nonNull)
+            .mapToDouble(task -> dateX(task.scheduledStart().orElse(baseScale.minDate()), baseScale))
+            .max()
+            .orElse(PAD);
+        return baseScale.withAxisEndX(maxX + NODE_WIDTH + PAD);
+    }
+
+    private double dateX(LocalDate date, TimeScale scale)
+    {
+        return GraphTimeline.dateX(date, scale.toTimelineScale());
+    }
+
+    private void drawTimeline(Pane canvas, TimeScale scale)
+    {
+        LocalDate minDate = scale.minDate();
+        LocalDate maxDate = scale.maxDate();
+        double axisStartX = scale.axisStartX();
+        double axisY = scale.axisY();
+        double axisEndX = Math.max(scale.axisEndX(), dateX(maxDate, scale));
+
+        javafx.scene.shape.Line axis = new javafx.scene.shape.Line(axisStartX, axisY, axisEndX, axisY);
+        axis.setStroke(Color.web("#4f6d97"));
+        axis.setStrokeWidth(1.5);
+        canvas.getChildren().add(axis);
+
+        switch (timelineGranularity)
+        {
+            case DAY -> drawDayTicks(canvas, scale);
+            case WEEK -> drawWeekTicks(canvas, scale);
+            case MONTH -> drawMonthTicks(canvas, scale);
         }
 
-        for (TaskBean root : roots)
-            placeNode(root, colOffset, row, maxCol, byId, nodeById, placed);
+        // Today marker is clamped to the visible range to keep orientation stable
+        // even when the loaded data does not include the current date.
+        double todayX = dateX(LocalDate.now().isBefore(minDate) ? minDate : LocalDate.now().isAfter(maxDate) ? maxDate : LocalDate.now(), scale);
+        javafx.scene.shape.Line today = new javafx.scene.shape.Line(todayX, axisY - 8, todayX, axisY + 16);
+        today.setStroke(Color.web("#d4a45b"));
+        today.setStrokeWidth(1.2);
+        canvas.getChildren().add(today);
+    }
 
-        // tasks not reached from any root (cycles / orphans)
-        byId.values().stream()
-            .filter(t -> t.id() != null && !placed.contains(t.id()))
-            .sorted(Comparator.comparing(t -> t.name().toLowerCase(Locale.ROOT)))
-            .forEach(t -> placeNode(t, colOffset, row, maxCol, byId, nodeById, placed));
-
-        // ghost successors — rightmost column
-        if (!ghostSuccIds.isEmpty())
+    private void drawDayTicks(Pane canvas, TimeScale scale)
+    {
+        LocalDate minDate = scale.minDate();
+        LocalDate maxDate = scale.maxDate();
+        int i = 0;
+        for (LocalDate tick = minDate; !tick.isAfter(maxDate); tick = tick.plusDays(1), i++)
         {
-            double ghostX = snap(PAD + (maxCol[0] + 1) * (NODE_WIDTH + H_GAP));
-            for (int i = 0; i < ghostSuccIds.size(); i++)
+            double x = dateX(tick, scale);
+            javafx.scene.shape.Line mark = new javafx.scene.shape.Line(x, scale.axisY() - 4, x, scale.axisY() + 8);
+            mark.setStroke(Color.web("#6f86a8"));
+            mark.setStrokeWidth(0.8);
+            canvas.getChildren().add(mark);
+            if (i % 7 == 0)
             {
-                Group node = nodeById.get(ghostSuccIds.get(i));
-                if (node != null) { node.setTranslateX(ghostX); node.setTranslateY(snap(PAD + i * STEP)); }
+                Label label = new Label(tick.format(DAY_FMT));
+                label.setStyle("-fx-font-size: 9px; -fx-text-fill: #a9bfd8;");
+                label.setLayoutX(x + 2);
+                label.setLayoutY(scale.axisY() - 17);
+                canvas.getChildren().add(label);
             }
         }
     }
 
-    /**
-     * Places {@code task} at {@code col} and {@code row[0]}, then recursively places
-     * its visual children in {@code col + 1}.  Updates {@code row[0]} and {@code maxCol[0]}.
-     */
-    private void placeNode(
-            TaskBean task, int col,
-            int[] row, int[] maxCol,
-            Map<Long, TaskBean> byId, Map<Long, Group> nodeById,
-            Set<Long> placed)
+    private void drawWeekTicks(Pane canvas, TimeScale scale)
     {
-        if (task.id() == null || !placed.add(task.id())) return;
-
-        if (col > maxCol[0]) maxCol[0] = col;
-
-        Group node = nodeById.get(task.id());
-        if (node != null)
+        LocalDate minDate = scale.minDate();
+        LocalDate maxDate = scale.maxDate();
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        LocalDate weekStart = minDate.minusDays(minDate.getDayOfWeek().getValue() - 1L);
+        for (LocalDate tick = weekStart; !tick.isAfter(maxDate); tick = tick.plusWeeks(1))
         {
-            node.setTranslateX(snap(PAD + col * (NODE_WIDTH + H_GAP)));
-            node.setTranslateY(snap(PAD + row[0] * STEP));
+            if (tick.isBefore(minDate)) continue;
+            double x = dateX(tick, scale);
+            javafx.scene.shape.Line mark = new javafx.scene.shape.Line(x, scale.axisY() - 5, x, scale.axisY() + 9);
+            mark.setStroke(Color.web("#6f86a8"));
+            mark.setStrokeWidth(0.9);
+            Label label = new Label("CW " + tick.get(weekFields.weekOfWeekBasedYear()));
+            label.setStyle("-fx-font-size: 10px; -fx-text-fill: #a9bfd8;");
+            label.setLayoutX(x + 3);
+            label.setLayoutY(scale.axisY() - 18);
+            canvas.getChildren().addAll(mark, label);
         }
-
-        List<TaskBean> children = visualChildren(task, byId);
-        if (children.isEmpty())
-            row[0]++;
-        else
-            for (TaskBean child : children)
-                placeNode(child, col + 1, row, maxCol, byId, nodeById, placed);
     }
 
-    /** Sub-tasks ∪ successors of {@code task} within {@code byId}, sorted alphabetically. */
-    private List<TaskBean> visualChildren(TaskBean task, Map<Long, TaskBean> byId)
+    private void drawMonthTicks(Pane canvas, TimeScale scale)
     {
-        Map<Long, TaskBean> seen = new LinkedHashMap<>();
-        task.subTasks() .ifPresent(s -> s.stream().filter(t -> t.id() != null && byId.containsKey(t.id())).forEach(t -> seen.put(t.id(), t)));
-        task.successors().ifPresent(s -> s.stream().filter(t -> t.id() != null && byId.containsKey(t.id())).forEach(t -> seen.putIfAbsent(t.id(), t)));
-        return seen.values().stream()
-                   .sorted(Comparator.comparing(t -> t.name().toLowerCase(Locale.ROOT)))
-                   .toList();
+        LocalDate minDate = scale.minDate();
+        LocalDate maxDate = scale.maxDate();
+        LocalDate monthTick = minDate.withDayOfMonth(1);
+        if (monthTick.isBefore(minDate)) monthTick = monthTick.plusMonths(1);
+        if (monthTick.isAfter(maxDate)) monthTick = minDate;
+
+        while (!monthTick.isAfter(maxDate))
+        {
+            double x = dateX(monthTick, scale);
+            javafx.scene.shape.Line tick = new javafx.scene.shape.Line(x, scale.axisY() - 6, x, scale.axisY() + 10);
+            tick.setStroke(Color.web("#6f86a8"));
+            tick.setStrokeWidth(1.0);
+
+            Label label = new Label(monthTick.format(MONTH_FMT));
+            label.setStyle("-fx-font-size: 10px; -fx-text-fill: #a9bfd8;");
+            label.setLayoutX(x + 4);
+            label.setLayoutY(scale.axisY() - 18);
+
+            canvas.getChildren().addAll(tick, label);
+            monthTick = monthTick.plusMonths(1).withDayOfMonth(1);
+        }
+    }
+
+    private Comparator<TaskBean> taskOrderComparator()
+    {
+        return Comparator
+            .comparing((TaskBean t) -> t.scheduledStart().orElse(null), Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(TaskBean::name, String.CASE_INSENSITIVE_ORDER)
+            .thenComparing(t -> t.id() == null ? Long.MAX_VALUE : t.id());
     }
 
     private enum EdgeType { PARENT_CHILD, PRED_SUCC }
 
     private record EdgeSpec(Group from, Group to, EdgeType type) {}
+    private record TimeScale(LocalDate minDate, LocalDate maxDate, double dayWidth, double axisStartX, double axisY, double tasksTopY, double axisEndX)
+    {
+        private GraphTimeline.Scale toTimelineScale()
+        {
+            return new GraphTimeline.Scale(minDate, maxDate, dayWidth, axisStartX, axisY, tasksTopY);
+        }
+
+        private TimeScale withAxisEndX(double axisEndX)
+        {
+            return new TimeScale(minDate, maxDate, dayWidth, axisStartX, axisY, tasksTopY, axisEndX);
+        }
+
+        private static TimeScale from(GraphTimeline.Scale scale)
+        {
+            return new TimeScale(scale.minDate(), scale.maxDate(), scale.dayWidth(), scale.axisStartX(), scale.axisY(), scale.tasksTopY(), 0);
+        }
+    }
 
     // ── Layout persistence ────────────────────────────────────────────────────
 
     @FXML
     private void saveLayout()
     {
-        FileChooser chooser = layoutFileChooser("Layout speichern");
+        FileChooser chooser = layoutFileChooser("Save layout");
         File file = chooser.showSaveDialog(graphContainer.getScene().getWindow());
         if (file == null) return;
 
@@ -571,14 +773,14 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         catch (IOException e)
         {
             log.error("failed to save layout to {}", file, e);
-            showError("Layout speichern", e);
+            TaskUiSupport.showError("Save layout", e);
         }
     }
 
     @FXML
     private void loadLayout()
     {
-        FileChooser chooser = layoutFileChooser("Layout laden");
+        FileChooser chooser = layoutFileChooser("Load layout");
         if (lastLayoutFile != null) chooser.setInitialDirectory(lastLayoutFile.getParentFile());
         File file = chooser.showOpenDialog(graphContainer.getScene().getWindow());
         if (file == null) return;
@@ -592,7 +794,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         catch (IOException e)
         {
             log.error("failed to load layout from {}", file, e);
-            showError("Layout laden", e);
+            TaskUiSupport.showError("Load layout", e);
             return;
         }
 
@@ -639,7 +841,7 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         chooser.setTitle(title);
         chooser.getExtensionFilters().addAll(
                 new ExtensionFilter("Pragma Graph Layout (*.pgraph)", "*.pgraph"),
-                new ExtensionFilter("Alle Dateien", "*.*"));
+                new ExtensionFilter("All files", "*.*"));
         if (lastLayoutFile != null)
         {
             chooser.setInitialDirectory(lastLayoutFile.getParentFile());
@@ -648,12 +850,92 @@ class GraphController extends DefaultFXCController<Graph, GraphService> implemen
         return chooser;
     }
 
-    private void showError(String title, Exception e)
+    private void centerOnDate(LocalDate date)
     {
-        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.showAndWait();
+        if (currentScale == null || graphContainer.getContent() == null) return;
+        double x = dateX(date, TimeScale.from(currentScale));
+        javafx.geometry.Bounds viewport = graphContainer.getViewportBounds();
+        javafx.geometry.Bounds content = graphContainer.getContent().getLayoutBounds();
+        if (content.getWidth() <= viewport.getWidth()) return;
+        double targetLeft = Math.max(0, x - viewport.getWidth() / 2.0);
+        double maxLeft = content.getWidth() - viewport.getWidth();
+        graphContainer.setHvalue(Math.min(1.0, Math.max(0.0, targetLeft / maxLeft)));
+    }
+
+    private boolean selectTask(TaskBean task)
+    {
+        if (task.id() == null) return false;
+        if (task.id().equals(selectedTaskId)) return true;
+        if (!confirmDiscardChanges()) return false;
+        selectedTaskId = task.id();
+        TaskBean selected = currentTaskById.getOrDefault(task.id(), task);
+        inspector.clearDirty();
+        inspector.showTask(selected);
+        updateSelectionStyles();
+        return true;
+    }
+
+    private void updateNodeContent(TaskBean task)
+    {
+        if (task == null || task.id() == null) return;
+        Group node = currentNodeById.get(task.id());
+        if (node == null || node.getChildren().size() < 2) return;
+        if (!(node.getChildren().get(1) instanceof VBox box)) return;
+        if (box.getChildren().size() < 2) return;
+        if (box.getChildren().get(0) instanceof Label nameLabel) nameLabel.setText(task.name());
+        if (box.getChildren().get(1) instanceof Label datesLabel) datesLabel.setText(dateText(task));
+    }
+
+    private String dateText(TaskBean task)
+    {
+        String startText = task.scheduledStart().map(d -> "from: " + d.format(DATE_FMT)).orElse("");
+        String endText   = task.scheduledFinish()  .map(d -> "to: " + d.format(DATE_FMT)).orElse("");
+        return startText.isEmpty() && endText.isEmpty() ? ""
+            : startText + (startText.isEmpty() || endText.isEmpty() ? "" : "  ") + endText;
+    }
+
+    private boolean hasStructuralRelationChanges(TaskBean before, TaskBean after)
+    {
+        if (before == null || after == null) return false;
+        Long beforeParentId = before.parentTask().map(TaskBean::id).orElse(null);
+        Long afterParentId = after.parentTask().map(TaskBean::id).orElse(null);
+        if (!java.util.Objects.equals(beforeParentId, afterParentId)) return true;
+        return !relationIds(before.predecessors()).equals(relationIds(after.predecessors()))
+            || !relationIds(before.successors()).equals(relationIds(after.successors()))
+            || !relationIds(before.subTasks()).equals(relationIds(after.subTasks()));
+    }
+
+    private Set<Long> relationIds(java.util.Optional<Set<TaskBean>> relations)
+    {
+        return relations.orElse(Set.of()).stream()
+            .map(TaskBean::id)
+            .filter(java.util.Objects::nonNull)
+            .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private void updateSelectionStyles()
+    {
+        currentNodeById.forEach((id, group) ->
+        {
+            if (group == null || group.getChildren().isEmpty()) return;
+            if (!(group.getChildren().get(0) instanceof Rectangle rect)) return;
+            boolean selected = selectedTaskId != null && selectedTaskId.equals(id);
+            if (selected)
+            {
+                rect.setStroke(Color.web("#ffd166"));
+                rect.setStrokeWidth(3.0);
+            }
+            else
+            {
+                rect.setStroke(Color.web("#6699cc"));
+                rect.setStrokeWidth(1.5);
+            }
+        });
+    }
+
+    private boolean confirmDiscardChanges()
+    {
+        return TaskUiSupport.confirmDiscardChanges(inspector.dirty());
     }
 
 }
