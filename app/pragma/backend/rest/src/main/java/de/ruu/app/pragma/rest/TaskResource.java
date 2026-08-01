@@ -5,6 +5,7 @@ import de.ruu.app.pragma.jpa.TaskGroupJPA;
 import de.ruu.app.pragma.jpa.TaskJPA;
 import de.ruu.app.pragma.core.TaskStatus;
 import de.ruu.app.pragma.core.TaskPriority;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -40,6 +41,7 @@ import java.util.Objects;
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed({SecurityRoles.TASK_READ, SecurityRoles.PRAGMA_ADMIN})
 public class TaskResource
 {
     @PersistenceContext
@@ -110,6 +112,7 @@ public class TaskResource
     }
 
     @POST
+    @RolesAllowed({SecurityRoles.TASK_CREATE, SecurityRoles.PRAGMA_ADMIN})
     public Response create(@Valid TaskCreateRequest request)
     {
         ensureTaskSchema();
@@ -120,6 +123,9 @@ public class TaskResource
         if (group == null) throw new NotFoundException("TaskGroup not found: " + request.groupId());
         TaskJPA entity = new TaskJPA(request.name(), group);
         entity.description (request.description());
+        entity.workEstimateInitial(request.workEstimateInitial());
+        entity.workEstimateCurrent(request.workEstimateCurrent());
+        entity.workActual(request.workActual());
         entity.scheduledStart(request.plannedStart());
         entity.scheduledFinish(request.plannedEnd());
         entity.status      (request.status() == null ? TaskStatus.NEW : request.status());
@@ -130,11 +136,19 @@ public class TaskResource
             entity.parentTask(parentTask);
         }
         em.persist(entity);
+        em.flush();
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "scheduledStart", entity.scheduledStart().orElse(null), null, null);
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "scheduledFinish", entity.scheduledFinish().orElse(null), null, null);
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "workEstimateCurrent", entity.workEstimateCurrent().orElse(null), null, null);
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "workActual", entity.workActual().orElse(null), null, null);
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "status", entity.status(), null, null);
+        ChangeLogSupport.logCreate(em, "Task", entity.id(), "priority", entity.priority(), null, null);
         return Response.status(Response.Status.CREATED).entity(Mappings.toDto(entity)).build();
     }
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public TaskDto update(@PathParam("id") Long id, @Valid TaskDto dto)
     {
         ensureTaskSchema();
@@ -142,17 +156,33 @@ public class TaskResource
         TaskJPA entity = requireTask(id);
         if (!Objects.equals(entity.version(), dto.version()))
             throw new WebApplicationException(Response.Status.CONFLICT);
+        var oldScheduledStart = entity.scheduledStart().orElse(null);
+        var oldScheduledFinish = entity.scheduledFinish().orElse(null);
+        var oldWorkEstimateCurrent = entity.workEstimateCurrent().orElse(null);
+        var oldWorkActual = entity.workActual().orElse(null);
+        var oldStatus = entity.status();
+        var oldPriority = entity.priority();
         entity.name       (dto.name());
         entity.description(dto.description().orElse(null));
         entity.scheduledStart(dto.scheduledStart().orElse(null));
         entity.scheduledFinish(dto.scheduledFinish()  .orElse(null));
+        entity.workEstimateInitial(dto.workEstimateInitial().orElse(null));
+        entity.workEstimateCurrent(dto.workEstimateCurrent().orElse(null));
+        entity.workActual(dto.workActual().orElse(null));
         entity.status      (dto.status());
         entity.priority    (dto.priority());
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "scheduledStart", oldScheduledStart, entity.scheduledStart().orElse(null), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "scheduledFinish", oldScheduledFinish, entity.scheduledFinish().orElse(null), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "workEstimateCurrent", oldWorkEstimateCurrent, entity.workEstimateCurrent().orElse(null), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "workActual", oldWorkActual, entity.workActual().orElse(null), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "status", oldStatus, entity.status(), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
+        ChangeLogSupport.logIfChanged(em, "Task", entity.id(), "priority", oldPriority, entity.priority(), de.ruu.app.pragma.core.ChangeCategory.UPDATE, null, null);
         return Mappings.toDto(entity);
     }
 
     @PUT
     @Path("/{id}/group/{groupId}")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public TaskDto moveToGroup(@PathParam("id") Long id, @PathParam("groupId") Long groupId)
     {
         ensureTaskSchema();
@@ -165,6 +195,7 @@ public class TaskResource
 
     @PUT
     @Path("/{id}/parent/{parentId}")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public TaskDto setParentTask(@PathParam("id") Long id, @PathParam("parentId") Long parentId)
     {
         ensureTaskSchema();
@@ -177,6 +208,7 @@ public class TaskResource
 
     @DELETE
     @Path("/{id}/parent")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public Response clearParentTask(@PathParam("id") Long id)
     {
         ensureTaskSchema();
@@ -187,6 +219,7 @@ public class TaskResource
 
     @PUT
     @Path("/{id}/predecessor/{predId}")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public TaskDto addPredecessor(@PathParam("id") Long id, @PathParam("predId") Long predId)
     {
         ensureTaskSchema();
@@ -198,6 +231,7 @@ public class TaskResource
 
     @DELETE
     @Path("/{id}/predecessor/{predId}")
+    @RolesAllowed({SecurityRoles.TASK_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public Response removePredecessor(@PathParam("id") Long id, @PathParam("predId") Long predId)
     {
         ensureTaskSchema();
@@ -231,10 +265,12 @@ public class TaskResource
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({SecurityRoles.TASK_DELETE, SecurityRoles.PRAGMA_ADMIN})
     public Response delete(@PathParam("id") Long id)
     {
         ensureTaskSchema();
         TaskJPA entity = requireTask(id);
+        ChangeLogSupport.logDelete(em, "Task", entity.id(), "name", entity.name(), null, null);
         entity.taskGroup().removeTask(entity);
         em.remove(entity);
         return Response.noContent().build();
@@ -263,6 +299,9 @@ public class TaskResource
         @NotBlank String name,
         @NotNull  Long groupId,
         @Nullable String description,
+        @Nullable Double workEstimateInitial,
+        @Nullable Double workEstimateCurrent,
+        @Nullable Double workActual,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
         @Nullable TaskStatus status,

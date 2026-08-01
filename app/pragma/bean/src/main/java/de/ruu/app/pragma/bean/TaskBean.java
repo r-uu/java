@@ -62,8 +62,8 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
     /** Package-private — called exclusively by TaskGroupBean.addTask() to avoid recursion. */
     void taskGroupInternal(TaskGroupBean group) { this.taskGroup = group; }
 
-    @Override public @Nullable Long                    id                 () { return id;                              }
-    @Override public @Nullable Short                   version            () { return version;                         }
+    @Override public @Nullable Long  id     () { return id;      }
+    @Override public @Nullable Short version() { return version; }
 
     @Override public          String         name               () { return name                           ; }
     @Override public Optional<TaskBean>      parentTask         () { return ofNullable(parentTask         ); }
@@ -79,15 +79,15 @@ public class TaskBean implements PersistentTask<TaskGroupBean, TaskBean>
     @Override public          TaskStatus     status             () { return status                         ; }
     @Override public          TaskPriority   priority           () { return priority                       ; }
 
-    @Override public TaskBean name               (          String    n) { name                = requireNonNull(n, "name"); return this; }
-    @Override public TaskBean parentTask         (@Nullable TaskBean  p) { parentTask          =                p         ; return this; }
-    @Override public TaskBean description        (@Nullable String    d) { description         =                d         ; return this; }
-    @Override public TaskBean workEstimateInitial(@Nullable Double    e) { workEstimateInitial =                e         ; return this; }
-    @Override public TaskBean workEstimateCurrent(@Nullable Double    e) { workEstimateCurrent =                e         ; return this; }
-    @Override public TaskBean workActual         (@Nullable Double    a) { workActual          =                a         ; return this; }
-    @Override public TaskBean scheduledStart     (@Nullable LocalDate s) { scheduledStart      =                s         ; return this; }
-    @Override public TaskBean scheduledFinish    (@Nullable LocalDate f) { scheduledFinish     =                f         ; return this; }
-    @Override public TaskBean status             (          TaskStatus s) { status              =                s         ; return this; }
+    @Override public TaskBean name               (          String       n) { name                = requireNonNull(n, "name"); return this; }
+    @Override public TaskBean parentTask         (@Nullable TaskBean     p) { parentTask          =                p         ; return this; }
+    @Override public TaskBean description        (@Nullable String       d) { description         =                d         ; return this; }
+    @Override public TaskBean workEstimateInitial(@Nullable Double       e) { workEstimateInitial =                e         ; return this; }
+    @Override public TaskBean workEstimateCurrent(@Nullable Double       e) { workEstimateCurrent =                e         ; return this; }
+    @Override public TaskBean workActual         (@Nullable Double       a) { workActual          =                a         ; return this; }
+    @Override public TaskBean scheduledStart     (@Nullable LocalDate    s) { scheduledStart      =                s         ; return this; }
+    @Override public TaskBean scheduledFinish    (@Nullable LocalDate    f) { scheduledFinish     =                f         ; return this; }
+    @Override public TaskBean status             (          TaskStatus   s) { status              =                s         ; return this; }
     @Override public TaskBean priority           (          TaskPriority p) { priority            =                p         ; return this; }
 
     @Override

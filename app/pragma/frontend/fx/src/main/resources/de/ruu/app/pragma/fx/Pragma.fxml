@@ -29,6 +29,11 @@
                         maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
         </Tab>
 
+        <Tab text="Administration">
+            <AnchorPane fx:id="paneAdmin"
+                        maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+        </Tab>
+
     </TabPane>
 
     <!-- Backup/Restore buttons floating over the tab header area -->

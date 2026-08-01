@@ -3,6 +3,7 @@ package de.ruu.app.pragma.fx;
 import de.ruu.app.pragma.fx.task.gantt.Gantt;
 import de.ruu.app.pragma.fx.task.graph.Graph;
 import de.ruu.app.pragma.fx.task.hierarchy.Hierarchies;
+import de.ruu.app.pragma.fx.admin.Admin;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.postgres.toolbox.ui.PostgresBackupUI;
 import de.ruu.lib.postgres.toolbox.ui.PostgresRestoreUI;
@@ -25,6 +26,7 @@ class PragmaController extends DefaultFXCController<Pragma, PragmaService> imple
     @FXML private AnchorPane paneHierarchies;
     @FXML private AnchorPane paneGantt;
     @FXML private AnchorPane paneGraph;
+    @FXML private AnchorPane paneAdmin;
 
     @FXML private Button btnBackup;
     @FXML private Button btnRestore;
@@ -32,6 +34,7 @@ class PragmaController extends DefaultFXCController<Pragma, PragmaService> imple
     @Inject private Hierarchies     hierarchies;
     @Inject private Gantt           gantt;
     @Inject private Graph           graph;
+    @Inject private Admin           admin;
     @Inject private PostgresBackupUI  backupUI;
     @Inject private PostgresRestoreUI restoreUI;
 
@@ -45,6 +48,7 @@ class PragmaController extends DefaultFXCController<Pragma, PragmaService> imple
         embed(paneHierarchies, hierarchies.localRoot());
         embed(paneGantt,       gantt      .localRoot());
         embed(paneGraph,       graph      .localRoot());
+        embed(paneAdmin,       admin      .localRoot());
 
         btnBackup .setOnAction(e -> openBackup ());
         btnRestore.setOnAction(e -> openRestore());

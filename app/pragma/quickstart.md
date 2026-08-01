@@ -43,13 +43,15 @@ Der Build kopiert dabei automatisch die Hibernate-JARs nach
 
 ## Typischer Entwicklungs-Workflow
 
-### Schritt 1 — PostgreSQL starten
+### Schritt 1 — PostgreSQL + Keycloak starten
 
 ```bash
 docker compose up -d
 ```
 
-Container: `pragma-postgres`, Port 5432, DB/User/Passwort: `pragma`
+Container:
+- `pragma-postgres` (Port 5432, DB/User/Passwort: `pragma`)
+- `pragma-keycloak` (Port 8080, Admin `admin` / `admin`)
 
 ### Schritt 2 — Liberty-Server starten
 
@@ -91,6 +93,36 @@ mvn -pl frontend/rest-client verify
 
 Tests mit `@DisabledOnServerNotListening` werden automatisch übersprungen,
 wenn kein Server auf Port 9090 lauscht.
+
+### Optional — Login-Abkürzung für Dev/Test
+
+Der Login lässt sich über `pragma.auth.test-mode` steuern:
+
+- `true` (Default): Dev/Test-Modus, Credentials werden automatisch aus den
+  Defaults genutzt (`r-uu` / `r-uu`).
+- `false`: Credentials sind verpflichtend und müssen gesetzt werden.
+
+Für schnelles Umschalten ohne erneute Eingabe gibt es zusätzlich WSL-Aliases:
+
+```bash
+ruu-pragma-fx         # provisioniert r-uu und startet JavaFX mit r-uu / r-uu
+ruu-pragma-fx-admin   # startet JavaFX mit admin / admin
+```
+
+Alternativ frei per Property:
+
+```bash
+mvn -pl frontend/fx -am exec:java@pragma \
+  -Dpragma.auth.test-mode=false \
+  -Dpragma.keycloak.username=<user> \
+  -Dpragma.keycloak.password=<password>
+```
+
+In IntelliJ kann dieselbe Steuerung über VM-Options gesetzt werden:
+
+```text
+-Dpragma.auth.test-mode=false -Dpragma.keycloak.username=<user> -Dpragma.keycloak.password=<password>
+```
 
 ---
 

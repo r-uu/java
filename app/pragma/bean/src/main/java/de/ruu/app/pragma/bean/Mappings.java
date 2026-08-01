@@ -2,6 +2,15 @@ package de.ruu.app.pragma.bean;
 
 import de.ruu.app.pragma.dto.TaskDto;
 import de.ruu.app.pragma.dto.TaskGroupDto;
+import de.ruu.app.pragma.dto.UserDto;
+import de.ruu.app.pragma.dto.AuthAccountDto;
+import de.ruu.app.pragma.dto.GroupDto;
+import de.ruu.app.pragma.dto.MembershipDto;
+import de.ruu.app.pragma.dto.TaskAssignmentDto;
+import de.ruu.app.pragma.dto.UserAvailabilityDto;
+import de.ruu.app.pragma.dto.ChangeLogDto;
+import de.ruu.app.pragma.dto.UserWorkloadDto;
+import de.ruu.app.pragma.dto.TaskOverrunDto;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -148,5 +157,165 @@ public final class Mappings
         }));
 
         return out;
+    }
+
+    public static UserBean toBean(UserDto in)
+    {
+        return new UserBean(in.username(), in.displayName(), in.email())
+            .id(in.id())
+            .version(in.version())
+            .keycloakUserId(in.keycloakUserId().orElse(null))
+            .password(in.password().orElse(null))
+            .active(in.active());
+    }
+
+    public static UserDto toDto(UserBean in)
+    {
+        return new UserDto(in.username(), in.displayName(), in.email())
+            .id(in.id())
+            .version(in.version())
+            .keycloakUserId(in.keycloakUserId().orElse(null))
+            .password(in.password().orElse(null))
+            .active(in.active());
+    }
+
+    public static AuthAccountBean toBean(AuthAccountDto in)
+    {
+        return new AuthAccountBean(in.userId(), in.passwordHash())
+            .id(in.id())
+            .version(in.version())
+            .loginEnabled(in.loginEnabled())
+            .lastLoginAt(in.lastLoginAt().orElse(null));
+    }
+
+    public static AuthAccountDto toDto(AuthAccountBean in)
+    {
+        return new AuthAccountDto(in.userId(), in.passwordHash())
+            .id(in.id())
+            .version(in.version())
+            .loginEnabled(in.loginEnabled())
+            .lastLoginAt(in.lastLoginAt().orElse(null));
+    }
+
+    public static GroupBean toBean(GroupDto in)
+    {
+        return new GroupBean(in.name())
+            .id(in.id())
+            .version(in.version())
+            .description(in.description().orElse(null))
+            .active(in.active());
+    }
+
+    public static GroupDto toDto(GroupBean in)
+    {
+        return new GroupDto(in.name())
+            .id(in.id())
+            .version(in.version())
+            .description(in.description().orElse(null))
+            .active(in.active());
+    }
+
+    public static MembershipBean toBean(MembershipDto in)
+    {
+        return new MembershipBean(in.userId(), in.groupId())
+            .id(in.id())
+            .version(in.version())
+            .roleInGroup(in.roleInGroup())
+            .validFrom(in.validFrom().orElse(null))
+            .validTo(in.validTo().orElse(null))
+            .active(in.active());
+    }
+
+    public static MembershipDto toDto(MembershipBean in)
+    {
+        return new MembershipDto(in.userId(), in.groupId())
+            .id(in.id())
+            .version(in.version())
+            .roleInGroup(in.roleInGroup())
+            .validFrom(in.validFrom().orElse(null))
+            .validTo(in.validTo().orElse(null))
+            .active(in.active());
+    }
+
+    public static TaskAssignmentBean toBean(TaskAssignmentDto in)
+    {
+        return new TaskAssignmentBean(in.taskId())
+            .id(in.id())
+            .version(in.version())
+            .assignmentType(in.assignmentType())
+            .targetType(in.targetType())
+            .userId(in.userId().orElse(null))
+            .groupId(in.groupId().orElse(null))
+            .share(in.share().orElse(null))
+            .priority(in.priority().orElse(null))
+            .validFrom(in.validFrom().orElse(null))
+            .validTo(in.validTo().orElse(null))
+            .note(in.note().orElse(null))
+            .active(in.active());
+    }
+
+    public static TaskAssignmentDto toDto(TaskAssignmentBean in)
+    {
+        return new TaskAssignmentDto(in.taskId())
+            .id(in.id())
+            .version(in.version())
+            .assignmentType(in.assignmentType())
+            .targetType(in.targetType())
+            .userId(in.userId().orElse(null))
+            .groupId(in.groupId().orElse(null))
+            .share(in.share().orElse(null))
+            .priority(in.priority().orElse(null))
+            .validFrom(in.validFrom().orElse(null))
+            .validTo(in.validTo().orElse(null))
+            .note(in.note().orElse(null))
+            .active(in.active());
+    }
+
+    public static UserAvailabilityBean toBean(UserAvailabilityDto in)
+    {
+        return new UserAvailabilityBean(in.userId(), in.fromDate(), in.toDate(), in.capacityHoursPerDay())
+            .id(in.id())
+            .version(in.version())
+            .availabilityType(in.availabilityType())
+            .note(in.note().orElse(null));
+    }
+
+    public static UserAvailabilityDto toDto(UserAvailabilityBean in)
+    {
+        return new UserAvailabilityDto(in.userId(), in.fromDate(), in.toDate(), in.capacityHoursPerDay())
+            .id(in.id())
+            .version(in.version())
+            .availabilityType(in.availabilityType())
+            .note(in.note().orElse(null));
+    }
+
+    public static ChangeLogBean toBean(ChangeLogDto in)
+    {
+        return new ChangeLogBean(in.entityType(), in.entityId(), in.fieldName(), in.oldValue().orElse(null), in.newValue().orElse(null))
+            .id(in.id())
+            .changedAt(in.changedAt())
+            .changedBy(in.changedBy().orElse(null))
+            .reason(in.reason().orElse(null))
+            .category(in.category());
+    }
+
+    public static ChangeLogDto toDto(ChangeLogBean in)
+    {
+        return new ChangeLogDto(in.entityType(), in.entityId(), in.fieldName(), in.oldValue().orElse(null), in.newValue().orElse(null))
+            .id(in.id())
+            .changedAt(in.changedAt())
+            .changedBy(in.changedBy().orElse(null))
+            .reason(in.reason().orElse(null))
+            .category(in.category());
+    }
+
+    public static UserWorkloadBean toBean(UserWorkloadDto in)
+    {
+        return new UserWorkloadBean(in.userId(), in.username(), in.displayName(), in.capacityHoursPerDay(), in.assignedHours(), in.overbookedHours());
+    }
+
+    public static TaskOverrunBean toBean(TaskOverrunDto in)
+    {
+        return new TaskOverrunBean(in.taskId(), in.taskName(), in.estimateHours(), in.actualHours(), in.overrunHours());
     }
 }

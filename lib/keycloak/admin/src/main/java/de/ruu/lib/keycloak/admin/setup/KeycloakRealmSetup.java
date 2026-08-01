@@ -30,7 +30,7 @@ import java.util.Map;
  * <ul>
  *   <li>Realm: pragma-realm</li>
  *   <li>Client: pragma-frontend (Public Client, Direct Access Grants)</li>
- *   <li>User: r_uu / r_uu_password</li>
+ *   <li>User: r-uu / r-uu</li>
  * </ul>
  *
  * <h2>Voraussetzungen:</h2>
@@ -54,9 +54,9 @@ public class KeycloakRealmSetup
 	private static final String REALM_NAME = System.getProperty("keycloak.realm", "pragma-realm");
 	private static final String CLIENT_ID = System.getProperty("keycloak.client.id", "pragma-frontend");
 	private static final String TEST_USER = System.getProperty("app.test.user",
-			System.getenv().getOrDefault("app_test_user_username", "test"));
+			System.getenv().getOrDefault("app_test_user_username", "r-uu"));
 	private static final String TEST_PASSWORD = System.getProperty("app.test.password",
-			System.getenv().getOrDefault("app_test_user_password", "test"));
+			System.getenv().getOrDefault("app_test_user_password", "r-uu"));
 
 	public static void main(String[] args)
 	{
@@ -80,7 +80,10 @@ public class KeycloakRealmSetup
 			// 4. Create Groups Claim Mapper (for Liberty compatibility)
 			createGroupsClaimMapper(keycloak);
 
-			// 5. Create Test User (with roles assigned)
+			// 5. Create UPN Claim Mapper (Liberty extracts user principal from upn by default)
+			createUpnClaimMapper(keycloak);
+
+			// 6. Create Test User (with roles assigned)
 			createTestUser(keycloak);
 
 			log.info("");
@@ -123,7 +126,14 @@ public class KeycloakRealmSetup
 		try
 		{
 			// Check whether the realm already exists
-			keycloak.realm(REALM_NAME).toRepresentation();
+			RealmRepresentation existing = keycloak.realm(REALM_NAME).toRepresentation();
+			if (!Boolean.TRUE.equals(existing.isDuplicateEmailsAllowed()))
+			{
+				log.info("Enabling duplicate emails for realm '{}'...", REALM_NAME);
+				existing.setDuplicateEmailsAllowed(true);
+				keycloak.realm(REALM_NAME).update(existing);
+				log.info("[OK] Duplicate emails enabled");
+			}
 			log.info("[OK] Realm '{}' already exists", REALM_NAME);
 		}
 		catch (Exception e)
@@ -136,6 +146,7 @@ public class KeycloakRealmSetup
 			realm.setDisplayName("PRAGMA Default Realm");
 			realm.setRegistrationAllowed(false);
 			realm.setResetPasswordAllowed(true);
+			realm.setDuplicateEmailsAllowed(true);
 
 			// ===== Token Lifespan Configuration (prevents immediate session expiry) =====
 			// Access Token: 30 minutes (1800 seconds) - prevents frequent re-authentication
@@ -347,7 +358,8 @@ public class KeycloakRealmSetup
 			"task-read",
 			"task-create",
 			"task-update",
-			"task-delete"
+			"task-delete",
+			"pragma-admin"
 		};
 
 		int created = 0;
@@ -455,6 +467,55 @@ public class KeycloakRealmSetup
 		}
 	}
 
+	private static void createUpnClaimMapper(Keycloak keycloak)
+	{
+		log.info("Creating 'upn' claim mapper for client '{}'...", CLIENT_ID);
+
+		try
+		{
+			String clientUuid = keycloak.realm(REALM_NAME).clients()
+					.findByClientId(CLIENT_ID).get(0).getId();
+
+			java.util.List<org.keycloak.representations.idm.ProtocolMapperRepresentation> existingMappers =
+					keycloak.realm(REALM_NAME).clients().get(clientUuid)
+							.getProtocolMappers().getMappers();
+
+			for (org.keycloak.representations.idm.ProtocolMapperRepresentation existingMapper : existingMappers)
+			{
+				if ("upn-claim-mapper".equals(existingMapper.getName()))
+				{
+					log.info("  [OK] 'upn' claim mapper already exists");
+					return;
+				}
+			}
+
+			org.keycloak.representations.idm.ProtocolMapperRepresentation mapper =
+					new org.keycloak.representations.idm.ProtocolMapperRepresentation();
+			mapper.setName("upn-claim-mapper");
+			mapper.setProtocol("openid-connect");
+			mapper.setProtocolMapper("oidc-usermodel-property-mapper");
+
+			java.util.Map<String, String> config = new java.util.HashMap<>();
+			config.put("user.attribute", "username");
+			config.put("claim.name", "upn");
+			config.put("jsonType.label", "String");
+			config.put("id.token.claim", "true");
+			config.put("access.token.claim", "true");
+			config.put("userinfo.token.claim", "true");
+			mapper.setConfig(config);
+
+			keycloak.realm(REALM_NAME).clients().get(clientUuid)
+					.getProtocolMappers().createMapper(mapper);
+
+			log.info("  [OK] 'upn' claim mapper created successfully");
+		}
+		catch (Exception ex)
+		{
+			log.error("ERROR: Could not create upn claim mapper: {}", ex.getMessage(), ex);
+			throw new RuntimeException("Failed to create upn claim mapper", ex);
+		}
+	}
+
 	private static void createTestUser(Keycloak keycloak) throws KeycloakAdminException
 	{
 		log.info("Checking test user '{}'...", TEST_USER);
@@ -504,7 +565,7 @@ public class KeycloakRealmSetup
 				}
 
 				// Assign roles (for existing user)
-				assignRolesToUser(keycloak, userId);
+				assignRolesToUser(keycloak, userId, TEST_USER);
 			}
 			else
 			{
@@ -547,7 +608,7 @@ public class KeycloakRealmSetup
 				}
 
 				// Assign roles for the new user
-				assignRolesToUser(keycloak, userId);
+				assignRolesToUser(keycloak, userId, TEST_USER);
 			}
 		}
 	}
@@ -555,11 +616,11 @@ public class KeycloakRealmSetup
 	/**
 	 * Weist dem User alle erforderlichen Rollen zu.
 	 */
-	private static void assignRolesToUser(Keycloak keycloak, String userId)
+	private static void assignRolesToUser(Keycloak keycloak, String userId, String username)
 	{
 		log.info("Assigning roles to user...");
 
-		String[] requiredRoles = {
+		java.util.List<String> requiredRoles = new java.util.ArrayList<>(java.util.List.of(
 			"taskgroup-read",
 			"taskgroup-create",
 			"taskgroup-update",
@@ -568,7 +629,8 @@ public class KeycloakRealmSetup
 			"task-create",
 			"task-update",
 			"task-delete"
-		};
+		));
+		if ("admin".equals(username) || "r-uu".equals(username)) requiredRoles.add("pragma-admin");
 
 		int assigned = 0;
 

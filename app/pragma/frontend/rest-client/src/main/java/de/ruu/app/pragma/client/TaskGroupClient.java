@@ -39,6 +39,7 @@ public class TaskGroupClient
     private final String scheme = ConfigProvider.getConfig().getValue("pragma.rest-api.scheme", String.class);
     private final String host   = ConfigProvider.getConfig().getValue("pragma.rest-api.host",   String.class);
     private final int    port   = ConfigProvider.getConfig().getValue("pragma.rest-api.port",   Integer.class);
+    private final RestClientAuthConfig authConfig = RestClientAuthConfig.read();
 
     private Client client;
 
@@ -46,8 +47,15 @@ public class TaskGroupClient
     public void postConstruct()
     {
         ObjectMapper mapper = createObjectMapper();
+        KeycloakTokenProvider tokenProvider = new KeycloakTokenProvider(
+            authConfig.serverUrl(),
+            authConfig.realm(),
+            authConfig.clientId(),
+            authConfig.username(),
+            authConfig.password());
         client = ClientBuilder.newBuilder()
             .register(new JacksonJsonProvider(mapper))
+            .register(new BearerTokenFilter(tokenProvider))
             .property(ClientProperties.CONNECT_TIMEOUT, 5000)
             .property(ClientProperties.READ_TIMEOUT,    15000)
             .build();

@@ -183,9 +183,16 @@ Daher: **Tracking-Backbone jetzt, UI-/Prozessstrenge schrittweise nach Bedarf**.
 #### Offene Entscheidungen
 
 1. Welche Felder gehören verbindlich in Stufe 1?
+   - id, name, parentId
+   - scheduledStart, scheduledFinish
+   - workEstimateInitial, workEstimateCurrent, workActual
+   - status, priority
 2. Wann wird ein Änderungsgrund Pflicht (immer, je Feld, je Schwellwert)?
+   - erstmal keine Pflicht
 3. Reicht Freitext oder braucht es zusätzlich Kategorien?
+   - erstmal nur Freitext
 4. Welche Auswertungen sollen zuerst sichtbar werden (und für wen)?
+   - scheduled Felder, work Felder, status, priority
 
 ### User, Groups, Member und Task-Zuständigkeit
 
@@ -309,9 +316,16 @@ Verfügbarkeit „anna“:
 #### Offene Entscheidungen
 
 1. Soll pro Task genau **ein** `RESPONSIBLE` erzwungen werden?
+  - Soll nicht erzwungen werden, aber UI kann Warnung anzeigen, wenn. Es sollen aber nicht mehr als 1 sein.
 2. Sollen Groups andere Groups enthalten dürfen (verschachtelte Teams)?
+   - Erstmal nicht, aber später möglich.
 3. Muss `Membership` historisiert werden oder reicht nur aktueller Zustand?
+   - Aktueller Zustand reicht, Historie kann später ergänzt werden.
 4. Soll Auth lokal (Passwort) starten oder direkt über externes IAM laufen?
+   - Im Nicht-Test-Modus haben wir keycloak doch bereits im Einsatz, daher direkt externes IAM.
 5. System-Default für Tageskapazität: 8h oder pro User verpflichtend pflegbar?
+   - Ja, Teilzeit kommt vor.
 6. Starten wir ohne wiederkehrende Regeln und führen diese erst später ein?
+   - Ja, erst später.
 7. Sollen Verfügbarkeiten nur für User gelten oder direkt auch für Groups pflegbar sein?
+   - Erstmal nur für User, später auch für Groups.

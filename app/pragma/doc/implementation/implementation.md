@@ -393,6 +393,22 @@ SmartGraph-Dependency bleibt im Classpath, wird aber nicht mehr aktiv genutzt.
 - `GraphController` speichert/lädt Knotenpositionen als `.pgraph`-Datei (Properties-Format, Task-ID als Schlüssel). Wird nach `DBClear`+`DBPopulate` wertlos, da neue IDs vergeben werden (→ Backlog P2-6).
 - SmartGraph ist als Dependency deklariert, wird aber nicht für das Rendering verwendet (→ Backlog P3-6).
 
+## Administration, Zuständigkeiten und Tracking
+
+Folgende Ebenen wurden ergänzt:
+
+- **Persistenz/REST:** `User`, `AuthAccount`, `Group`, `Membership`, `TaskAssignment`, `UserAvailability`, `ChangeLog`.
+- **Auth-Quelle:** Benutzer-Authentifizierung liegt in Keycloak; lokale `User` halten die fachliche Referenz über `keycloakUserId`.
+- **Task-Zuständigkeit:** `TaskAssignment` unterstützt `RESPONSIBLE` und `ASSIGNEE` für `USER` oder `GROUP`.
+- **Regel:** pro Task ist maximal ein aktiver `RESPONSIBLE` erlaubt.
+- **History-Backbone:** `ChangeLog` speichert Feldänderungen (`entityType`, `entityId`, `fieldName`, `oldValue`, `newValue`, `changedAt`, `category`).
+- **Tracking in Task-Updates:** Änderungen an `scheduledStart`, `scheduledFinish`, `workEstimateCurrent`, `workActual`, `status`, `priority` werden geloggt.
+- **Analytics-REST:** Überauslastung (`/admin/analytics/workload`) und Zeitüberschreitung (`/admin/analytics/time-overruns`).
+- **FX-UI:** neuer Tab **Administration** mit Verwaltung für User, Groups, Memberships, Assignments, Verfügbarkeiten sowie separaten Ansichten für History und Analytics.
+- **Keycloak-Sync:** `/admin/users?syncFromKeycloak=true` synchronisiert Realm-User in `app_user` (Upsert nach `keycloakUserId`/`username`) und wird vom Admin-Client für die User-Liste genutzt.
+- **Keycloak-Userverwaltung in Admin-UI:** User-Create/Update/Delete laufen über Keycloak und synchronisieren anschließend in `app_user`; Passwort-Reset erfolgt optional im User-Dialog.
+- **Admin-UI Toolbar-Design:** In den Admin-Tabs werden leichte Icon-Buttons (Reload/Add/Edit/Delete) analog zu den übrigen Tabs verwendet.
+
 #### Test-Harness / Regression-Tests (FX)
 
 - JavaFX-Test-Harness ist unter `frontend/fx/src/test` aktiv.

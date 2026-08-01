@@ -7,6 +7,39 @@ export RUU_JAVA="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export RUU_LIB="$RUU_JAVA/lib"
 export RUU_APP="$RUU_JAVA/app"
 export RUU_PRAGMA="$RUU_APP/pragma"
+export RUU_PRAGMA_COMPOSE_FILE="${RUU_PRAGMA_COMPOSE_FILE:-$RUU_PRAGMA/docker-compose.yml}"
+
+ruu-autostart-infra() {
+  [ "${RUU_WSL_AUTOSTART_INFRA:-1}" = "1" ] || return 0
+  [ -n "${RUU_AUTOSTART_INFRA_DONE:-}" ] && return 0
+  export RUU_AUTOSTART_INFRA_DONE=1
+
+  command -v docker >/dev/null 2>&1 || return 0
+  docker info >/dev/null 2>&1 || return 0
+
+  local compose_file="$RUU_PRAGMA_COMPOSE_FILE"
+  [ -f "$compose_file" ] || return 0
+
+  docker compose -f "$compose_file" config --services 2>/dev/null | grep -qx 'keycloak' || return 0
+
+  local keycloak_cid
+  local keycloak_state
+  keycloak_cid="$(docker compose -f "$compose_file" ps -q keycloak 2>/dev/null | head -n1)"
+  if [ -n "$keycloak_cid" ]; then
+    keycloak_state="$(docker inspect -f '{{.State.Running}}' "$keycloak_cid" 2>/dev/null || echo false)"
+    [ "$keycloak_state" = "true" ] && return 0
+  fi
+
+  local start_output
+  if ! start_output="$(
+    docker compose -f "$compose_file" up -d keycloak 2>&1
+  )"; then
+    echo "⚠️  Could not auto-start pragma postgres/keycloak (compose file: $compose_file)"
+    echo "$start_output"
+  fi
+}
+
+ruu-autostart-infra
 
 # ═══════════════════════════════════════════════════════════════════
 # Navigation
@@ -64,6 +97,22 @@ ruu-pragma-win-exe() {
     --dest "${win_dest}"
 }
 alias ruu-pragma-exe='ruu-pragma-win-exe'
+
+# ═══════════════════════════════════════════════════════════════════
+# Pragma — Dev/Test Login-Shortcuts (Keycloak)
+# ═══════════════════════════════════════════════════════════════════
+ruu-pragma-fx-as() {
+  local user="${1:-r-uu}"
+  local pass="${2:-$user}"
+  shift 2 || true
+  cd "$RUU_PRAGMA" || return 1
+  mvn -pl frontend/fx -am exec:java@pragma \
+    -Dpragma.keycloak.username="$user" \
+    -Dpragma.keycloak.password="$pass" \
+    "$@"
+}
+alias ruu-pragma-fx='ruu-pragma-fx-as r-uu r-uu'
+alias ruu-pragma-fx-admin='ruu-pragma-fx-as admin admin'
 
 echo "✓  r-uu-java aliases loaded"
 echo "  📚 help:   ruu-help | ruu-groups"

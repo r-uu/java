@@ -2,6 +2,7 @@ package de.ruu.app.pragma.fx;
 
 import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.client.TaskGroupClient;
+import de.ruu.app.pragma.fx.PragmaExceptionDialogSupport;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -172,10 +173,7 @@ public class TaskGroupManagementDialog
 
     private static void showError(String title, Exception e)
     {
-        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.showAndWait();
+        PragmaExceptionDialogSupport.showError(title, e);
     }
 
     private java.util.Optional<TaskGroupBean> editGroup(String title, TaskGroupBean draft)

@@ -1,5 +1,6 @@
 package de.ruu.app.pragma.fx.task;
 
+import de.ruu.app.pragma.fx.PragmaExceptionDialogSupport;
 import jakarta.enterprise.inject.Vetoed;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -38,10 +39,7 @@ public final class TaskUiSupport
 
   public static void showError(String title, Exception e)
   {
-    Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.showAndWait();
+    PragmaExceptionDialogSupport.showError(title, e);
   }
 
   public static void showWarning(String title, String message)

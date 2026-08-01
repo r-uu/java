@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+  <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+    <tabs>
+      <Tab text="Users">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnUsersRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload users"/></tooltip>
+                </Button>
+                <Button fx:id="btnUsersAdd" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-plus-square" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="add user"/></tooltip>
+                </Button>
+                <Button fx:id="btnUsersEdit" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-edit" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="edit user"/></tooltip>
+                </Button>
+                <Button fx:id="btnUsersDelete" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-trash-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="delete user"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblUsersStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblUsers">
+              <columns>
+                <TableColumn fx:id="colUserId" text="id" prefWidth="70"/>
+                <TableColumn fx:id="colUserUsername" text="username" prefWidth="180"/>
+                <TableColumn fx:id="colUserKeycloakId" text="keycloakUserId" prefWidth="190"/>
+                <TableColumn fx:id="colUserDisplayName" text="displayName" prefWidth="220"/>
+                <TableColumn fx:id="colUserEmail" text="email" prefWidth="240"/>
+                <TableColumn fx:id="colUserActive" text="active" prefWidth="80"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="Groups">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnGroupsRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload groups"/></tooltip>
+                </Button>
+                <Button fx:id="btnGroupsAdd" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-plus-square" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="add group"/></tooltip>
+                </Button>
+                <Button fx:id="btnGroupsEdit" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-edit" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="edit group"/></tooltip>
+                </Button>
+                <Button fx:id="btnGroupsDelete" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-trash-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="delete group"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblGroupsStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblGroups">
+              <columns>
+                <TableColumn fx:id="colGroupId" text="id" prefWidth="70"/>
+                <TableColumn fx:id="colGroupName" text="name" prefWidth="220"/>
+                <TableColumn fx:id="colGroupDescription" text="description" prefWidth="350"/>
+                <TableColumn fx:id="colGroupActive" text="active" prefWidth="80"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="Memberships">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnMembershipsRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload memberships"/></tooltip>
+                </Button>
+                <Button fx:id="btnMembershipsAdd" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-plus-square" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="add membership"/></tooltip>
+                </Button>
+                <Button fx:id="btnMembershipsEdit" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-edit" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="edit membership"/></tooltip>
+                </Button>
+                <Button fx:id="btnMembershipsDelete" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-trash-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="delete membership"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblMembershipsStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblMemberships">
+              <columns>
+                <TableColumn fx:id="colMembershipId" text="id" prefWidth="70"/>
+                <TableColumn fx:id="colMembershipUser" text="userId" prefWidth="120"/>
+                <TableColumn fx:id="colMembershipGroup" text="groupId" prefWidth="120"/>
+                <TableColumn fx:id="colMembershipRole" text="role" prefWidth="170"/>
+                <TableColumn fx:id="colMembershipValidFrom" text="validFrom" prefWidth="140"/>
+                <TableColumn fx:id="colMembershipValidTo" text="validTo" prefWidth="140"/>
+                <TableColumn fx:id="colMembershipActive" text="active" prefWidth="90"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="Assignments">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnAssignmentsRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload assignments"/></tooltip>
+                </Button>
+                <Button fx:id="btnAssignmentsAdd" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-plus-square" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="add assignment"/></tooltip>
+                </Button>
+                <Button fx:id="btnAssignmentsEdit" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-edit" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="edit assignment"/></tooltip>
+                </Button>
+                <Button fx:id="btnAssignmentsDelete" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-trash-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="delete assignment"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblAssignmentsStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblAssignments">
+              <columns>
+                <TableColumn fx:id="colAssignmentId" text="id" prefWidth="70"/>
+                <TableColumn fx:id="colAssignmentTask" text="taskId" prefWidth="110"/>
+                <TableColumn fx:id="colAssignmentType" text="type" prefWidth="140"/>
+                <TableColumn fx:id="colAssignmentTargetType" text="targetType" prefWidth="120"/>
+                <TableColumn fx:id="colAssignmentTargetId" text="targetId" prefWidth="110"/>
+                <TableColumn fx:id="colAssignmentShare" text="share" prefWidth="90"/>
+                <TableColumn fx:id="colAssignmentPriority" text="priority" prefWidth="90"/>
+                <TableColumn fx:id="colAssignmentActive" text="active" prefWidth="90"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="Availability">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnAvailabilityRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload availability"/></tooltip>
+                </Button>
+                <Button fx:id="btnAvailabilityAdd" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-plus-square" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="add availability"/></tooltip>
+                </Button>
+                <Button fx:id="btnAvailabilityEdit" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-edit" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="edit availability"/></tooltip>
+                </Button>
+                <Button fx:id="btnAvailabilityDelete" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="far-trash-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="delete availability"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblAvailabilityStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblAvailabilities">
+              <columns>
+                <TableColumn fx:id="colAvailabilityId" text="id" prefWidth="70"/>
+                <TableColumn fx:id="colAvailabilityUser" text="userId" prefWidth="120"/>
+                <TableColumn fx:id="colAvailabilityFrom" text="from" prefWidth="140"/>
+                <TableColumn fx:id="colAvailabilityTo" text="to" prefWidth="140"/>
+                <TableColumn fx:id="colAvailabilityCapacity" text="capacity h/day" prefWidth="130"/>
+                <TableColumn fx:id="colAvailabilityType" text="type" prefWidth="130"/>
+                <TableColumn fx:id="colAvailabilityNote" text="note" prefWidth="260"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="History">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnHistoryRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload history"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblHistoryStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <TableView fx:id="tblHistory">
+              <columns>
+                <TableColumn fx:id="colHistoryChangedAt" text="changedAt" prefWidth="180"/>
+                <TableColumn fx:id="colHistoryEntityType" text="entityType" prefWidth="120"/>
+                <TableColumn fx:id="colHistoryEntityId" text="entityId" prefWidth="90"/>
+                <TableColumn fx:id="colHistoryField" text="field" prefWidth="160"/>
+                <TableColumn fx:id="colHistoryOld" text="oldValue" prefWidth="220"/>
+                <TableColumn fx:id="colHistoryNew" text="newValue" prefWidth="220"/>
+                <TableColumn fx:id="colHistoryCategory" text="category" prefWidth="130"/>
+              </columns>
+            </TableView>
+          </center>
+        </BorderPane>
+      </Tab>
+
+      <Tab text="Analytics">
+        <BorderPane>
+          <top>
+            <HBox spacing="6">
+              <children>
+                <Button fx:id="btnAnalyticsRefresh" mnemonicParsing="false" prefHeight="20" prefWidth="20">
+                  <graphic><FontIcon iconLiteral="fas-sync-alt" iconSize="11"/></graphic>
+                  <tooltip><Tooltip text="reload analytics"/></tooltip>
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblAnalyticsStatus"/>
+              </children>
+            </HBox>
+          </top>
+          <center>
+            <SplitPane orientation="VERTICAL" dividerPositions="0.5">
+              <items>
+                <VBox spacing="4">
+                  <children>
+                    <Label text="Überauslastungen"/>
+                    <TableView fx:id="tblWorkload">
+                      <columns>
+                        <TableColumn fx:id="colWorkloadUser" text="user" prefWidth="220"/>
+                        <TableColumn fx:id="colWorkloadCapacity" text="capacity" prefWidth="120"/>
+                        <TableColumn fx:id="colWorkloadAssigned" text="assigned" prefWidth="120"/>
+                        <TableColumn fx:id="colWorkloadOverbooked" text="overbooked" prefWidth="140"/>
+                      </columns>
+                    </TableView>
+                  </children>
+                </VBox>
+                <VBox spacing="4">
+                  <children>
+                    <Label text="Zeitüberschreitungen"/>
+                    <TableView fx:id="tblOverruns">
+                      <columns>
+                        <TableColumn fx:id="colOverrunTask" text="task" prefWidth="260"/>
+                        <TableColumn fx:id="colOverrunEstimate" text="estimate" prefWidth="120"/>
+                        <TableColumn fx:id="colOverrunActual" text="actual" prefWidth="120"/>
+                        <TableColumn fx:id="colOverrunDelta" text="overrun" prefWidth="140"/>
+                      </columns>
+                    </TableView>
+                  </children>
+                </VBox>
+              </items>
+            </SplitPane>
+          </center>
+        </BorderPane>
+      </Tab>
+    </tabs>
+  </TabPane>
+</AnchorPane>

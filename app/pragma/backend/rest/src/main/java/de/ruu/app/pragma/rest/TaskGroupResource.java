@@ -1,7 +1,9 @@
 package de.ruu.app.pragma.rest;
 
 import de.ruu.app.pragma.dto.TaskGroupDto;
+import de.ruu.app.pragma.core.ChangeCategory;
 import de.ruu.app.pragma.jpa.TaskGroupJPA;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -29,6 +31,7 @@ import java.util.Objects;
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed({SecurityRoles.TASKGROUP_READ, SecurityRoles.PRAGMA_ADMIN})
 public class TaskGroupResource
 {
     @PersistenceContext
@@ -59,29 +62,38 @@ public class TaskGroupResource
     }
 
     @POST
+    @RolesAllowed({SecurityRoles.TASKGROUP_CREATE, SecurityRoles.PRAGMA_ADMIN})
     public Response create(@Valid TaskGroupDto dto)
     {
         TaskGroupJPA entity = new TaskGroupJPA(dto.name());
         em.persist(entity);
+        em.flush();
+        ChangeLogSupport.logCreate(em, "TaskGroup", entity.id(), "name", entity.name(), null, null);
         return Response.status(Response.Status.CREATED).entity(Mappings.toDto(entity)).build();
     }
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({SecurityRoles.TASKGROUP_UPDATE, SecurityRoles.PRAGMA_ADMIN})
     public TaskGroupDto update(@PathParam("id") Long id, @Valid TaskGroupDto dto)
     {
         TaskGroupJPA entity = requireGroup(id);
         if (!Objects.equals(entity.version(), dto.version()))
             throw new WebApplicationException(Response.Status.CONFLICT);
+        String oldName = entity.name();
         entity.name(dto.name());
+        ChangeLogSupport.logIfChanged(em, "TaskGroup", entity.id(), "name", oldName, entity.name(), ChangeCategory.UPDATE, null, null);
         return Mappings.toDto(entity);
     }
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({SecurityRoles.TASKGROUP_DELETE, SecurityRoles.PRAGMA_ADMIN})
     public Response delete(@PathParam("id") Long id)
     {
-        em.remove(requireGroup(id));
+        TaskGroupJPA entity = requireGroup(id);
+        ChangeLogSupport.logDelete(em, "TaskGroup", entity.id(), "name", entity.name(), null, null);
+        em.remove(entity);
         return Response.noContent().build();
     }
 

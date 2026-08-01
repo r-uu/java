@@ -8,6 +8,7 @@ import de.ruu.app.pragma.fx.task.TaskUiSupport;
 import de.ruu.app.pragma.fx.task.edit.TaskEditor;
 import de.ruu.app.pragma.fx.task.inspector.TaskInspectorSupport;
 import de.ruu.app.pragma.fx.taskgroup.edit.TaskGroupEditor;
+import de.ruu.app.pragma.fx.PragmaExceptionDialogSupport;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButton;
 import de.ruu.lib.fx.control.autocomplete.textfield.TextFieldAutoCompleteClearableWithArrowButtonBuilder;
@@ -697,7 +698,7 @@ class HierarchiesController extends DefaultFXCController<Hierarchies, Hierarchie
 
     private void showError(String title, Exception e)
     {
-        TaskUiSupport.showError(title, e);
+        PragmaExceptionDialogSupport.showError(title, e);
     }
 
     private void showInfo(String title, String message)

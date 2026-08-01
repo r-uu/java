@@ -21,6 +21,7 @@ module de.ruu.app.pragma.client
     requires microprofile.config.api;
     requires org.jspecify;
 	requires de.ruu.app.pragma.core;
+    requires java.net.http;
 
 	exports de.ruu.app.pragma.client;
     exports de.ruu.app.pragma.client.dbcommand;

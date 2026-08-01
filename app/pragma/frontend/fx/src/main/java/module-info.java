@@ -25,6 +25,7 @@ module de.ruu.app.pragma.fx
 	requires org.kordamp.ikonli.javafx;
 
 	exports de.ruu.app.pragma.fx;
+	exports de.ruu.app.pragma.fx.admin;
 	exports de.ruu.app.pragma.fx.task.gantt;
 	exports de.ruu.app.pragma.fx.task.graph;
 	exports de.ruu.app.pragma.fx.task.edit;
@@ -34,6 +35,7 @@ module de.ruu.app.pragma.fx
 
 	// open for CDI (Weld) bean discovery, proxy generation, and FXML controller injection
 	opens de.ruu.app.pragma.fx;
+	opens de.ruu.app.pragma.fx.admin;
 	opens de.ruu.app.pragma.fx.task.edit;
 	opens de.ruu.app.pragma.fx.task.view;
 	opens de.ruu.app.pragma.fx.task.hierarchy;

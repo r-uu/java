@@ -11,6 +11,13 @@
 
     <class>de.ruu.app.pragma.jpa.TaskGroupJPA</class>
     <class>de.ruu.app.pragma.jpa.TaskJPA</class>
+    <class>de.ruu.app.pragma.jpa.UserJPA</class>
+    <class>de.ruu.app.pragma.jpa.AuthAccountJPA</class>
+    <class>de.ruu.app.pragma.jpa.GroupJPA</class>
+    <class>de.ruu.app.pragma.jpa.MembershipJPA</class>
+    <class>de.ruu.app.pragma.jpa.TaskAssignmentJPA</class>
+    <class>de.ruu.app.pragma.jpa.UserAvailabilityJPA</class>
+    <class>de.ruu.app.pragma.jpa.ChangeLogJPA</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

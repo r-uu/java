@@ -57,6 +57,7 @@ public class TaskClient
     private final int readTimeoutMs = ConfigProvider.getConfig()
         .getOptionalValue("pragma.rest-api.read-timeout-ms", Integer.class)
         .orElse(120000);
+    private final RestClientAuthConfig authConfig = RestClientAuthConfig.read();
 
     private Client client;
 
@@ -64,8 +65,15 @@ public class TaskClient
     public void postConstruct()
     {
         ObjectMapper mapper = createObjectMapper();
+        KeycloakTokenProvider tokenProvider = new KeycloakTokenProvider(
+            authConfig.serverUrl(),
+            authConfig.realm(),
+            authConfig.clientId(),
+            authConfig.username(),
+            authConfig.password());
         client = ClientBuilder.newBuilder()
             .register(new JacksonJsonProvider(mapper))
+            .register(new BearerTokenFilter(tokenProvider))
             .property(ClientProperties.CONNECT_TIMEOUT, connectTimeoutMs)
             .property(ClientProperties.READ_TIMEOUT,    readTimeoutMs)
             .build();
@@ -152,6 +160,9 @@ public class TaskClient
         var request  = new TaskCreateRequest(
             bean.name(), groupId,
             bean.description().orElse(null),
+            bean.workEstimateInitial().orElse(null),
+            bean.workEstimateCurrent().orElse(null),
+            bean.workActual().orElse(null),
             bean.scheduledStart().orElse(null),
             bean.scheduledFinish()  .orElse(null),
             bean.status(),
@@ -333,6 +344,9 @@ public class TaskClient
     private record TaskCreateRequest(
         String name, long groupId,
         @Nullable String description,
+        @Nullable Double workEstimateInitial,
+        @Nullable Double workEstimateCurrent,
+        @Nullable Double workActual,
         @Nullable LocalDate plannedStart,
         @Nullable LocalDate plannedEnd,
         TaskStatus status,

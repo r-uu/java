@@ -43,6 +43,10 @@
       enableBeanValidation="true"
       defaultJtaDataSourceRef="jdbc/pragma" />
 
+  <mpJwt id="pragmaMpJwt"
+      userNameAttribute="preferred_username"
+      groupNameAttribute="groups" />
+
   <application id="pragma"
       name="pragma"
       type="war"
