@@ -37,6 +37,12 @@
     <dependency>
       <groupId>r-uu</groupId>
       <artifactId>r-uu.lib.keycloak.admin</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Jakarta EE APIs (provided by Liberty) -->

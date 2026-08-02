@@ -93,6 +93,8 @@ docker exec postgres psql -U postgres -c '\du'   # Rollen/User
 | `pragma` | `pragma` | (im DB-Init gesetzt)  | 5432 |
 | `keycloak`  | `keycloak`  | (intern, via Compose) | 5432 |
 
+Die Compose-Umgebung in `app/pragma/docker-compose.yml` legt `lib_test`/`lib_test` automatisch an, damit lokale Tests direkt mit dem erwarteten Nutzer arbeiten.
+
 ### Keycloak Admin-Zugang
 
 | Eigenschaft     | Wert                  |

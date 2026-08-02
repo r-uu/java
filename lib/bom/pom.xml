@@ -55,8 +55,8 @@
 		<postgres_pragma_database>pragma</postgres_pragma_database>
 
 		<!-- PostgreSQL Lib Test Database -->
-		<postgres_libtest_username>lib_test_default</postgres_libtest_username>
-		<postgres_libtest_password>lib_test_default</postgres_libtest_password>
+		<postgres_libtest_username>lib_test</postgres_libtest_username>
+		<postgres_libtest_password>lib_test</postgres_libtest_password>
 		<postgres_libtest_database>lib_test</postgres_libtest_database>
 
 		<!-- PostgreSQL Keycloak Database -->
