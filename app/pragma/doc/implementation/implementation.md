@@ -175,8 +175,8 @@ app/pragma/
 │   ├── jpa/                      (r-uu.app.pragma.backend.jpa)           — JPA-Entities (Hibernate)
 │   └── rest/                     (r-uu.app.pragma.backend.rest, WAR)     — JAX-RS REST-API + Liberty Server
 │       └── src/main/liberty/config/
-│           ├── server.xml        — Liberty-Konfiguration (Port 9090, Datasource jdbc/pragma)
-│           └── server.env        — Umgebungsvariablen (Ports, DB-Credentials)
+│           ├── server.xml        — Liberty-Konfiguration (Port 9090, Datasource jdbc/pragma, lokale Defaults)
+│           └── server.env        — optionale Overrides für Ports und DB-Credentials
 └── frontend/
     ├── pom.xml                   (r-uu.app.pragma.frontend)
     ├── rest-client/              (r-uu.app.pragma.frontend.rest.client)   — JAX-RS Client (Jersey)
@@ -243,7 +243,7 @@ Pins. Das erfordert umfangreiche Änderungen in lib/.
 - **Port:** 9090 (HTTP), 9543 (HTTPS) — um Konflikt mit jeeeraaah (9080) zu vermeiden
 - **Context root:** `/pragma`, JAX-RS base: `/pragma/api`
 - **Features:** `jakartaee-10.0`, `microProfile-6.1`
-- **Datasource:** `jdbc/pragma` → PostgreSQL (Container `pragma-postgres`, Port 5432)
+- **Datasource:** `jdbc/pragma` → PostgreSQL (Container `pragma-postgres`, Host-Port 5432)
 - **JPA provider:** Hibernate (JARs in `lib/global/`, nicht im WAR gebündelt)
 - **Start:** `mvn -pl backend/rest liberty:run` (Produktion) oder `mvn -pl backend/rest liberty:dev` (Hot-Reload)
 

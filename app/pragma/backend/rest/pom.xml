@@ -34,6 +34,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.keycloak.admin</artifactId>
+    </dependency>
 
     <!-- Jakarta EE APIs (provided by Liberty) -->
     <dependency>
@@ -132,6 +136,31 @@
             WEB-INF/lib/log4j-core-*.jar
           </packagingExcludes>
         </configuration>
+      </plugin>
+
+      <!-- Remove stale generated Liberty security artifacts before a fresh local start.
+           They can become unreadable after password/config changes and break liberty:dev. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>cleanup-liberty-security</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete failonerror="false"
+                    file="${project.build.directory}/liberty/wlp/usr/servers/defaultServer/resources/security/ltpa.keys" />
+                <delete failonerror="false"
+                    file="${project.build.directory}/liberty/wlp/usr/servers/defaultServer/resources/security/key.p12" />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Copy Hibernate JARs and PostgreSQL driver to Liberty's global library directory -->

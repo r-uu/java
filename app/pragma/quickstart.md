@@ -50,8 +50,20 @@ docker compose up -d
 ```
 
 Container:
-- `pragma-postgres` (Port 5432, DB/User/Passwort: `pragma`)
+- `pragma-postgres` (Host-Port 5432, DB/User/Passwort: `pragma`)
 - `pragma-keycloak` (Port 8080, Admin `admin` / `admin`)
+
+Falls `FATAL: password authentication failed for user "pragma"` auftritt, ist meist bereits ein
+persistiertes Docker-Volume mit abweichenden PostgreSQL-Credentials vorhanden. Dann die DB
+zurücksetzen und neu initialisieren:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+Abweichende Liberty-Datasource-Credentials lassen sich über Liberty-Variablen wie
+`-Ddatasource_database_password=...` überschreiben.
 
 ### Schritt 2 — Liberty-Server starten
 
@@ -64,6 +76,9 @@ mvn -pl backend/rest package liberty:run
 ```bash
 mvn -pl backend/rest package liberty:dev
 ```
+
+Wichtig: `liberty:dev` benötigt hier eine Maven-Version **>= 3.8.6**. Das in manchen
+Distributionen per `apt` installierte Maven 3.6.x ist dafür zu alt.
 
 Der Server ist erreichbar unter:
 - `http://localhost:9090/pragma/api/task-groups`
