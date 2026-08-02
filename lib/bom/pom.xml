@@ -461,6 +461,11 @@
 				<artifactId>mapstruct-processor</artifactId>
 				<version>1.6.3</version>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>2.0.17</version>
+			</dependency>
 			<!-- Import MicroProfile BOM korrekt -->
 			<dependency>
 				<groupId>org.eclipse.microprofile</groupId>
