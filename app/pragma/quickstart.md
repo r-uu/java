@@ -83,6 +83,10 @@ Distributionen per `apt` installierte Maven 3.6.x ist dafür zu alt.
 Der Server ist erreichbar unter:
 - `http://localhost:9090/pragma/api/task-groups`
 
+Beim Start der JavaFX-App wird vor dem eigentlichen Fensterstart automatisch ein kurzer
+Prueflauf ausgefuehrt. Wenn PostgreSQL, Keycloak oder das Backend nicht bereit sind,
+bricht Pragma mit einer klaren Fehlermeldung ab.
+
 ### Schritt 3 — Datenbank befüllen
 
 ```bash

@@ -13,7 +13,15 @@ public class PragmaAppRunner extends FXCAppRunner
         log.debug("starting {}", PragmaAppRunner.class.getName());
         FXCAppRunner.configureModuleAccessForCDI();
         PragmaAppRunner.class.getModule().addReads(PragmaAppRunner.class.getClassLoader().getUnnamedModule());
-        FXCAppRunner.run(PragmaApp.class, args);
+        try
+        {
+            PragmaStartupCheck.verify();
+            FXCAppRunner.run(PragmaApp.class, args);
+        }
+        catch (IllegalStateException e)
+        {
+            System.exit(1);
+        }
         log.debug("finished {}", PragmaAppRunner.class.getName());
     }
 }

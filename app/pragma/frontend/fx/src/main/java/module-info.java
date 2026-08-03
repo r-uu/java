@@ -16,6 +16,7 @@ module de.ruu.app.pragma.fx
 	requires javafx.base;
 	requires javafx.controls;
 	requires javafx.fxml;
+	requires java.net.http;
 
 	requires jakarta.inject;
 	requires jakarta.cdi;
