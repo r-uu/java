@@ -18,7 +18,7 @@ module de.ruu.app.pragma.client
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.jakarta.rs.json;
 
-    requires microprofile.config.api;
+    requires org.eclipse.microprofile.config;
     requires org.jspecify;
 	requires de.ruu.app.pragma.core;
     requires java.net.http;

@@ -7,7 +7,7 @@ module de.ruu.lib.util.config.mp
 	requires de.ruu.lib.util;
 
 	requires transitive jakarta.cdi;
-	requires transitive microprofile.config.api;
+	requires transitive org.eclipse.microprofile.config;
 
 	requires org.apache.logging.log4j;
 }

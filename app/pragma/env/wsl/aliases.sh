@@ -77,7 +77,13 @@ alias ruu-pragma-exe='ruu-pragma-win-exe'
 ruu-keycloak-provision() {
   local user="${1:-r-uu}"
   local pass="${2:-$user}"
-  shift 2 || true
+  local admin_user="${3:-pragma-admin}"
+  local admin_pass="${4:-$admin_user}"
+  if [ "$#" -ge 4 ]; then
+    shift 4 || true
+  else
+    shift 2 || true
+  fi
   cd "$RUU_PRAGMA" || return 1
   mvn -f ../../lib/keycloak/admin/pom.xml -am exec:java \
     -Dexec.mainClass=de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup \
@@ -87,6 +93,15 @@ ruu-keycloak-provision() {
     -Dkeycloak.client.id=pragma-frontend \
     -Dapp.test.user="$user" \
     -Dapp.test.password="$pass" \
+    "$@" || return 1
+  mvn -f ../../lib/keycloak/admin/pom.xml -am exec:java \
+    -Dexec.mainClass=de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup \
+    -Dkeycloak.admin.user=admin \
+    -Dkeycloak.admin.password=admin \
+    -Dkeycloak.realm=pragma-realm \
+    -Dkeycloak.client.id=pragma-frontend \
+    -Dapp.test.user="$admin_user" \
+    -Dapp.test.password="$admin_pass" \
     "$@"
 }
 
@@ -102,6 +117,6 @@ ruu-pragma-fx-as() {
     "$@"
 }
 alias ruu-pragma-fx='ruu-pragma-fx-as r-uu r-uu'
-alias ruu-pragma-fx-admin='ruu-pragma-fx-as admin admin'
+alias ruu-pragma-fx-admin='ruu-pragma-fx-as pragma-admin pragma-admin'
 
 echo "✓  pragma aliases loaded"

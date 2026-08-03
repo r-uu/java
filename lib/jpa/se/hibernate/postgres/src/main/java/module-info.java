@@ -13,7 +13,7 @@ module de.ruu.lib.jpa.se.hibernate.postgres
 	requires jakarta.persistence;
 	requires java.sql;
 	requires org.apache.logging.log4j;
-	requires microprofile.config.api;
+	requires org.eclipse.microprofile.config;
 	requires org.hibernate.orm.core;
 	requires org.postgresql.jdbc;
 	requires de.ruu.lib.jdbc.core;

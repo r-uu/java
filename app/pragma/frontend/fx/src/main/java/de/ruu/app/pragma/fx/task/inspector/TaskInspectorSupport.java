@@ -63,7 +63,7 @@ public final class TaskInspectorSupport
   {
     if (!inspectorContainer.getChildren().contains(editorRoot))
       inspectorContainer.getChildren().add(editorRoot);
-    editorService.setEditable(true);
+    editorService.setEditable(false);
     editorService.onTaskUpdated(this::onEditorTaskUpdated);
     editorService.dirtyProperty().addListener((obs, old, dirty) -> updateSaveButtonState());
     toggleButton.setOnAction(e -> toggleInspector());
@@ -76,6 +76,7 @@ public final class TaskInspectorSupport
   {
     currentTask = task;
     editorService.task(task);
+    editorService.setEditable(true);
     updateSaveButtonState();
   }
 
@@ -83,6 +84,7 @@ public final class TaskInspectorSupport
   {
     currentTask = null;
     editorService.clear();
+    editorService.setEditable(false);
     updateSaveButtonState();
   }
 

@@ -12,7 +12,7 @@ module de.ruu.lib.postgres.ui
 	requires javafx.fxml;
 	requires javafx.controls;
 	requires jakarta.inject;
-	requires microprofile.config.api;
+	requires org.eclipse.microprofile.config;
 
 	requires org.apache.logging.log4j;
 	requires de.ruu.lib.postgres;

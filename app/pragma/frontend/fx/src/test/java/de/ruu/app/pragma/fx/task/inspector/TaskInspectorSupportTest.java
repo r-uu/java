@@ -84,6 +84,29 @@ class TaskInspectorSupportTest
     });
   }
 
+  @Test
+  void editorIsEnabledOnlyWhenTaskIsSelected()
+  {
+    FakeEditorService editor = new FakeEditorService();
+    BorderPane pane = new BorderPane();
+    VBox container = new VBox();
+    Button toggle = new Button();
+    Button save = new Button();
+    TaskBean task = persistedTask(3L, "C");
+
+    FxTestHarness.runOnFxThread(() -> {
+      TaskInspectorSupport support = new TaskInspectorSupport(
+          pane, container, toggle, save, new Pane(), editor,
+          in -> in, updated -> {}, error -> { throw new AssertionError(error); });
+      support.initialize();
+      assertThat(editor.editable).isFalse();
+      support.showTask(task);
+      assertThat(editor.editable).isTrue();
+      support.clearTask();
+      assertThat(editor.editable).isFalse();
+    });
+  }
+
   private static TaskBean persistedTask(Long id, String name)
   {
     TaskBean task = new TaskBean(new TaskGroupBean("G"), name);
@@ -105,13 +128,14 @@ class TaskInspectorSupportTest
     private final BooleanProperty dirty = new SimpleBooleanProperty(false);
     private boolean updating;
     private TaskBean task;
+    private boolean editable;
     private Consumer<TaskBean> onTaskUpdated = ignored -> {};
 
     @Override public Optional<TaskBean> task() { return Optional.ofNullable(task); }
     @Override public void task(TaskBean task) { this.task = task; }
     @Override public void clear() { task = null; }
     @Override public void applyTo(TaskBean task) { this.task = task; }
-    @Override public void setEditable(boolean editable) { }
+    @Override public void setEditable(boolean editable) { this.editable = editable; }
     @Override public void onTaskUpdated(Consumer<TaskBean> listener) { this.onTaskUpdated = listener; }
     @Override public BooleanProperty dirtyProperty() { return dirty; }
     @Override public void clearDirty() { dirty.set(false); }

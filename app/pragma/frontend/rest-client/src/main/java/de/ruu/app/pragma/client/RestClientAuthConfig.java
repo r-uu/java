@@ -34,9 +34,22 @@ final class RestClientAuthConfig
       return new RestClientAuthConfig(serverUrl, realm, clientId, username, password);
     }
 
-    String username = required(config, "pragma.keycloak.username");
-    String password = required(config, "pragma.keycloak.password");
+    String adminUsername = optionalNonBlank(config, "pragma.keycloak.admin.username");
+    String adminPassword = optionalNonBlank(config, "pragma.keycloak.admin.password");
+    if ((adminUsername == null) != (adminPassword == null))
+      throw new IllegalStateException(
+          "Both 'pragma.keycloak.admin.username' and 'pragma.keycloak.admin.password' must be set together.");
+    String username = adminUsername != null ? adminUsername : required(config, "pragma.keycloak.username");
+    String password = adminPassword != null ? adminPassword : required(config, "pragma.keycloak.password");
     return new RestClientAuthConfig(serverUrl, realm, clientId, username, password);
+  }
+
+  private static String optionalNonBlank(Config config, String key)
+  {
+    return config.getOptionalValue(key, String.class)
+        .map(String::trim)
+        .filter(value -> !value.isEmpty())
+        .orElse(null);
   }
 
   private static String required(Config config, String key)

@@ -92,6 +92,7 @@ final class KeycloakUserSyncService
             String token = obtainToken(client, config);
             try (Response response = client
                 .target(config.serverUrl() + "/admin/realms/" + config.realm() + "/users")
+                .queryParam("briefRepresentation", false)
                 .queryParam("max", 1000)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + token)
@@ -286,10 +287,13 @@ final class KeycloakUserSyncService
     {
         String id = requireNonBlank(asString(json.get("id")).orElse(null), "Keycloak user without id");
         String username = requireNonBlank(asString(json.get("username")).orElse(null), "Keycloak user without username");
-        String first = asString(json.get("firstName")).orElse("");
-        String last = asString(json.get("lastName")).orElse("");
-        String displayName = (first + " " + last).trim();
-        if (displayName.isBlank()) displayName = username;
+        String displayName = displayNameFromAttributes(json).orElseGet(() -> {
+            String first = asString(json.get("firstName")).orElse("");
+            String last = asString(json.get("lastName")).orElse("");
+            if (!first.isBlank() && first.equals(last)) return first;
+            String combined = (first + " " + last).trim();
+            return combined.isBlank() ? username : combined;
+        });
         String email = asString(json.get("email")).orElse(id + "@keycloak.local");
         boolean enabled = asBoolean(json.get("enabled")).orElse(true);
         return new KeycloakUser(id, username, displayName, email, enabled);
@@ -299,12 +303,13 @@ final class KeycloakUserSyncService
     {
         String trimmed = defaulted(displayName, username).trim();
         String firstName = trimmed;
-        String lastName = "";
+        String lastName = username;
         int split = trimmed.indexOf(' ');
         if (split > 0) {
             firstName = trimmed.substring(0, split).trim();
             lastName = trimmed.substring(split + 1).trim();
         }
+        if (lastName.isBlank()) lastName = username;
         Map<String, Object> map = new HashMap<>();
         map.put("username", username);
         map.put("email", email);
@@ -312,6 +317,7 @@ final class KeycloakUserSyncService
         map.put("lastName", lastName);
         map.put("enabled", enabled);
         map.put("emailVerified", true);
+        map.put("attributes", Map.of("pragmaDisplayName", List.of(trimmed)));
         return map;
     }
 
@@ -336,6 +342,21 @@ final class KeycloakUserSyncService
     private static Optional<Boolean> asBoolean(@Nullable Object value)
     {
         if (value instanceof Boolean b) return Optional.of(b);
+        return Optional.empty();
+    }
+
+    private static Optional<String> displayNameFromAttributes(Map<String, Object> json)
+    {
+        Object attributes = json.get("attributes");
+        if (!(attributes instanceof Map<?, ?> attrs)) return Optional.empty();
+        Object rawDisplayName = attrs.get("pragmaDisplayName");
+        if (rawDisplayName instanceof List<?> values) {
+            for (Object value : values) {
+                if (value instanceof String s && !s.isBlank()) return Optional.of(s.trim());
+            }
+            return Optional.empty();
+        }
+        if (rawDisplayName instanceof String single && !single.isBlank()) return Optional.of(single.trim());
         return Optional.empty();
     }
 

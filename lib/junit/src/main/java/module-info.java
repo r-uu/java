@@ -6,7 +6,7 @@ module de.ruu.lib.junit
 	requires java.desktop;
 	requires org.junit.platform.commons;
 	requires org.apache.logging.log4j;
-	requires microprofile.config.api;
+	requires org.eclipse.microprofile.config;
 	requires de.ruu.lib.util;
 
 	requires org.junit.jupiter.api;

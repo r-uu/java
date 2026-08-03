@@ -221,8 +221,8 @@
                 <artifactItem>
                   <groupId>io.smallrye</groupId>
                   <artifactId>jandex</artifactId>
-                  <version>3.2.3</version>
-                  <destFileName>jandex-3.2.3.jar</destFileName>
+                  <version>3.6.0</version>
+                  <destFileName>jandex-3.6.0.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.fasterxml</groupId>
@@ -239,8 +239,8 @@
                 <artifactItem>
                   <groupId>org.postgresql</groupId>
                   <artifactId>postgresql</artifactId>
-                  <version>42.7.8</version>
-                  <destFileName>postgresql-42.7.8.jar</destFileName>
+                  <version>42.7.13</version>
+                  <destFileName>postgresql-42.7.13.jar</destFileName>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.basedir}/src/main/liberty/config/lib/global</outputDirectory>

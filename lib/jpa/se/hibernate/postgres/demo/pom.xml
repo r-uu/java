@@ -52,7 +52,7 @@
 		<!-- Weld SE (CDI Implementation) for testing -->
 		<dependency>
 			<groupId>org.jboss.weld.se</groupId>
-			<artifactId>weld-se-shaded</artifactId>
+			<artifactId>weld-se-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
