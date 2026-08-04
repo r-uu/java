@@ -11,6 +11,10 @@ export RUU_PRAGMA_COMPOSE_FILE="${RUU_PRAGMA_COMPOSE_FILE:-$RUU_PRAGMA/docker-co
 export RUU_PAPERLESS_CONTAINER="${RUU_PAPERLESS_CONTAINER:-paperless-webserver}"
 export RUU_PAPERLESS_COMPOSE_FILE="${RUU_PAPERLESS_COMPOSE_FILE:-$RUU_JAVA/env/wsl/paperless-compose.yml}"
 export RUU_PAPERLESS_SERVICE="${RUU_PAPERLESS_SERVICE:-paperless-webserver}"
+export RUU_OPENPROJECT_CONTAINER="${RUU_OPENPROJECT_CONTAINER:-openproject}"
+export RUU_OPENPROJECT_DB_CONTAINER="${RUU_OPENPROJECT_DB_CONTAINER:-openproject-db}"
+export RUU_OPENPROJECT_COMPOSE_FILE="${RUU_OPENPROJECT_COMPOSE_FILE:-$HOME/develop/github/wsl-env/docker/openproject/docker-compose.yml}"
+export RUU_OPENPROJECT_SERVICE="${RUU_OPENPROJECT_SERVICE:-openproject}"
 
 ruu-autostart-infra() {
   [ "${RUU_WSL_AUTOSTART_INFRA:-1}" = "1" ] || return 0
@@ -162,6 +166,56 @@ ruu-jasper-logs ()
   docker logs jasperreports "$@"
 }
 
+# OpenProject helpers
+ruu-openproject-start ()
+{
+  local container="${RUU_OPENPROJECT_CONTAINER:-openproject}"
+  local compose_file="${RUU_OPENPROJECT_COMPOSE_FILE:-$HOME/develop/github/wsl-env/docker/openproject/docker-compose.yml}"
+  local service="${RUU_OPENPROJECT_SERVICE:-openproject}"
+
+  if [ -n "$compose_file" ] && [ -f "$compose_file" ]; then
+    if docker compose -f "$compose_file" config --services 2>/dev/null | grep -qx "$service"; then
+      docker compose -f "$compose_file" up -d
+      return $?
+    fi
+  fi
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker start "$container"
+    return $?
+  fi
+
+  echo "Container '$container' does not exist and no compose service '$service' was found."
+  echo "Set RUU_OPENPROJECT_COMPOSE_FILE and RUU_OPENPROJECT_SERVICE to the correct compose stack, or create the container first."
+  return 1
+}
+
+ruu-openproject-stop ()
+{
+  local container="${RUU_OPENPROJECT_CONTAINER:-openproject}"
+  local db_container="${RUU_OPENPROJECT_DB_CONTAINER:-openproject-db}"
+  local compose_file="${RUU_OPENPROJECT_COMPOSE_FILE:-$HOME/develop/github/wsl-env/docker/openproject/docker-compose.yml}"
+  local service="${RUU_OPENPROJECT_SERVICE:-openproject}"
+
+  if [ -n "$compose_file" ] && [ -f "$compose_file" ]; then
+    if docker compose -f "$compose_file" config --services 2>/dev/null | grep -qx "$service"; then
+      docker compose -f "$compose_file" stop
+      return $?
+    fi
+  fi
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker stop "$container"
+    if docker container inspect "$db_container" >/dev/null 2>&1; then
+      docker stop "$db_container" >/dev/null 2>&1 || true
+    fi
+    return $?
+  fi
+
+  echo "Container '$container' does not exist."
+  return 1
+}
+
 # ═══════════════════════════════════════════════════════════════════
 # Pragma — Windows Executable
 # ═══════════════════════════════════════════════════════════════════
@@ -212,3 +266,4 @@ echo "  📚 help:   ruu-help | ruu-groups"
 echo "  🔨 build:  ruu-mvn-install-fast"
 echo "  📄 docs:   ruu-paperless-start | ruu-paperless-stop"
 echo "  🧾 jasper: ruu-jasper-start | ruu-jasper-stop"
+echo "  📋 plan:   ruu-openproject-start | ruu-openproject-stop"
