@@ -6,6 +6,7 @@ import de.ruu.app.pragma.dto.UserDto;
 import de.ruu.app.pragma.jpa.UserJPA;
 import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -60,9 +61,8 @@ final class KeycloakUserSyncService
 
     static UserJPA updateInKeycloakAndSync(EntityManager em, UserJPA localUser, UserDto dto)
     {
-        String keycloakUserId = localUser.keycloakUserId()
-            .orElseThrow(() -> new IllegalStateException("Local user has no keycloakUserId"));
         KeycloakConfig config = KeycloakConfig.read();
+        String keycloakUserId = requireLinkedKeycloakUserId(config, localUser);
         updateKeycloakUser(
             config,
             keycloakUserId,
@@ -79,9 +79,8 @@ final class KeycloakUserSyncService
 
     static void deleteInKeycloakAndLocal(EntityManager em, UserJPA localUser)
     {
-        String keycloakUserId = localUser.keycloakUserId()
-            .orElseThrow(() -> new IllegalStateException("Local user has no keycloakUserId"));
         KeycloakConfig config = KeycloakConfig.read();
+        String keycloakUserId = requireLinkedKeycloakUserId(config, localUser);
         deleteKeycloakUser(config, keycloakUserId);
         em.remove(localUser);
     }
@@ -180,6 +179,43 @@ final class KeycloakUserSyncService
                 return toKeycloakUser(readObject(response.readEntity(String.class)));
             }
         }
+    }
+
+    private static Optional<KeycloakUser> findOneKeycloakUserByUsername(KeycloakConfig config, String username)
+    {
+        try (Client client = ClientBuilder.newBuilder().build()) {
+            String token = obtainToken(client, config);
+            try (Response response = client
+                .target(config.serverUrl() + "/admin/realms/" + config.realm() + "/users")
+                .queryParam("username", username)
+                .queryParam("exact", true)
+                .queryParam("briefRepresentation", false)
+                .queryParam("max", 2)
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Bearer " + token)
+                .get()) {
+                if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL)
+                    throw new IllegalStateException("Failed to fetch Keycloak user by username: HTTP " + response.getStatus());
+                return readUsers(response.readEntity(String.class)).stream()
+                    .filter(it -> it.username().equals(username))
+                    .findFirst();
+            }
+        }
+    }
+
+    private static String requireLinkedKeycloakUserId(KeycloakConfig config, UserJPA localUser)
+    {
+        String linked = localUser.keycloakUserId().orElse(null);
+        if (linked != null && !linked.isBlank()) return linked;
+        String username = localUser.username();
+        return findOneKeycloakUserByUsername(config, username)
+            .map(user -> {
+                localUser.keycloakUserId(user.id());
+                return user.id();
+            })
+            .orElseThrow(() -> new WebApplicationException(
+                "User \"" + username + "\" is not linked to an existing Keycloak account.",
+                Response.Status.CONFLICT));
     }
 
     private static String obtainToken(Client client, KeycloakConfig config)
