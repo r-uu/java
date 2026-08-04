@@ -12,7 +12,7 @@
 
 ### mapstruct
 
-In der jeeeraaah Implementierung hat sich mapstruct nicht als sehr hilfreich erwiesen. Im pragma Projekt soll mapstruct auf den Prüfstand gestellt werden. Ein Verzicht auf mapstruct ist eine valide Option. AI-Agenten sollen dazu eine sinnvolle Einschätzung abgeben.
+In einer frueheren Implementierung hat sich mapstruct nicht als sehr hilfreich erwiesen. Im pragma Projekt soll mapstruct auf den Pruefstand gestellt werden. Ein Verzicht auf mapstruct ist eine valide Option. AI-Agenten sollen dazu eine sinnvolle Einschaetzung abgeben.
 
 ## Schichtenmodell
 
@@ -140,8 +140,8 @@ Persistenzschicht; andere Schichten transportieren diese Werte nur mit.
 Set<T> collectLeaves(T root) { ... }
 ```
 
-**Wildcard-Komplexität** entsteht zwingend durch die bidirektionale Referenz Task ↔ TaskGroup
-(wie im jeeeraaah-Projekt). `RawTask`/`RawTaskGroup` dienen als Anker für `List<RawTask>`
+**Wildcard-Komplexität** entsteht zwingend durch die bidirektionale Referenz Task ↔ TaskGroup.
+`RawTask`/`RawTaskGroup` dienen als Anker für `List<RawTask>`
 über Schichtgrenzen ohne Wildcard.
 
 
@@ -240,7 +240,7 @@ Pins. Das erfordert umfangreiche Änderungen in lib/.
 
 ## Open Liberty Server
 
-- **Port:** 9090 (HTTP), 9543 (HTTPS) — um Konflikt mit jeeeraaah (9080) zu vermeiden
+- **Port:** 9090 (HTTP), 9543 (HTTPS) — zur Vermeidung lokaler Port-Konflikte
 - **Context root:** `/pragma`, JAX-RS base: `/pragma/api`
 - **Features:** `jakartaee-10.0`, `microProfile-6.1`
 - **Datasource:** `jdbc/pragma` → PostgreSQL (Container `pragma-postgres`, Host-Port 5432)
@@ -310,13 +310,13 @@ Empfehlung: Setze auf JavaFXSmartGraph. Es spart dir bei der Implementierung von
 
 ## Aufbau der FX UI
 
-Die pragma-UI soll sich an der jeeeraaah-UI orientieren. Sie soll insbesondere das FXC-Framework aus lib/ verwenden. Einstieg in die pragma-UI soll eine FXC-App sein, die zunächst folgende Kacheln anzeigt:
+Die pragma-UI soll sich an einer klaren, kachelbasierten Desktop-UI orientieren. Sie soll insbesondere das FXC-Framework aus lib/ verwenden. Einstieg in die pragma-UI soll eine FXC-App sein, die zunaechst folgende Kacheln anzeigt:
 
-- Hierarchy View: zeigt FXCView Hierarchies (orientiert sich an de.ruu.app.jeeeraaah.frontend.ui.fx.task.hierarchy.Hierarchies)
-- Gantt View:     zeigt FXCView Gantt       (orientiert sich an de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt.Gantt)
+- Hierarchy View: zeigt FXCView Hierarchies fuer die hierarchische Aufgabenansicht
+- Gantt View:     zeigt FXCView Gantt fuer die zeitliche Aufgabenplanung
 - Graph View:     zeigt FXCView Graph, wird mit JavaFXSmartGraph neu erstellt
 
-Die Views sollen analog zur jeeeraaah Version autonom als FXCApp lauffähig sein.
+Die Views sollen autonom als FXCApp lauffaehig sein.
 
 ### Aktueller Stand (FX UI)
 

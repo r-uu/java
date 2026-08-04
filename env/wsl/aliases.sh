@@ -8,6 +8,9 @@ export RUU_LIB="$RUU_JAVA/lib"
 export RUU_APP="$RUU_JAVA/app"
 export RUU_PRAGMA="$RUU_APP/pragma"
 export RUU_PRAGMA_COMPOSE_FILE="${RUU_PRAGMA_COMPOSE_FILE:-$RUU_PRAGMA/docker-compose.yml}"
+export RUU_PAPERLESS_CONTAINER="${RUU_PAPERLESS_CONTAINER:-paperless-webserver}"
+export RUU_PAPERLESS_COMPOSE_FILE="${RUU_PAPERLESS_COMPOSE_FILE:-$RUU_JAVA/env/wsl/paperless-compose.yml}"
+export RUU_PAPERLESS_SERVICE="${RUU_PAPERLESS_SERVICE:-paperless-webserver}"
 
 ruu-autostart-infra() {
   [ "${RUU_WSL_AUTOSTART_INFRA:-1}" = "1" ] || return 0
@@ -69,6 +72,96 @@ alias ruu-git-pull='cd $RUU_JAVA && git pull'
 alias ruu-git-push='cd $RUU_JAVA && git push'
 alias ruu-git-log='cd $RUU_JAVA && git log --oneline --graph --all -20'
 
+# Paperless-ngx helpers
+# Defaults now point to a local compose stack so ruu-paperless-start/stop work directly.
+ruu-paperless-start ()
+{
+  local container="${RUU_PAPERLESS_CONTAINER:-paperless-webserver}"
+  local compose_file="${RUU_PAPERLESS_COMPOSE_FILE:-$RUU_JAVA/env/wsl/paperless-compose.yml}"
+  local service="${RUU_PAPERLESS_SERVICE:-paperless-webserver}"
+
+  if ! docker container inspect postgres >/dev/null 2>&1; then
+    echo "Shared Postgres container 'postgres' was not found."
+    return 1
+  fi
+
+  local postgres_running
+  postgres_running="$(docker inspect -f '{{.State.Running}}' postgres 2>/dev/null || echo false)"
+  if [ "$postgres_running" != "true" ]; then
+    docker start postgres >/dev/null 2>&1 || true
+  fi
+
+  if [ -n "$compose_file" ] && [ -f "$compose_file" ]; then
+    if docker compose -f "$compose_file" config --services 2>/dev/null | grep -qx "$service"; then
+      docker compose -f "$compose_file" up -d "$service"
+      return $?
+    fi
+  fi
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker start "$container"
+    return $?
+  fi
+
+  echo "Container '$container' does not exist and no compose service '$service' was found."
+  echo "Set RUU_PAPERLESS_COMPOSE_FILE and RUU_PAPERLESS_SERVICE to the correct compose stack, or create the container first."
+  return 1
+}
+
+ruu-paperless-stop ()
+{
+  local container="${RUU_PAPERLESS_CONTAINER:-paperless-webserver}"
+  local compose_file="${RUU_PAPERLESS_COMPOSE_FILE:-$RUU_JAVA/env/wsl/paperless-compose.yml}"
+  local service="${RUU_PAPERLESS_SERVICE:-paperless-webserver}"
+
+  if [ -n "$compose_file" ] && [ -f "$compose_file" ]; then
+    if docker compose -f "$compose_file" config --services 2>/dev/null | grep -qx "$service"; then
+      docker compose -f "$compose_file" stop 2>/dev/null || docker compose -f "$compose_file" stop "$service" 2>/dev/null
+      return $?
+    fi
+  fi
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker stop "$container"
+    return $?
+  fi
+
+  echo "Container '$container' does not exist."
+  return 1
+}
+
+# JasperReports helpers
+ruu-jasper-start ()
+{
+  local container="jasperreports"
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker start "$container"
+    return $?
+  fi
+
+  echo "Container '$container' does not exist."
+  return 1
+}
+
+ruu-jasper-stop ()
+{
+  local container="jasperreports"
+
+  if docker container inspect "$container" >/dev/null 2>&1; then
+    docker stop "$container"
+    return $?
+  fi
+
+  echo "Container '$container' does not exist."
+  return 1
+}
+
+ruu-jasper-logs ()
+{
+  docker logs jasperreports "$@"
+}
+
 # ═══════════════════════════════════════════════════════════════════
 # Pragma — Windows Executable
 # ═══════════════════════════════════════════════════════════════════
@@ -117,3 +210,5 @@ alias ruu-pragma-fx-admin='ruu-pragma-fx-as admin admin'
 echo "✓  r-uu-java aliases loaded"
 echo "  📚 help:   ruu-help | ruu-groups"
 echo "  🔨 build:  ruu-mvn-install-fast"
+echo "  📄 docs:   ruu-paperless-start | ruu-paperless-stop"
+echo "  🧾 jasper: ruu-jasper-start | ruu-jasper-stop"

@@ -14,7 +14,7 @@ Diese Datei dient als Kontext-Datei für AI-Agenten wie Claude Code oder Gemini.
 
 Das zu entwickelnde Softwaresystem pragma soll dem Anwender dabei helfen, in einem Projekt anfallenden Aufgaben (Task) zu strukturieren und den zeitlichen Ablauf für die Umsetzung der Aufgaben zu planen. Task können dabei in Taskgruppen (TaskGroup) organisiert werden.
 
-Es orientiert sich inhaltlich an den jeeeraaah-Projekten [backend](https://github.com/r-uu/main_java) und [frontend](https://github.com/r-uu/main_cmp), stellt aber einen echten Neuanfang dar.
+Es orientiert sich inhaltlich an frueheren Planungs- und Aufgabenmanagement-Projekten, stellt aber einen echten Neuanfang dar.
 
 ### Strukturierung von Tasks
 

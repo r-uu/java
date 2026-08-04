@@ -6,4 +6,4 @@ Diese Datei dient als Kontext-Datei für AI-Agenten wie Claude Code oder Gemini.
 
 ## Technische Projektziele
 
-Das Projekt orientiert sich inhaltlich und technisch an den jeeeraaah-Projekten [backend](https://github.com/r-uu/main_java) und [frontend](https://github.com/r-uu/main_cmp), stellt aber einen echten Neuanfang dar.
+Das Projekt orientiert sich inhaltlich und technisch an frueheren Planungs- und Aufgabenmanagement-Projekten, stellt aber einen echten Neuanfang dar.

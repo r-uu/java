@@ -241,4 +241,3 @@ mvn clean
 | Liberty HTTP               | 9090 | REST-API unter `/pragma/api`   |
 | Liberty HTTPS              | 9543 |                                |
 | PostgreSQL                 | 5432 | Container `pragma-postgres`    |
-| jeeeraaah (falls parallel) | 9080 | anderes Projekt, kein Konflikt |

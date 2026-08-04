@@ -161,5 +161,5 @@ in der Bean-Schicht ist sie optional und typischerweise `null`.
 
 - **Flat DTOs**: Brauchen wir DTOs, die nur skalare Felder (keine Relationen) enthalten?
 - **Relation-DTOs**: Brauchen wir DTOs, die ausschließlich Relationen abbilden?
-- **Id in allen Schichten**: Soll `id` in Bean und DTO immer gesetzt sein (vgl. jeeeraaah-Projekt)?
+- **Id in allen Schichten**: Soll `id` in Bean und DTO immer gesetzt sein?
 - **mapstruct**: Bewertung steht aus — bisheriger Eindruck aus dem Altprojekt war negativ.

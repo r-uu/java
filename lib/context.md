@@ -12,11 +12,11 @@ Ziel des Projekts ist die Bereitstellung allgemein wiederverwendbarer Java-Libra
 
 ## Projektgrenzen
 
-Das Projekt lehnt sich zwar an das alte `jeeeraaah`-Projekt (github.com/r-uu/main_java) an, definiert aber einen klaren Schnitt: es soll keine Abhängigkeiten zu `jeeeraaah` geben. Insbesondere sollen die Projekte unter `main_java` nicht von den Projekten unter `lib/` abhängig sein.
+Das Projekt definiert einen klaren Schnitt zu älteren Vorgängerprojekten: es soll keine Abhängigkeiten zu externen Altprojekten geben.
 
 Die Trennung gilt in beide Richtungen:
-- `lib/` darf keine Abhängigkeiten zu Projekten unter `main_java` einführen.
-- Projekte unter `main_java` sollen nicht von Projekten unter `lib/` abhängig sein.
+- `lib/` darf keine Abhängigkeiten zu Vorgängerprojekten einführen.
+- Vorgängerprojekte sollen nicht von Projekten unter `lib/` abhängig sein.
 
 ## Dokumentation
 
