@@ -126,8 +126,8 @@ Der Login lässt sich über `pragma.auth.test-mode` steuern:
 Für schnelles Umschalten ohne erneute Eingabe gibt es zusätzlich WSL-Aliases:
 
 ```bash
-ruu-pragma-fx         # provisioniert r-uu + pragma-admin und startet JavaFX mit r-uu / r-uu
-ruu-pragma-fx-admin   # provisioniert r-uu + pragma-admin und startet JavaFX mit pragma-admin / pragma-admin
+ruu-pragma-fx         # provisioniert r-uu + admin-keycloak und startet JavaFX mit r-uu / r-uu
+ruu-pragma-fx-admin   # provisioniert r-uu + admin-keycloak und startet JavaFX mit admin-keycloak / r-uu
 ```
 
 Alternativ frei per Property:

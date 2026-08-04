@@ -16,8 +16,8 @@
   <variable name="datasource_server_host" defaultValue="localhost" />
   <variable name="datasource_server_port" defaultValue="5432" />
   <variable name="datasource_database" defaultValue="pragma" />
-  <variable name="datasource_database_username" defaultValue="pragma" />
-  <variable name="datasource_database_password" defaultValue="pragma" />
+  <variable name="datasource_database_username" defaultValue="admin-postgres" />
+  <variable name="datasource_database_password" defaultValue="r-uu" />
 
   <httpEndpoint id="defaultHttpEndpoint"
       httpPort="${default_http_port}"

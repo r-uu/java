@@ -77,8 +77,8 @@ alias ruu-pragma-exe='ruu-pragma-win-exe'
 ruu-keycloak-provision() {
   local user="${1:-r-uu}"
   local pass="${2:-$user}"
-  local admin_user="${3:-pragma-admin}"
-  local admin_pass="${4:-$admin_user}"
+  local admin_user="${3:-admin-keycloak}"
+  local admin_pass="${4:-r-uu}"
   if [ "$#" -ge 4 ]; then
     shift 4 || true
   else
@@ -117,6 +117,6 @@ ruu-pragma-fx-as() {
     "$@"
 }
 alias ruu-pragma-fx='ruu-pragma-fx-as r-uu r-uu'
-alias ruu-pragma-fx-admin='ruu-pragma-fx-as pragma-admin pragma-admin'
+alias ruu-pragma-fx-admin='ruu-pragma-fx-as admin-keycloak r-uu'
 
 echo "✓  pragma aliases loaded"

@@ -296,8 +296,26 @@ public class AdminClient
 
     private void requireSuccess(Response response)
     {
-        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL)
-            throw new RuntimeException("HTTP " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
+        if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) return;
+        String body = readBodySafely(response);
+        String detail = body.isBlank()
+            ? response.getStatusInfo().getReasonPhrase()
+            : body;
+        throw new RuntimeException("HTTP " + response.getStatus() + " " + detail);
+    }
+
+    private static String readBodySafely(Response response)
+    {
+        try
+        {
+            if (response.hasEntity())
+            {
+                String body = response.readEntity(String.class);
+                return body == null ? "" : body.trim();
+            }
+        }
+        catch (Exception ignored) { }
+        return "";
     }
 
     private ObjectMapper createObjectMapper()

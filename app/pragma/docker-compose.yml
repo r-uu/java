@@ -4,8 +4,8 @@ services:
     container_name: pragma-postgres
     environment:
       POSTGRES_DB: pragma
-      POSTGRES_USER: pragma
-      POSTGRES_PASSWORD: pragma
+      POSTGRES_USER: admin-postgres
+      POSTGRES_PASSWORD: r-uu
     ports:
       - "5432:5432"
     volumes:
@@ -13,7 +13,7 @@ services:
       - ./docker/initdb:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pragma -d pragma"]
+      test: ["CMD-SHELL", "pg_isready -U admin-postgres -d pragma"]
       interval: 10s
       timeout: 5s
       retries: 5

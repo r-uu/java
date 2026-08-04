@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 final class KeycloakUserSyncService
 {
@@ -34,12 +35,19 @@ final class KeycloakUserSyncService
         KeycloakConfig config = KeycloakConfig.read();
         List<KeycloakUser> realmUsers = fetchRealmUsers(config);
         Map<String, UserJPA> byKeycloakId = findExistingByKeycloakId(em);
-        int synced = 0;
+
+        // Sync Keycloak → local
         for (KeycloakUser realmUser : realmUsers) {
             upsertLocalUser(em, realmUser, byKeycloakId);
-            synced++;
         }
-        return synced;
+
+        // Deactivate local users whose keycloakUserId no longer exists in Keycloak
+        Set<String> keycloakIds = realmUsers.stream().map(KeycloakUser::id).collect(java.util.stream.Collectors.toSet());
+        byKeycloakId.values().stream()
+            .filter(u -> !keycloakIds.contains(u.keycloakUserId().orElse(null)))
+            .forEach(u -> u.active(false));
+
+        return realmUsers.size();
     }
 
     static UserJPA createInKeycloakAndSync(EntityManager em, UserDto dto)
@@ -71,17 +79,27 @@ final class KeycloakUserSyncService
             dto.email(),
             dto.active(),
             dto.password().orElse(null));
-        KeycloakUser refreshed = fetchOneKeycloakUser(config, keycloakUserId);
-        upsertLocalUser(em, refreshed, findExistingByKeycloakId(em));
-        return findByKeycloakId(em, keycloakUserId)
-            .orElseThrow(() -> new IllegalStateException("User sync failed for Keycloak user " + keycloakUserId));
+        // Apply DTO values directly — do not re-derive them from the Keycloak response,
+        // which may compute a different displayName (firstName+lastName fallback) if the
+        // pragmaDisplayName attribute was not yet stored.
+        return localUser
+            .username(dto.username())
+            .displayName(dto.displayName())
+            .email(dto.email())
+            .active(dto.active());
     }
 
     static void deleteInKeycloakAndLocal(EntityManager em, UserJPA localUser)
     {
-        KeycloakConfig config = KeycloakConfig.read();
-        String keycloakUserId = requireLinkedKeycloakUserId(config, localUser);
-        deleteKeycloakUser(config, keycloakUserId);
+        String keycloakUserId = localUser.keycloakUserId().orElse(null);
+        if (keycloakUserId != null && !keycloakUserId.isBlank()) {
+            KeycloakConfig config = KeycloakConfig.read();
+            try {
+                deleteKeycloakUser(config, keycloakUserId);
+            } catch (IllegalStateException e) {
+                // Keycloak user already gone — proceed with local delete
+            }
+        }
         em.remove(localUser);
     }
 
@@ -145,6 +163,8 @@ final class KeycloakUserSyncService
                 .request()
                 .header("Authorization", "Bearer " + token)
                 .put(Entity.entity(userBody(username, displayName, email, enabled), MediaType.APPLICATION_JSON_TYPE))) {
+                if (response.getStatus() == 409) throw new WebApplicationException(
+                    "Username already exists in Keycloak", Response.Status.CONFLICT);
                 if (response.getStatus() != 204) throw new IllegalStateException("Failed to update Keycloak user: HTTP " + response.getStatus());
             }
             if (password != null && !password.isBlank()) resetPassword(client, config, token, userId, password);
