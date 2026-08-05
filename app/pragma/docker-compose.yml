@@ -3,7 +3,7 @@ services:
     image: postgres:17
     container_name: pragma-postgres
     environment:
-      POSTGRES_DB: pragma
+      POSTGRES_DB: postgres
       POSTGRES_USER: admin-postgres
       POSTGRES_PASSWORD: r-uu
     ports:
@@ -13,7 +13,7 @@ services:
       - ./docker/initdb:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin-postgres -d pragma"]
+      test: ["CMD-SHELL", "pg_isready -U admin-postgres -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,8 +24,17 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: start-dev
     ports:
       - "8080:8080"

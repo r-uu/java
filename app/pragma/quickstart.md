@@ -50,10 +50,15 @@ docker compose up -d
 ```
 
 Container:
-- `pragma-postgres` (Host-Port 5432, DB/User/Passwort: `pragma`)
+- `pragma-postgres` (Host-Port 5432, eine Instanz mit mehreren DBs: `postgres` (admin), `pragma`, `keycloak`)
 - `pragma-keycloak` (Port 8080, Admin `admin` / `admin`)
 
-Falls `FATAL: password authentication failed for user "pragma"` auftritt, ist meist bereits ein
+DB- und User-Trennung in der Postgres-Instanz:
+- `pragma`-DB mit User `pragma` / Passwort `pragma` (für Pragma-Backend)
+- `keycloak`-DB mit User `keycloak` / Passwort `keycloak` (für Keycloak)
+- `postgres` als Admin-DB (Container-Admin `admin-postgres` / `r-uu`)
+
+Falls `FATAL: password authentication failed for user "pragma"` oder `"keycloak"` auftritt, ist meist bereits ein
 persistiertes Docker-Volume mit abweichenden PostgreSQL-Credentials vorhanden. Dann die DB
 zurücksetzen und neu initialisieren:
 
@@ -87,7 +92,17 @@ Beim Start der JavaFX-App wird vor dem eigentlichen Fensterstart automatisch ein
 Prueflauf ausgefuehrt. Wenn PostgreSQL, Keycloak oder das Backend nicht bereit sind,
 bricht Pragma mit einer klaren Fehlermeldung ab.
 
-### Schritt 3 — Datenbank befüllen
+### Schritt 3 — Keycloak Realm initialisieren (einmalig nach `down -v`)
+
+Nach einer frischen Initialisierung existiert `pragma-realm` noch nicht.
+Vor den DB-Commands muss daher einmal das Realm-Setup laufen:
+
+```bash
+cd ~/develop/github/java/lib/keycloak/admin
+mvn exec:java -Dexec.mainClass=de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup
+```
+
+### Schritt 4 — Datenbank befüllen
 
 ```bash
 # Datenbank leeren + Testdaten anlegen (empfohlen für frischen Start)
@@ -102,7 +117,24 @@ mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client
 
 `DBPopulate` legt 3 Gruppen mit 10 Tasks an (Vorgänger-, Teilaufgaben- und Gruppenrelationen).
 
-### Schritt 4 — Integrationstests ausführen
+### Optional — DBEdit / Postgres-Toolbox Profile
+
+Für Backup/Restore mit der Postgres-Toolbox liegen jetzt zwei Profile vor:
+
+- `config/application.properties` (Default, DB `pragma`)
+- `config/application-keycloak.properties` (DB `keycloak`)
+
+Tools, die `config.file.name` unterstützen, können damit direkt umschalten:
+
+```bash
+# Default (pragma)
+-Dconfig.file.name=config/application.properties
+
+# Keycloak-DB
+-Dconfig.file.name=config/application-keycloak.properties
+```
+
+### Schritt 5 — Integrationstests ausführen
 
 Server muss laufen (Schritt 2).
 
