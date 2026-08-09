@@ -26,6 +26,10 @@
       <groupId>r-uu</groupId>
       <artifactId>r-uu.app.pragma.bean</artifactId>
     </dependency>
+    <dependency>
+      <groupId>r-uu</groupId>
+      <artifactId>r-uu.lib.postgres.toolbox</artifactId>
+    </dependency>
 
     <!-- Jakarta EE APIs -->
     <dependency>

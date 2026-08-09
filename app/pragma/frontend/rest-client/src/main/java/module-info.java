@@ -21,6 +21,7 @@ module de.ruu.app.pragma.client
     requires org.eclipse.microprofile.config;
     requires org.jspecify;
 	requires de.ruu.app.pragma.core;
+    requires de.ruu.lib.postgres;
     requires java.net.http;
 
 	exports de.ruu.app.pragma.client;

@@ -113,6 +113,9 @@ mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client
 
 # Nur befüllen
 mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client.dbcommand.DBPopulate
+
+# Baseline-Szenario gemäß Spezifikation (Backup + Reset + Setup + Verifikation)
+mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client.dbcommand.SetupPragmaTestScenarioBaseline
 ```
 
 `DBPopulate` legt 3 Gruppen mit 10 Tasks an (Vorgänger-, Teilaufgaben- und Gruppenrelationen).
@@ -213,7 +216,9 @@ de.ruu.app.pragma.client.dbcommand
 ├── DBPopulate.java      — legt Testdaten an (Gruppen, Tasks, Relationen)
 ├── DBCommand.java       — führt DBClear + DBPopulate aus (hat eigene main())
 ├── DBClearRunner.java   — thin wrapper für IntelliJ-Config (→ DBClear.main)
-└── DBPopulateRunner.java— thin wrapper für IntelliJ-Config (→ DBPopulate.main)
+├── DBPopulateRunner.java— thin wrapper für IntelliJ-Config (→ DBPopulate.main)
+├── SetupPragmaTestScenarioBaseline.java       — Baseline-Setup inkl. Snapshot, Rollback, Verifikation
+└── SetupPragmaTestScenarioBaselineRunner.java — thin wrapper für IntelliJ-Config
 ```
 
 Alle Klassen lassen sich direkt per `main()` starten — kein CDI-Container nötig.
