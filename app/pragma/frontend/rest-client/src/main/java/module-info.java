@@ -28,6 +28,6 @@ module de.ruu.app.pragma.client
     exports de.ruu.app.pragma.client.dbcommand;
 
     // open for CDI (Weld) bean discovery and proxy generation
-    opens de.ruu.app.pragma.client;
-    opens de.ruu.app.pragma.client.dbcommand;
+    opens de.ruu.app.pragma.client to weld.se.shaded;
+    opens de.ruu.app.pragma.client.dbcommand to weld.se.shaded;
 }

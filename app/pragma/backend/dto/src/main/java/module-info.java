@@ -6,5 +6,5 @@ module de.ruu.app.pragma.dto
     requires static jakarta.validation;
 
     exports de.ruu.app.pragma.dto;
-    opens   de.ruu.app.pragma.dto; // allow reflective access for JSON serialization (Jackson field visibility)
+    opens   de.ruu.app.pragma.dto to com.fasterxml.jackson.databind; // allow reflective access for JSON serialization (Jackson field visibility)
 }

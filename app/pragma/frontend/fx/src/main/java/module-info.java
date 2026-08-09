@@ -25,23 +25,16 @@ module de.ruu.app.pragma.fx
 	requires org.apache.logging.log4j;
 	requires org.kordamp.ikonli.javafx;
 
-	exports de.ruu.app.pragma.fx;
-	exports de.ruu.app.pragma.fx.admin;
-	exports de.ruu.app.pragma.fx.task.gantt;
-	exports de.ruu.app.pragma.fx.task.graph;
-	exports de.ruu.app.pragma.fx.task.edit;
-	exports de.ruu.app.pragma.fx.task.view;
-	exports de.ruu.app.pragma.fx.taskgroup.edit;
-	exports de.ruu.app.pragma.fx.taskgroup.view;
-
-	// open for CDI (Weld) bean discovery, proxy generation, and FXML controller injection
-	opens de.ruu.app.pragma.fx;
-	opens de.ruu.app.pragma.fx.admin;
-	opens de.ruu.app.pragma.fx.task.edit;
-	opens de.ruu.app.pragma.fx.task.view;
-	opens de.ruu.app.pragma.fx.task.hierarchy;
-	opens de.ruu.app.pragma.fx.task.gantt;
-	opens de.ruu.app.pragma.fx.task.graph;
-	opens de.ruu.app.pragma.fx.taskgroup.edit;
-	opens de.ruu.app.pragma.fx.taskgroup.view;
+	// no exports: no other module imports from de.ruu.app.pragma.fx at compile time
+	// opens for CDI (Weld) bean discovery/proxy generation, FXML controller injection,
+	// and JavaFX Application subclass instantiation (javafx.graphics)
+	opens de.ruu.app.pragma.fx                to javafx.graphics, javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.admin          to javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.task.edit      to javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.task.view      to javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.task.hierarchy to javafx.graphics, javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.task.gantt     to javafx.graphics, javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.task.graph     to javafx.graphics, javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.taskgroup.edit to javafx.fxml, weld.se.shaded;
+	opens de.ruu.app.pragma.fx.taskgroup.view to javafx.fxml, weld.se.shaded;
 }
