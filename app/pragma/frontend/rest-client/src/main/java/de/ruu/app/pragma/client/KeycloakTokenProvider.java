@@ -18,12 +18,12 @@ final class KeycloakTokenProvider
   private static final long CLOCK_SKEW_SECONDS = 20L;
 
   private final HttpClient httpClient = HttpClient.newHttpClient();
-  private final String tokenEndpoint;
-  private final String clientId;
-  private final String username;
-  private final String password;
+  private final String     tokenEndpoint;
+  private final String     clientId;
+  private final String     username;
+  private final String     password;
 
-  private String accessToken;
+  private String  accessToken;
   private Instant expiresAt;
 
   KeycloakTokenProvider(String serverUrl, String realm, String clientId, String username, String password)

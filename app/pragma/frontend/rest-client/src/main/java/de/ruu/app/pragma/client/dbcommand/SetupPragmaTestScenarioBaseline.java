@@ -2,21 +2,11 @@ package de.ruu.app.pragma.client.dbcommand;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import de.ruu.app.pragma.bean.GroupBean;
-import de.ruu.app.pragma.bean.MembershipBean;
-import de.ruu.app.pragma.bean.TaskAssignmentBean;
-import de.ruu.app.pragma.bean.TaskBean;
-import de.ruu.app.pragma.bean.TaskGroupBean;
-import de.ruu.app.pragma.bean.UserAvailabilityBean;
-import de.ruu.app.pragma.bean.UserBean;
+import de.ruu.app.pragma.bean.*;
 import de.ruu.app.pragma.client.AdminClient;
 import de.ruu.app.pragma.client.TaskClient;
 import de.ruu.app.pragma.client.TaskGroupClient;
-import de.ruu.app.pragma.core.AssignmentTargetType;
-import de.ruu.app.pragma.core.AssignmentType;
-import de.ruu.app.pragma.core.MembershipRole;
-import de.ruu.app.pragma.core.TaskPriority;
-import de.ruu.app.pragma.core.TaskStatus;
+import de.ruu.app.pragma.core.*;
 import de.ruu.lib.postgres.PostgresToolBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,17 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class SetupPragmaTestScenarioBaseline
 {
@@ -69,7 +49,7 @@ public class SetupPragmaTestScenarioBaseline
 
     adminClient.postConstruct();
     groupClient.postConstruct();
-    taskClient.postConstruct();
+    taskClient .postConstruct();
     try
     {
       new SetupPragmaTestScenarioBaseline().execute(config, adminClient, groupClient, taskClient);
