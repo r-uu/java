@@ -240,10 +240,10 @@ Mit JPMS können Entwickler Module definieren, die ausschließlich über eine se
 <details><summary>Ein Modul definiert seine Schnittstelle in `module-info.java`:</summary>
 
 ```java
-module de.ruu.app.jeeeraaah.backend.persistence.jpa
+module de.ruu.app.pragma.jpa
 {
     // what this module exports
-    exports de.ruu.app.jeeeraaah.backend.persistence.jpa;
+    exports de.ruu.app.pragma.jpa;
     
     // what is required by this module
     requires jakarta.persistence;
@@ -251,8 +251,8 @@ module de.ruu.app.jeeeraaah.backend.persistence.jpa
     
     // what remains hidden
     // → all other packages!
-    // e.g. de.ruu.app.jeeeraaah.backend.persistence.jpa.ee, an internal implementation of the module
-    // so "import de.ruu.app.jeeeraaah.backend.persistence.jpa.ee;" from outside the module will fail
+    // e.g. de.ruu.app.pragma.jpa.internal, an internal implementation package of the module
+    // so "import de.ruu.app.pragma.jpa.internal;" from outside the module will fail
 }
 ```
 </details>
@@ -260,6 +260,8 @@ module de.ruu.app.jeeeraaah.backend.persistence.jpa
 ---
 
 Mit JPMS ist es sogar möglich, dass Module bis ins Detail selbst steuern, welche anderen Module auf welche Teile der bereitgestellten Schnittstelle zugreifen können. Die durchgängige Verwendung von Modulen erfordert dabei zwar im ersten Moment einen gewissen Zusatzaufwand, garantiert aber danach eine viel stabilere interne Struktur des Gesamtsystems. Dies wird erreicht, indem die beschriebene Inflation von (internen) Abhängigkeiten effektiv verhindert wird.
+
+Ein konkretes Beispiel für den Einsatz von JPMS in einer nicht trivialen Enterprise-Java-Anwendung ist das Projekt [pragma](../../../app/pragma/doc/implementation/jpms-in-action/jpms%20in%20action%20-%20pragma.md).
 
 ## Modulithen mit Java - Monolithische Systeme aus Modulen
 
@@ -281,7 +283,7 @@ Durch die Modulgrenzen kann der (willkürliche, ungewollte, unerwünschte) Zugri
 
 Auch achteinhalb Jahre nach der Veröffentlichung von JPMS ist dessen Einsatz in der Praxis noch nicht sehr weit verbreitet. Dies mag daran liegen, dass viele bestehende Systeme noch auf Java 8 oder älter basieren. Es mag aber auch daran liegen, dass die Vorteile von JPMS und Modulithen noch nicht allgemein bekannt sind.
 
-Im POC-Projekt [jeeeraaah](https://github.com/r-uu/main/tree/main/root/app/jeeeraaah) wurde JPMS von Anfang an eingesetzt, um die Modularisierung des Systems sicherzustellen. Dadurch konnte eine saubere interne Struktur des Systems erreicht werden, die das System auch bei wachsender Komplexität beherrschbar macht.
+Im POC-Projekt [pragma](../../../app/pragma/doc/implementation/jpms-in-action/jpms%20in%20action%20-%20pragma.md) wurde JPMS von Anfang an eingesetzt, um die Modularisierung des Systems sicherzustellen. Dadurch konnte eine saubere interne Struktur des Systems erreicht werden, die das System auch bei wachsender Komplexität beherrschbar macht.
 
 Selbstverständlich ist es möglich und häufig auch sinnvoll, Modulithen mit Microservices zu kombinieren. Dies kommt immer dann in Betracht, wenn für bestimmte Systemteile Kriterien wie Skalierbarkeit wichtig sind. Microservices skalieren besser als Modulithen. Außerdem erweisen sie sich als vorteilhaft, wenn Teilsysteme häufig und schnell geändert werden müssen. Modulithen sind vergleichsweise große Deploymenteinheiten, die oft längere Releasezyklen haben, als die kleineren Microservices. Insofern ist eine Koexistenz von Modulithen und Microservices keineswegs unüblich.
 
