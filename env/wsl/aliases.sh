@@ -76,6 +76,33 @@ alias ruu-git-pull='cd $RUU_JAVA && git pull'
 alias ruu-git-push='cd $RUU_JAVA && git push'
 alias ruu-git-log='cd $RUU_JAVA && git log --oneline --graph --all -20'
 
+ruu-docker-up() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" up -d "$@"
+}
+
+ruu-docker-restart-postgres() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" restart postgres
+}
+
+ruu-keycloak-start() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" up -d keycloak
+}
+
+ruu-keycloak-logs() {
+  docker logs pragma-keycloak "$@"
+}
+
+ruu-keycloak-setup() {
+  cd "$RUU_PRAGMA" || return 1
+  mvn -f ../../lib/keycloak/admin/pom.xml -am exec:java \
+    -Dexec.mainClass=de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup \
+    -Dkeycloak.admin.user=admin \
+    -Dkeycloak.admin.password=admin \
+    -Dkeycloak.realm=pragma-realm \
+    -Dkeycloak.client.id=pragma-frontend \
+    "$@"
+}
+
 # Paperless-ngx helpers
 # Defaults now point to a local compose stack so ruu-paperless-start/stop work directly.
 ruu-paperless-start ()

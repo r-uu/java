@@ -1,6 +1,7 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
+import de.ruu.lib.docker.health.PragmaEnvironmentSupport;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -34,13 +35,13 @@ public class JasperReportsHealthCheck implements HealthCheck
 		log.info("Checking JasperReports service...");
 
 		// Check if container is running
-		if (!isContainerRunning("jasperreports"))
+		if (!isContainerRunning(PragmaEnvironmentSupport.JASPERREPORTS_CONTAINER))
 		{
 			log.error("  [FAIL] JasperReports container is not running");
 			return HealthCheckResult.failure(
 				"JasperReports Container",
 				"Container is not running",
-				"cd ~/develop/github/main/config/shared/docker && docker compose up -d jasperreports",
+				"docker start " + PragmaEnvironmentSupport.JASPERREPORTS_CONTAINER,
 				"ruu-jasper-start"
 			);
 		}

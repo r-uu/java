@@ -104,4 +104,10 @@ Dieses Repository entstand aus der Zusammenführung von:
 - `lib-java` → `lib/` (Libraries)
 - `app-pragma-java` → `app/pragma/` (Pragma-Applikation)
 
-`java/main` wird bis zur Stilllegung weiter parallel betrieben.
+## Konsolidierter Root-Bestand
+
+- `main/` ist stillgelegt und wird nicht mehr verwendet. Veraltete Leerstrukturen und Pfadreferenzen auf das fruehere `~/develop/github/main/...`-Layout wurden entfernt bzw. auf das aktuelle Repository-Layout umgestellt.
+- Die Pragma-Laufzeitkonfiguration liegt ausschliesslich in `app/pragma/config/`. Der fruehere duplizierte Root-Ordner `config/` wird nicht mehr versioniert.
+- `env/` bleibt aktiv. `env/wsl/aliases.sh` ist das Root-Profil fuer das gesamte Repository; `app/pragma/env/wsl/aliases.sh` bleibt das modulbezogene Profil fuer direkte Arbeit in `app/pragma/`.
+- Docker-/Keycloak-Hilfen verweisen auf das aktuelle Pragma-Compose unter `app/pragma/docker-compose.yml` sowie auf `lib/keycloak/admin`.
+- `run_gantt_demo.sh` wird nicht mehr verwendet und ist entfernt. Gantt-Demos werden direkt aus den betroffenen Maven-Modulen gestartet.

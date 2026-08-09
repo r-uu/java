@@ -1,6 +1,7 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
+import de.ruu.lib.docker.health.PragmaEnvironmentSupport;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -83,7 +84,7 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 					return HealthCheckResult.failure(
 						"Keycloak Realm",
 						"Realm exists but configuration incomplete",
-						"cd ~/develop/github/main/root/lib/keycloak.admin && mvn exec:java -Dexec.mainClass=\"de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup\"",
+						PragmaEnvironmentSupport.keycloakSetupCommand(),
 						"ruu-keycloak-setup"
 					);
 				}
@@ -95,7 +96,7 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 				return HealthCheckResult.failure(
 					"Keycloak Realm",
 					"Realm '" + realmName + "' does not exist",
-					"cd ~/develop/github/main/root/lib/keycloak.admin && mvn exec:java -Dexec.mainClass=\"de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup\"",
+					PragmaEnvironmentSupport.keycloakSetupCommand(),
 					"ruu-keycloak-setup"
 				);
 			}
@@ -106,7 +107,7 @@ public class KeycloakRealmHealthCheck implements HealthCheck
 			return HealthCheckResult.failure(
 				"Keycloak Realm",
 				"Cannot check realm: " + e.getMessage(),
-				"cd ~/develop/github/main/root/lib/keycloak.admin && mvn exec:java -Dexec.mainClass=\"de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup\"",
+				PragmaEnvironmentSupport.keycloakSetupCommand(),
 				"ruu-keycloak-setup"
 			);
 		}

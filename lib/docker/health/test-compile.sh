@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/r-uu/develop/github/main/root/lib/docker.health
+cd /home/r-uu/develop/github/java/lib/docker/health
 echo "════════════════════════════════════════════════════════════════"
 echo "Kompiliere docker.health Modul..."
 echo "════════════════════════════════════════════════════════════════"

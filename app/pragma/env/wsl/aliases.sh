@@ -43,6 +43,22 @@ ruu-autostart-infra
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-pragma-cd='cd $RUU_PRAGMA'
 
+ruu-docker-up() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" up -d "$@"
+}
+
+ruu-docker-restart-postgres() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" restart postgres
+}
+
+ruu-keycloak-start() {
+  docker compose -f "$RUU_PRAGMA_COMPOSE_FILE" up -d keycloak
+}
+
+ruu-keycloak-logs() {
+  docker logs pragma-keycloak "$@"
+}
+
 # Baut ein selbstständiges Windows-App-Image unter C:\Users\r-uu\develop\win-exe\pragma\:
 #   pragma.exe  – nativer Launcher (kein installiertes JDK nötig)
 #   runtime\    – zugeschnittenes JRE (jlink, nur benötigte JDK-Module)
@@ -103,6 +119,10 @@ ruu-keycloak-provision() {
     -Dapp.test.user="$admin_user" \
     -Dapp.test.password="$admin_pass" \
     "$@"
+}
+
+ruu-keycloak-setup() {
+  ruu-keycloak-provision "$@"
 }
 
 ruu-pragma-fx-as() {

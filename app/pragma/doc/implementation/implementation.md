@@ -290,6 +290,7 @@ Basis-URL: `http://localhost:9090/pragma/api`
 
 ## JPMS-Entscheidungen
 
+- Weiterfuehrende JPMS-Unterlagen liegen unter `doc/implementation/jpms-in-action/`.
 - **Named modules** (mit `module-info.java`): `core`, `bean`, `dto`, `jpa`, `rest-client` (Modulname: `de.ruu.app.pragma.client`), `fx`
   - Hyphene sind in JPMS-Modulnamen verboten — `rest-client` heißt deshalb `de.ruu.app.pragma.client`
   - Jersey (`jersey.client`) und MicroProfile Config (`microprofile.config.api`) sind automatische Module (Modulname aus JAR-Dateiname abgeleitet)

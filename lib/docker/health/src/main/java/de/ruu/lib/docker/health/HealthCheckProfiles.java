@@ -38,9 +38,12 @@ public class HealthCheckProfiles
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "pragma", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "lib_test", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "pragma", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "lib_test", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "keycloak", 5432))
 			.addCheck(new KeycloakServerHealthCheck())
 			.addCheck(new KeycloakRealmHealthCheck("pragma-realm"))
 			.addCheck(new JasperReportsHealthCheck())
@@ -60,9 +63,12 @@ public class HealthCheckProfiles
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "pragma", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "lib_test", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "pragma", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "lib_test", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "keycloak", 5432))
 			.build();
 	}
 
@@ -115,8 +121,10 @@ public class HealthCheckProfiles
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "pragma", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "pragma", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck(PragmaEnvironmentSupport.PRAGMA_POSTGRES_CONTAINER,
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE, "keycloak", 5432))
 			.addCheck(new KeycloakServerHealthCheck())
 			.addCheck(new KeycloakRealmHealthCheck("pragma-realm"))
 			.build();

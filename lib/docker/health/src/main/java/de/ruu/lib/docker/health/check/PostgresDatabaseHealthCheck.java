@@ -1,6 +1,7 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
+import de.ruu.lib.docker.health.PragmaEnvironmentSupport;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -15,18 +16,31 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 	private static final Logger log = LogManager.getLogger(PostgresDatabaseHealthCheck.class);
 
 	private final String containerName;
+	private final String composeServiceName;
 	private final String databaseName;
 	private final int    port;
 	private final String username;
 	private final String password;
 
+	public PostgresDatabaseHealthCheck(
+		String containerName,
+		String composeServiceName,
+		String databaseName,
+		int port,
+		String username,
+		String password)
+	{
+		this.containerName      = containerName;
+		this.composeServiceName = composeServiceName;
+		this.databaseName       = databaseName;
+		this.port               = port;
+		this.username           = username;
+		this.password           = password;
+	}
+
 	public PostgresDatabaseHealthCheck(String containerName, String databaseName, int port, String username, String password)
 	{
-		this.containerName = containerName;
-		this.databaseName  = databaseName;
-		this.port          = port;
-		this.username      = username;
-		this.password      = password;
+		this(containerName, containerName, databaseName, port, username, password);
 	}
 
 	/**
@@ -55,11 +69,20 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 			user = "pragma";
 			pass = "pragma";
 		}
-		this.containerName = containerName;
-		this.databaseName  = databaseName;
-		this.port          = port;
-		this.username      = user;
-		this.password      = pass;
+		this(containerName, containerName, databaseName, port, user, pass);
+	}
+
+	public PostgresDatabaseHealthCheck(String containerName, String composeServiceName, String databaseName, int port)
+	{
+		this(containerName, composeServiceName, databaseName, port, credentialsFor(databaseName)[0],
+			credentialsFor(databaseName)[1]);
+	}
+
+	private static String[] credentialsFor(String databaseName)
+	{
+		if ("keycloak".equals(databaseName)) return new String[]{"keycloak", "keycloak"};
+		if ("lib_test".equals(databaseName)) return new String[]{"lib_test", "lib_test"};
+		return new String[]{"pragma", "pragma"};
 	}
 
 	@Override
@@ -74,7 +97,7 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 			return HealthCheckResult.failure(
 				"PostgreSQL Container: " + containerName,
 				"Container is not running",
-				"cd ~/develop/github/main/config/shared/docker && docker compose up -d " + containerName,
+				PragmaEnvironmentSupport.composeUpCommand(composeServiceName),
 				"ruu-docker-up"
 			);
 		}
@@ -94,7 +117,8 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 			log.error("  [FAIL] Cannot connect to database '{}': {}", databaseName, e.getMessage());
 
 			// All databases are in the same container now (postgres)
-			String fixCommand = "cd ~/develop/github/main/config/shared/docker && docker compose restart postgres";
+			String fixCommand = PragmaEnvironmentSupport.composeRestartCommand(
+				PragmaEnvironmentSupport.PRAGMA_POSTGRES_SERVICE);
 			String alias = "ruu-docker-restart-postgres";
 
 			return HealthCheckResult.failure(

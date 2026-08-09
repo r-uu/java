@@ -1,6 +1,7 @@
 package de.ruu.lib.docker.health.check;
 
 import de.ruu.lib.docker.health.HealthCheckResult;
+import de.ruu.lib.docker.health.PragmaEnvironmentSupport;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -37,13 +38,13 @@ public class KeycloakServerHealthCheck implements HealthCheck
 		log.info("Checking Keycloak server...");
 
 		// Check if container is running
-		if (!isContainerRunning("keycloak"))
+		if (!isContainerRunning(PragmaEnvironmentSupport.PRAGMA_KEYCLOAK_CONTAINER))
 		{
 			log.error("  [FAIL] Keycloak container is not running");
 			return HealthCheckResult.failure(
 				"Keycloak Container",
 				"Container is not running",
-				"cd ~/develop/github/main/config/shared/docker && docker compose up -d keycloak",
+				PragmaEnvironmentSupport.composeUpCommand(PragmaEnvironmentSupport.PRAGMA_KEYCLOAK_SERVICE),
 				"ruu-keycloak-start"
 			);
 		}

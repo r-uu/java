@@ -1,5 +1,6 @@
 package de.ruu.lib.docker.health.fix;
 
+import de.ruu.lib.docker.health.PragmaEnvironmentSupport;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -23,7 +24,7 @@ public class DockerContainerStartStrategy implements AutoFixStrategy
 	 */
 	public DockerContainerStartStrategy()
 	{
-		this("~/develop/github/main/config/shared/docker", 30);
+		this(PragmaEnvironmentSupport.PRAGMA_DIR, 30);
 	}
 
 	/**
