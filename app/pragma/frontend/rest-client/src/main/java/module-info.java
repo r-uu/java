@@ -27,7 +27,7 @@ module de.ruu.app.pragma.client
 	exports de.ruu.app.pragma.client;
     exports de.ruu.app.pragma.client.dbcommand;
 
-    // open for CDI (Weld) bean discovery and proxy generation
-    opens de.ruu.app.pragma.client to weld.se.shaded;
+    // open for CDI (Weld) bean discovery/proxy generation and Jackson field-based serialization
+    opens de.ruu.app.pragma.client to weld.se.shaded, com.fasterxml.jackson.databind;
     opens de.ruu.app.pragma.client.dbcommand to weld.se.shaded;
 }

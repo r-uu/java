@@ -115,7 +115,7 @@ mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client
 mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client.dbcommand.DBPopulate
 
 # Baseline-Szenario gemäß Spezifikation (Backup + Reset + Setup + Verifikation)
-mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client.dbcommand.SetupPragmaTestScenarioBaseline
+mvn -pl frontend/rest-client exec:java -Dexec.mainClass=de.ruu.app.pragma.client.dbcommand.DBSetupTestScenarioBaseline
 ```
 
 `DBPopulate` legt 3 Gruppen mit 10 Tasks an (Vorgänger-, Teilaufgaben- und Gruppenrelationen).

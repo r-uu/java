@@ -56,6 +56,23 @@ public class PostgresToolBox
 		runCommandWithEnv(command, Map.of("PGPASSWORD", password));
 	}
 
+	public static void executeSql(
+		Path executable, String host, int port, String dbName, String username, String password, String sql)
+		throws IOException, InterruptedException
+	{
+		List<String> command = List.of(
+				executable.toString(),
+				"-h", host,
+				"-p", String.valueOf(port),
+				"-U", username,
+				"-d", dbName,
+				"-v", "ON_ERROR_STOP=1",
+				"-c", sql
+		);
+
+		runCommandWithEnv(command, Map.of("PGPASSWORD", password));
+	}
+
 	private static void runCommandWithEnv(List<String> command, Map<String, String> env)
 			throws IOException, InterruptedException
 	{

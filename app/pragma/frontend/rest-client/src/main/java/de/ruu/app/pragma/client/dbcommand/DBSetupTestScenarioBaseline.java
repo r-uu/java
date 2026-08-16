@@ -30,9 +30,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class SetupPragmaTestScenarioBaseline
+public class DBSetupTestScenarioBaseline
 {
-  private static final Logger log = LogManager.getLogger(SetupPragmaTestScenarioBaseline.class);
+  private static final Logger log = LogManager.getLogger(DBSetupTestScenarioBaseline.class);
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
   private static final DateTimeFormatter FILE_TS = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
   private static final LocalDate BASELINE_START = LocalDate.of(2026, 1, 1);
@@ -52,7 +52,7 @@ public class SetupPragmaTestScenarioBaseline
     taskClient .postConstruct();
     try
     {
-      new SetupPragmaTestScenarioBaseline().execute(config, adminClient, groupClient, taskClient);
+      new DBSetupTestScenarioBaseline().execute(config, adminClient, groupClient, taskClient);
     }
     catch (Exception e)
     {
@@ -142,6 +142,8 @@ public class SetupPragmaTestScenarioBaseline
       TaskClient taskClient,
       Path backupDir)
   {
+    ensureRealmLoginUser(config);
+
     // Backend + Keycloak connectivity through authenticated REST calls.
     adminClient.users();
     List<TaskGroupBean> taskGroups = groupClient.findAll();
@@ -165,6 +167,161 @@ public class SetupPragmaTestScenarioBaseline
       throw new IllegalStateException("Missing Keycloak admin password.");
 
     return new Preconditions(hasBusinessData);
+  }
+
+  private void ensureRealmLoginUser(SetupConfig config)
+  {
+    try
+    {
+      String token = keycloakAdminToken(config);
+      HttpClient httpClient = HttpClient.newHttpClient();
+      String usersUrl = config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm()
+          + "/users?exact=true&username=" + urlEncode(config.authUsername());
+
+      HttpRequest listRequest = HttpRequest.newBuilder()
+          .uri(URI.create(usersUrl))
+          .header("Authorization", "Bearer " + token)
+          .GET()
+          .build();
+      HttpResponse<String> listResponse = httpClient.send(listRequest, HttpResponse.BodyHandlers.ofString());
+      if (listResponse.statusCode() / 100 != 2)
+        throw new IllegalStateException("Failed to read Keycloak users for setup login: HTTP " + listResponse.statusCode());
+
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> users = OBJECT_MAPPER.readValue(listResponse.body(), List.class);
+
+      String userId;
+      if (users.isEmpty())
+      {
+        Map<String, Object> newUser = new LinkedHashMap<>();
+        newUser.put("username", config.authUsername());
+        newUser.put("enabled", true);
+        newUser.put("emailVerified", true);
+        newUser.put("email", config.authUsername() + "@local.invalid");
+        newUser.put("firstName", "Pragma");
+        newUser.put("lastName", "Setup");
+        newUser.put("requiredActions", List.of());
+        newUser.put("credentials", List.of(
+            Map.of(
+                "type", "password",
+                "value", config.defaultUserPassword(),
+                "temporary", false)));
+
+        HttpRequest createUserRequest = HttpRequest.newBuilder()
+            .uri(URI.create(config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm() + "/users"))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(newUser)))
+            .build();
+        HttpResponse<String> createUserResponse = httpClient.send(createUserRequest, HttpResponse.BodyHandlers.ofString());
+        if (createUserResponse.statusCode() != 201)
+          throw new IllegalStateException(
+              "Failed to create Keycloak setup login user '" + config.authUsername()
+                  + "': HTTP " + createUserResponse.statusCode() + " - " + createUserResponse.body());
+
+        HttpRequest reloadRequest = HttpRequest.newBuilder()
+            .uri(URI.create(usersUrl))
+            .header("Authorization", "Bearer " + token)
+            .GET()
+            .build();
+        HttpResponse<String> reloadResponse = httpClient.send(reloadRequest, HttpResponse.BodyHandlers.ofString());
+        if (reloadResponse.statusCode() / 100 != 2)
+          throw new IllegalStateException("Failed to reload Keycloak user after creation: HTTP " + reloadResponse.statusCode());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> reloaded = OBJECT_MAPPER.readValue(reloadResponse.body(), List.class);
+        if (reloaded.isEmpty())
+          throw new IllegalStateException("Created Keycloak setup login user cannot be resolved afterwards.");
+        users = reloaded;
+      }
+
+      userId = String.valueOf(users.get(0).getOrDefault("id", ""));
+      if (userId.isBlank())
+        throw new IllegalStateException("Keycloak setup login user has no id: " + config.authUsername());
+
+      Map<String, Object> userUpdate = new LinkedHashMap<>();
+      userUpdate.put("id", userId);
+      userUpdate.put("username", config.authUsername());
+      userUpdate.put("enabled", true);
+      userUpdate.put("emailVerified", true);
+      userUpdate.put("email", config.authUsername() + "@local.invalid");
+      userUpdate.put("firstName", "Pragma");
+      userUpdate.put("lastName", "Setup");
+      userUpdate.put("requiredActions", List.of());
+
+      HttpRequest updateUserRequest = HttpRequest.newBuilder()
+          .uri(URI.create(config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm() + "/users/" + userId))
+          .header("Authorization", "Bearer " + token)
+          .header("Content-Type", "application/json")
+          .PUT(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(userUpdate)))
+          .build();
+      HttpResponse<String> updateUserResponse = httpClient.send(updateUserRequest, HttpResponse.BodyHandlers.ofString());
+      if (updateUserResponse.statusCode() != 204)
+        throw new IllegalStateException(
+            "Failed to update Keycloak setup login user '" + config.authUsername()
+                + "': HTTP " + updateUserResponse.statusCode() + " - " + updateUserResponse.body());
+
+      HttpRequest roleRequest = HttpRequest.newBuilder()
+          .uri(URI.create(config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm() + "/roles/pragma-admin"))
+          .header("Authorization", "Bearer " + token)
+          .GET()
+          .build();
+      HttpResponse<String> roleResponse = httpClient.send(roleRequest, HttpResponse.BodyHandlers.ofString());
+      if (roleResponse.statusCode() != 200)
+        throw new IllegalStateException(
+            "Failed to read Keycloak role 'pragma-admin': HTTP " + roleResponse.statusCode() + " - " + roleResponse.body());
+      HttpRequest roleAssignRequest = HttpRequest.newBuilder()
+          .uri(URI.create(config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm()
+              + "/users/" + userId + "/role-mappings/realm"))
+          .header("Authorization", "Bearer " + token)
+          .header("Content-Type", "application/json")
+          .POST(HttpRequest.BodyPublishers.ofString("[" + roleResponse.body() + "]"))
+          .build();
+      HttpResponse<String> roleAssignResponse = httpClient.send(roleAssignRequest, HttpResponse.BodyHandlers.ofString());
+      if (roleAssignResponse.statusCode() != 204)
+        throw new IllegalStateException(
+            "Failed to assign role 'pragma-admin' to setup login user '" + config.authUsername()
+                + "': HTTP " + roleAssignResponse.statusCode() + " - " + roleAssignResponse.body());
+
+      Map<String, Object> credential = new LinkedHashMap<>();
+      credential.put("type", "password");
+      credential.put("value", config.defaultUserPassword());
+      credential.put("temporary", false);
+
+      HttpRequest resetPasswordRequest = HttpRequest.newBuilder()
+          .uri(URI.create(config.keycloakServerUrl() + "/admin/realms/" + config.keycloakRealm() + "/users/" + userId + "/reset-password"))
+          .header("Authorization", "Bearer " + token)
+          .header("Content-Type", "application/json")
+          .PUT(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(credential)))
+          .build();
+      HttpResponse<String> resetPasswordResponse = httpClient.send(resetPasswordRequest, HttpResponse.BodyHandlers.ofString());
+      if (resetPasswordResponse.statusCode() != 204)
+        throw new IllegalStateException(
+            "Failed to set Keycloak setup login password for '" + config.authUsername()
+                + "': HTTP " + resetPasswordResponse.statusCode() + " - " + resetPasswordResponse.body());
+    }
+    catch (Exception e)
+    {
+      throw new IllegalStateException("Failed to provision Keycloak setup login user", e);
+    }
+  }
+
+  private void clearChangeLog(SetupConfig config)
+  {
+    try
+    {
+      PostgresToolBox.executeSql(
+          config.postgresSqlExecutable(),
+          config.postgresHost(),
+          config.postgresPort(),
+          config.postgresDatabase(),
+          config.postgresUsername(),
+          config.postgresPassword(),
+          "TRUNCATE TABLE change_log RESTART IDENTITY");
+    }
+    catch (Exception e)
+    {
+      throw new IllegalStateException("Failed to clear change_log", e);
+    }
   }
 
   private Snapshot createSnapshot(SetupConfig config, Path backupDir) throws Exception
@@ -212,6 +369,8 @@ public class SetupPragmaTestScenarioBaseline
       TaskGroupClient groupClient,
       TaskClient taskClient)
   {
+    clearChangeLog(config);
+
     List<TaskBean> tasks = taskClient.findAll();
     for (TaskBean task : tasks)
     {
@@ -790,6 +949,7 @@ public class SetupPragmaTestScenarioBaseline
       boolean force,
       Path postgresBackupExecutable,
       Path postgresRestoreExecutable,
+      Path postgresSqlExecutable,
       String postgresHost,
       int postgresPort,
       String postgresDatabase,
@@ -814,11 +974,12 @@ public class SetupPragmaTestScenarioBaseline
 
       Path pgDump = Path.of(value(config, "pragma.postgres.backup.executable").orElse("/usr/bin/pg_dump"));
       Path pgRestore = Path.of(value(config, "pragma.postgres.restore.executable").orElse("/usr/bin/pg_restore"));
+      Path pgSql = Path.of(value(config, "pragma.postgres.psql.executable").orElse("/usr/bin/psql"));
       String pgHost = value(config, "pragma.postgres.host").orElse("localhost");
       int pgPort = value(config, "pragma.postgres.port").map(Integer::parseInt).orElse(5432);
       String pgDatabase = value(config, "pragma.postgres.database").orElse("pragma");
-      String pgUsername = value(config, "pragma.postgres.username").orElse("admin-postgres");
-      String pgPassword = value(config, "pragma.postgres.password").orElse("r-uu");
+      String pgUsername = value(config, "pragma.postgres.username").orElse("pragma");
+      String pgPassword = value(config, "pragma.postgres.password").orElse("pragma");
 
       String keycloakServerUrl = value(config, "pragma.keycloak.admin.server-url")
           .or(() -> value(config, "pragma.keycloak.server-url"))
@@ -841,6 +1002,7 @@ public class SetupPragmaTestScenarioBaseline
           force,
           pgDump,
           pgRestore,
+          pgSql,
           pgHost,
           pgPort,
           pgDatabase,
