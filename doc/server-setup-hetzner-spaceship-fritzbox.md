@@ -15,11 +15,11 @@ Beide Subdomains zeigen auf denselben Server. Die Trennung erfolgt später per R
 
 Es gibt aktuell drei relevante Systeme:
 
-| System | Zweck | Wo es läuft |
-|---|---|---|
-| Lokaler Rechner mit WSL | Administration per SSH, Pflege der Konfiguration | bei dir zuhause |
-| Spaceship | DNS für `r-uu.com`, `dms.r-uu.com`, `pragma.r-uu.com` | externer DNS-/Domain-Anbieter |
-| Hetzner Cloud Server `r-uu-01-ubuntu` | Host für Caddy, später DMS/Paperless und Pragma | Hetzner-Rechenzentrum |
+| System                                | Zweck                                                 | Wo es läuft                   |
+|---------------------------------------|-------------------------------------------------------|-------------------------------|
+| Lokaler Rechner mit WSL               | Administration per SSH, Pflege der Konfiguration      | bei dir zuhause               |
+| Spaceship                             | DNS für `r-uu.com`, `dms.r-uu.com`, `pragma.r-uu.com` | externer DNS-/Domain-Anbieter |
+| Hetzner Cloud Server `r-uu-01-ubuntu` | Host für Caddy, später DMS/Paperless und Pragma       | Hetzner-Rechenzentrum         |
 
 Zusätzlich spielt die Fritzbox eine Nebenrolle:
 
@@ -770,8 +770,6 @@ Das ist komfortabler, aber auch ein eigener Einrichtungsblock. Fuer jetzt ist de
 
 ## 8. Workflows für paperless
 
-
-
 ### 8.1 Mails
 
 - Primärer mail account ist und bleibt aus historischen Gründen web.de.
@@ -782,6 +780,19 @@ Das ist komfortabler, aber auch ein eigener Einrichtungsblock. Fuer jetzt ist de
   - in die imap-Ordnerstruktur von mail.de und
   - in den imap-paperless-ordner von gmx.de verteilt.
 - paperless holt die Mails aus dem imap-paperless-ordner von gmx.de ab und verarbeitet sie.
+
+#### 8.1.1 Thunderbird-Filter
+
+Die Filter in Thunderbird sind so angelegt, dass sie die eingegangenen Mails von mail.de:
+
+| # | Aktion      | Ziel / Markierung | Ordner                |
+|---|-------------|-------------------|-----------------------|
+| 1 | Kopie       | mail.de           | Ordnerstruktur        |
+| 2 | Kopie       | lokal             | Ordnerstruktur        |
+| 3 | Verschieben | gmx.de            | imap-paperless-Ordner |
+| 4 | Markieren   | ungelesen         |                       |
+
+Die Reihenfolge der Filter ist wichtig, da die Filter in der gegebenen Reihenfolge abgearbeitet werden.
 
 ### 8.2 Scanner
 
