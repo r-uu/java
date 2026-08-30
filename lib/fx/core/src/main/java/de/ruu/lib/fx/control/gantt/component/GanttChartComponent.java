@@ -1,6 +1,7 @@
 package de.ruu.lib.fx.control.gantt.component;
 
 import de.ruu.lib.fx.comp.DefaultFXCView;
+import jakarta.enterprise.context.Dependent;
 
 /**
  * FXC View component for Gantt chart visualization.
@@ -17,6 +18,7 @@ import de.ruu.lib.fx.comp.DefaultFXCView;
  * }
  * </pre>
  */
+@Dependent
 public class GanttChartComponent extends DefaultFXCView<GanttChartComponent, GanttChartService, GanttChartController>
 {
 }

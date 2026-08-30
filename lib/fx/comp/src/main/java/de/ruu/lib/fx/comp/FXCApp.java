@@ -61,9 +61,7 @@ public abstract class FXCApp extends Application
 	public static class FXStageShowingEvent extends AbstractEvent<FXCApp, Stage>
 	{
 		@ApplicationScoped
-		public static class FXStageShowingEventDispatcher extends EventDispatcher<FXStageShowingEvent>
-		{
-		}
+		public static class FXStageShowingEventDispatcher extends EventDispatcher<FXStageShowingEvent> { }
 
 		public FXStageShowingEvent(final FXCApp source, final Stage data) {
 			super(source, data);

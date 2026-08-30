@@ -5,7 +5,7 @@
        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd
                            http://jboss.org/schema/weld/beans http://jboss.org/schema/weld/beans_1_1.xsd"
        version="4.0"
-       bean-discovery-mode="all">
+       bean-discovery-mode="annotated">
   <!--
     Im Fat-JAR scannt Weld sonst alle Klassen aller enthaltenen Bibliotheken und scheitert,
     wenn diese optionale Abhängigkeiten referenzieren (OSGi, Disruptor, …).

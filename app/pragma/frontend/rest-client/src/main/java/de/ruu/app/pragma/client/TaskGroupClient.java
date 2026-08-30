@@ -13,7 +13,7 @@ import de.ruu.app.pragma.bean.TaskGroupBean;
 import de.ruu.app.pragma.dto.TaskGroupDto;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -33,7 +33,7 @@ import java.util.Optional;
  * <p>The public interface works exclusively with {@link TaskGroupBean}.
  * DTO types are an internal transport detail.
  */
-@Singleton
+@Dependent
 public class TaskGroupClient
 {
     private final String scheme = ConfigProvider.getConfig().getValue("pragma.rest-api.scheme", String.class);

@@ -29,7 +29,7 @@ import de.ruu.app.pragma.dto.UserDto;
 import de.ruu.app.pragma.dto.UserWorkloadDto;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -42,7 +42,7 @@ import org.glassfish.jersey.client.ClientProperties;
 
 import java.util.List;
 
-@Singleton
+@Dependent
 public class AdminClient
 {
     private final String scheme = ConfigProvider.getConfig().getValue("pragma.rest-api.scheme", String.class);

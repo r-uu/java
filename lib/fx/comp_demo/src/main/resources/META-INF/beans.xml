@@ -6,7 +6,7 @@
        xsi:schemaLocation=
          "http://xmlns.jcp.org/xml/ns/javaee
           http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
-       bean-discovery-mode="all">
+       bean-discovery-mode="annotated">
 	<scan>
 		<!-- don't scan org.jboss.weld classes -->
 <!-- 		<exclude name="org.jboss.weld.**" />  -->

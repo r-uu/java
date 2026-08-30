@@ -11,6 +11,7 @@ module de.ruu.lib.postgres.ui
 	requires de.ruu.lib.util.config.mp;
 	requires javafx.fxml;
 	requires javafx.controls;
+	requires jakarta.cdi;
 	requires jakarta.inject;
 	requires org.eclipse.microprofile.config;
 

@@ -16,7 +16,7 @@ import de.ruu.app.pragma.core.TaskPriority;
 import de.ruu.app.pragma.core.TaskStatus;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Singleton;
+import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -45,7 +45,7 @@ import java.util.Optional;
  * <p><strong>Tasks must always belong to a group.</strong> The {@code create(TaskBean)} method
  * enforces this: the bean's {@code taskGroup()} must be non-null and already persisted (id ≠ null).
  */
-@Singleton
+@Dependent
 public class TaskClient
 {
     private final String scheme = ConfigProvider.getConfig().getValue("pragma.rest-api.scheme", String.class);
